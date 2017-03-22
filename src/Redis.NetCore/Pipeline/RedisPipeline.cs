@@ -19,7 +19,6 @@ namespace Redis.NetCore.Pipeline
         private Exception _pipelineException;
         private int _sendIsRunning = 0;
         private int _receiveIsRunning = 0;
-        private int _receiveCount = 0;
         private Task _sendTask;
         private Task _receiveTask;
 
@@ -108,8 +107,15 @@ namespace Redis.NetCore.Pipeline
 
         private async Task SendAndMarkDone()
         {
-            await SendAsync().ConfigureAwait(false);
-            Interlocked.Exchange(ref _sendIsRunning, 0);
+            while (true)
+            {
+                await SendAsync().ConfigureAwait(false);
+                Interlocked.Exchange(ref _sendIsRunning, 0);
+                if (RequestQueue.Count == 0 || Interlocked.CompareExchange(ref _sendIsRunning, 1, 0) != 0)
+                {
+                    return;
+                }
+            }
         }
 
         private async Task SendAsync()
@@ -178,8 +184,15 @@ namespace Redis.NetCore.Pipeline
 
         private async Task ReceiveAndMarkDone()
         {
-            await ReceiveAsync().ConfigureAwait(false);
-            Interlocked.Exchange(ref _receiveIsRunning, 0);
+            while (true)
+            {
+                await ReceiveAsync().ConfigureAwait(false);
+                Interlocked.Exchange(ref _receiveIsRunning, 0);
+                if (_responseQueue.Count == 0 || Interlocked.CompareExchange(ref _receiveIsRunning, 1, 0) != 0)
+                {
+                    return;
+                }
+            }
         }
 
         private async Task ReceiveAsync()
@@ -195,8 +208,6 @@ namespace Redis.NetCore.Pipeline
                 RedisPipelineItem currentItem;
                 while (_responseQueue.TryDequeue(out currentItem))
                 {
-                    var count = Interlocked.Increment(ref _receiveCount);
-                    Debug.WriteLine($"Receive count {count}");
                     await _redisReader.ReadAsync(currentItem).ConfigureAwait(false);
                 }
             }

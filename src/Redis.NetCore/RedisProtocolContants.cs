@@ -7,6 +7,8 @@ namespace Redis.NetCore
 {
     public static class RedisProtocolContants
     {
+        public static readonly byte Minus = '-'.ToByte();
+        public static readonly byte Zero = '0'.ToByte();
         public static readonly byte SimpleString = '+'.ToByte();
         public static readonly byte Integer = ':'.ToByte();
         public static readonly byte Error = '-'.ToByte();

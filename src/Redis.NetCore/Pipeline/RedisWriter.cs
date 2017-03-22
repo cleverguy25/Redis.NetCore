@@ -26,13 +26,69 @@ namespace Redis.NetCore.Pipeline
 
         public async Task WriteRedisRequestAsync(byte[][] requestData)
         {
-            await WriteCountLineAsync(RedisProtocolContants.Array, requestData.Length).ConfigureAwait(false);
+            // Inline for performance, even though it makes this method
+            // long and har to read.  Comments to help.
+            // Write length
+            var countBytes = requestData.Length.ToBytes();
+            if (_currentPosition + countBytes.Length + 3 > _buffer.Count)
+            {
+                SaveExistingBuffer();
+                await CreateNewBufferAsync().ConfigureAwait(false);
+            }
+
+            WriteByte(RedisProtocolContants.Array);
+            WriteBytes(countBytes, 0, countBytes.Length);
+            WriteBytes(RedisProtocolContants.LineEnding, 0, 2);
             foreach (var item in requestData)
             {
-                await WriteCountLineAsync(RedisProtocolContants.BulkString, item.Length).ConfigureAwait(false);
-                await WriteDataAsync(item).ConfigureAwait(false);
-                await WriteDataAsync(RedisProtocolContants.LineEnding).ConfigureAwait(false);
+                // Write item length
+                countBytes = item.Length.ToBytes();
+                if (_currentPosition + countBytes.Length + 3 > _buffer.Count)
+                {
+                    SaveExistingBuffer();
+                    await CreateNewBufferAsync().ConfigureAwait(false);
+                }
+
+                WriteByte(RedisProtocolContants.BulkString);
+                WriteBytes(countBytes, 0, countBytes.Length);
+                WriteBytes(RedisProtocolContants.LineEnding, 0, 2);
+
+                // Write data
+                var startPosition = 0;
+
+                while (true)
+                {
+                    if (WriteData(item, ref startPosition)) break;
+
+                    SaveExistingBuffer();
+                    await CreateNewBufferAsync().ConfigureAwait(false);
+                }
+
+                // Write line ending
+                startPosition = 0;
+
+                while (true)
+                {
+                    if (WriteData(RedisProtocolContants.LineEnding, ref startPosition)) break;
+
+                    SaveExistingBuffer();
+                    await CreateNewBufferAsync().ConfigureAwait(false);
+                }
             }
+        }
+
+        private bool WriteData(byte[] data, ref int startPosition)
+        {
+            var length = Math.Min(_buffer.Count - _currentPosition, data.Length - startPosition);
+
+            WriteBytes(data, startPosition, length);
+            startPosition += length;
+            if (startPosition == data.Length)
+            {
+                return true;
+            }
+
+            return false;
         }
 
         public List<ArraySegment<byte>> FlushBuffers()
@@ -69,45 +125,6 @@ namespace Redis.NetCore.Pipeline
             var arraySegment = new ArraySegment<byte>(_buffer.Array, _buffer.Offset, _currentPosition);
             _sendBufferList.Add(arraySegment);
             _currentPosition = 0;
-        }
-
-        private Task WriteCountLineAsync(byte symbol, int count)
-        {
-            var countBytes = count.ToBytes();
-            return WriteLengthAsync(symbol, countBytes);
-        }
-
-        private async Task WriteLengthAsync(byte symbol, byte[] data)
-        {
-            if (_currentPosition + data.Length + 3 > _buffer.Count)
-            {
-                SaveExistingBuffer();
-                await CreateNewBufferAsync().ConfigureAwait(false);
-            }
-
-            WriteByte(symbol);
-            WriteBytes(data, 0, data.Length);
-            WriteBytes(RedisProtocolContants.LineEnding, 0, 2);
-        }
-
-        private async Task WriteDataAsync(byte[] data)
-        {
-            var startPosition = 0;
-
-            while (true)
-            {
-                var length = Math.Min(_buffer.Count - _currentPosition, data.Length - startPosition);
-
-                WriteBytes(data, startPosition, length);
-                startPosition += length;
-                if (startPosition == data.Length)
-                {
-                    break;
-                }
-
-                SaveExistingBuffer();
-                await CreateNewBufferAsync().ConfigureAwait(false);
-            }
         }
 
         private void WriteByte(byte value)

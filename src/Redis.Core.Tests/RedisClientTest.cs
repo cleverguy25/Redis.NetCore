@@ -72,7 +72,7 @@ namespace Redis.NetCore.Tests
             using (var client = CreateClient())
             {
                 var tasks = new List<Task>();
-                const int numberOperations = 100;
+                const int numberOperations = 2000;
                 for (var i = 0; i < numberOperations; i++)
                 {
                     var task = client.SetStringAsync("QuickFire" + i, "Value" + i);
