@@ -1,0 +1,9 @@
+.vs/Redis.NetCore/v14/.suo
+src/Redis.NetCore/bin/
+src/Redis.NetCore/obj/
+src/Redis.Core.Tests/project.lock.json
+src/Redis.Core.Tests/obj/
+.vs/
+*.user
+src/Redis.Core.Tests/bin/
+src/Redis.NetCore/project.lock.json
