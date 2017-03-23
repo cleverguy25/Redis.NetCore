@@ -7,6 +7,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Options;
 using Redis.NetCore.Configuration;
 using Redis.NetCore.Pipeline;
@@ -23,10 +24,10 @@ namespace Redis.NetCore
             _redisPipelinePool = redisPipelinePool;
         }
 
-        public static IRedisClient CreateClient(IOptions<RedisConfiguration> redisConfiguration, int numConnections = 3)
+        public static IRedisClient CreateClient(RedisConfiguration redisConfiguration, int numConnections = 3)
         {
             var bufferManager = new BufferManager(15, 8192, 10, 20);
-            var pipelinePool = new RedisPipelinePool(redisConfiguration.Value, bufferManager, numConnections);
+            var pipelinePool = new RedisPipelinePool(redisConfiguration, bufferManager, numConnections);
             return new RedisClient(pipelinePool);
         }
 

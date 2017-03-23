@@ -191,6 +191,12 @@ namespace Redis.NetCore.Pipeline
 
         private static void ProcessValue(RedisPipelineItem redisItem, byte[] value)
         {
+            if (value == null)
+            {
+                redisItem.OnSuccess(null);
+                return;
+            }
+
             var result = new byte[1][];
             result[0] = value;
             redisItem.OnSuccess(result);

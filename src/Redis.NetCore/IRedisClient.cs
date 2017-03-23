@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Distributed;
 using Redis.NetCore.Sockets;
 
 namespace Redis.NetCore
@@ -12,9 +13,9 @@ namespace Redis.NetCore
 
         Task SetAsync(string key, byte[] data, int seconds);
 
-        Task<byte[]> GetAsync(string key);
+        Task<byte[][]> GetAsync(params string[] keys);
 
-        Task<byte[][]> GetAsync(params string[] key);
+        Task<byte[]> GetAsync(string key);
 
         Task<int> GetTimeToLive(string key);
 

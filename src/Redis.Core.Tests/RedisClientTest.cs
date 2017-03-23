@@ -36,7 +36,7 @@ namespace Redis.NetCore.Tests
                                          Endpoints = new[] { "localhost:1234" }
                                      };
 
-            using (var client = RedisClient.CreateClient(Options.Create(redisConfiguration)))
+            using (var client = RedisClient.CreateClient(redisConfiguration))
             {
                 await Assert.ThrowsAsync<RedisException>(() => client.SetStringAsync("NoConnection", "NoOp"));
             }
@@ -132,7 +132,7 @@ namespace Redis.NetCore.Tests
             {
                 Endpoints = new[] { "localhost:32768" }
             };
-            var client = RedisClient.CreateClient(Options.Create(redisConfiguration));
+            var client = RedisClient.CreateClient(redisConfiguration);
             return client;
         }
     }

@@ -28,7 +28,7 @@ namespace Redis.NetCore
 
         public static byte[] CollapseArray(this IEnumerable<byte[]> value)
         {
-            return value?.SelectMany(item => item).ToArray();
+            return value?.SelectMany(item => item)?.ToArray();
         }
     }
 }
