@@ -2,7 +2,6 @@
 using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
-using Redis.NetCore.Sockets;
 
 namespace Redis.NetCore.Pipeline
 {

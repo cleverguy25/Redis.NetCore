@@ -1,18 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Net;
-using System.Net.Sockets;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.Options;
-using Redis.NetCore.Abstractions;
+﻿using Redis.NetCore.Abstractions;
 using Redis.NetCore.Configuration;
 using Redis.NetCore.Pipeline;
-using Redis.NetCore.Sockets;
 
 namespace Redis.NetCore
 {
