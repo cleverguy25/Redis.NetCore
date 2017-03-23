@@ -29,7 +29,6 @@ namespace Redis.NetCore.Pipeline
 
         public void OnSuccess(byte[][] redisResponse)
         {
-            Debug.WriteLine($"Item {Id} done");
             _onSuccess?.Invoke(redisResponse);
         }
     }

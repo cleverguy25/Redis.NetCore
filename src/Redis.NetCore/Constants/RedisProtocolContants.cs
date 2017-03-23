@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Redis.NetCore
+﻿namespace Redis.NetCore.Constants
 {
     public static class RedisProtocolContants
     {

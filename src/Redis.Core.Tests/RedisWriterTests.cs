@@ -1,12 +1,14 @@
 ﻿using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Redis.NetCore.Constants;
 using Redis.NetCore.Pipeline;
 using Redis.NetCore.Sockets;
 using Xunit;
 
 namespace Redis.NetCore.Tests
 {
+    [Trait("Category", "UnitTest")]
     public class RedisWriterTests
     {
         [Fact]

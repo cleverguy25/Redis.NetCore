@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Distributed;
+using Redis.NetCore.Constants;
 
 namespace Redis.NetCore
 {
@@ -19,6 +20,19 @@ namespace Redis.NetCore
             CheckKey(key);
 
             return SendCommandAsync(RedisCommands.Set, key.ToBytes(), data);
+        }
+
+        public Task SetAsync(IEnumerable<KeyValuePair<string, byte[]>> keyValues)
+        {
+            var data = new List<byte[]>();
+            foreach (var keyValue in keyValues)
+            {
+                data.Add(keyValue.Key.ToBytes());
+                data.Add(keyValue.Value);
+            }
+
+            var request = ComposeRequest(RedisCommands.MultipleSet, data);
+            return SendMultipleCommandAsync(request);
         }
 
         public Task SetAsync(string key, byte[] data, TimeSpan expiration)
@@ -37,7 +51,15 @@ namespace Redis.NetCore
             var expirationBytes = seconds.ToString(CultureInfo.InvariantCulture).ToBytes();
             return SendCommandAsync(RedisCommands.SetExpiration, key.ToBytes(), expirationBytes, data);
         }
-        
+
+        public async Task<bool> SetNotExistsAsync(string key, byte[] data)
+        {
+            CheckKey(key);
+
+            var bytes = await SendCommandAsync(RedisCommands.SetNotExists, key.ToBytes(), data);
+            return bytes[0] == '1';
+        }
+
         public Task<byte[][]> GetAsync(params string[] keys)
         {
             if (keys == null)
@@ -67,6 +89,13 @@ namespace Redis.NetCore
             }
 
             return SendCommandAsync(RedisCommands.Get, key.ToBytes());
+        }
+
+        public Task<byte[]> GetSetAsync(string key, byte[] data)
+        {
+            CheckKey(key);
+
+            return SendCommandAsync(RedisCommands.GetSet, key.ToBytes(), data);
         }
     }
 }

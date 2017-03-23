@@ -36,12 +36,12 @@ namespace Redis.NetCore
 
         public void Remove(string key)
         {
-            // TODO: clevel implement IDistributedCache Remove
+            RemoveAsync(key).GetAwaiter().GetResult();
         }
 
         public Task RemoveAsync(string key)
         {
-            return Task.CompletedTask; // TODO: clevel implement IDistributedCache RemoveAsync
+            return DeleteKeyAsync(key);
         }
     }
 }

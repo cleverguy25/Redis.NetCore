@@ -10,6 +10,7 @@ using Xunit;
 
 namespace Redis.NetCore.Tests
 {
+    [Trait("Category", "UnitTest")]
     public class RedisReaderTests
     {
         [Fact]
@@ -79,7 +80,7 @@ namespace Redis.NetCore.Tests
             SetupSocketResponse(socket, "$-1\r\n");
 
             await redisReader.ReadAsync(redisPiplineItem);
-            Assert.Equal(null, responseData[0]);
+            Assert.Equal(null, responseData);
         }
 
         [Fact]
@@ -94,6 +95,20 @@ namespace Redis.NetCore.Tests
 
             await redisReader.ReadAsync(redisPiplineItem);
             Assert.Equal("Boom!", Encoding.UTF8.GetString(responseData[0]));
+        }
+
+        [Fact]
+        public async Task ReadIntegerAsync()
+        {
+            var socket = Substitute.For<IAsyncSocket>();
+
+            byte[][] responseData = null;
+            var redisReader = CreateRedisReader(100, socket);
+            var redisPiplineItem = new RedisPipelineItem(null, null, response => responseData = response);
+            SetupSocketResponse(socket, ":42\r\n");
+
+            await redisReader.ReadAsync(redisPiplineItem);
+            Assert.Equal("42", Encoding.UTF8.GetString(responseData[0]));
         }
 
         [Fact]

@@ -5,6 +5,7 @@ using Xunit;
 
 namespace Redis.NetCore.Tests
 {
+    [Trait("Category", "UnitTest")]
     public class BufferManagerTest
     {
         private const int SegmentSize = 8192;
