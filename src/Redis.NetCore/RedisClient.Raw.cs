@@ -120,6 +120,15 @@ namespace Redis.NetCore
             return bytes != null;
         }
 
+        public async Task<int> SetRangeAsync(string key, int offset, byte[] data)
+        {
+            CheckKey(key);
+
+            var offsetBytes = offset.ToString(CultureInfo.InvariantCulture).ToBytes();
+            var bytes = await SendCommandAsync(RedisCommands.SetRange, key.ToBytes(), offsetBytes, data);
+            return ConvertBytesToInteger(bytes);
+        }
+
         public Task<byte[][]> GetAsync(params string[] keys)
         {
             if (keys == null)
@@ -149,6 +158,15 @@ namespace Redis.NetCore
             }
 
             return SendCommandAsync(RedisCommands.Get, key.ToBytes());
+        }
+
+        public Task<byte[]> GetRangeAsync(string key, int begin, int end = -1)
+        {
+            CheckKey(key);
+
+            var beginBytes = begin.ToString(CultureInfo.InvariantCulture).ToBytes();
+            var endBytes = end.ToString(CultureInfo.InvariantCulture).ToBytes();
+            return SendCommandAsync(RedisCommands.GetRange, key.ToBytes(), beginBytes, endBytes);
         }
 
         public Task<byte[]> GetSetAsync(string key, byte[] data)

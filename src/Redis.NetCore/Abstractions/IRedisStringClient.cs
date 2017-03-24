@@ -28,9 +28,13 @@ namespace Redis.NetCore.Abstractions
 
         Task<bool> SetStringExistsAsync(string key, string data, TimeSpan expiration);
 
+        Task<int> SetStringRangeAsync(string key, int offset, string data);
+
         Task<string> GetStringAsync(string key);
 
         Task<string[]> GetStringsAsync(params string[] keys);
+
+        Task<string> GetStringRangeAsync(string key, int begin, int end = -1);
 
         Task<string> GetSetStringAsync(string key, string data);
 

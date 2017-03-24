@@ -230,6 +230,34 @@ namespace Redis.NetCore.Tests
         }
 
         [Fact]
+        public async Task SetStringRangeAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string expected = "Hello Bar!";
+                const string key = nameof(SetStringRangeAsync);
+                await TestClient.SetGetAsync(client, key, "Hello Foo!");
+                var length = await client.SetStringRangeAsync(key, 6, "Bar");
+                var value = await client.GetStringAsync(key);
+                Assert.Equal(10, length);
+                Assert.Equal(expected, value);
+            }
+        }
+
+        [Fact]
+        public async Task GetStringRangeAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string expected = "Hello Foo!";
+                const string key = nameof(GetStringRangeAsync);
+                await TestClient.SetGetAsync(client, key, expected);
+                var value = await client.GetStringRangeAsync(key, 6, 8);
+                Assert.Equal("Foo", value);
+            }
+        }
+
+        [Fact]
         public async Task AppendAsync()
         {
             using (var client = TestClient.CreateClient())

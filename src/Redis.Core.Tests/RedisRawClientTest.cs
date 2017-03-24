@@ -284,6 +284,34 @@ namespace Redis.NetCore.Tests
         }
 
         [Fact]
+        public async Task SetRangeBytesAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string expected = "Hello Bar!";
+                const string key = nameof(SetBytesAsync);
+                await TestClient.SetGetAsync(client, key, "Hello Foo!");
+                var length = await client.SetRangeAsync(key, 6, "Bar".ToBytes());
+                var bytes = await client.GetAsync(key);
+                Assert.Equal(10, length);
+                Assert.Equal(expected, Encoding.UTF8.GetString(bytes));
+            }
+        }
+
+        [Fact]
+        public async Task GetRangeBytesAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string expected = "Hello Foo!";
+                const string key = nameof(GetRangeBytesAsync);
+                await TestClient.SetGetAsync(client, key, expected);
+                var bytes = await client.GetRangeAsync(key, 6, 8);
+                Assert.Equal("Foo", Encoding.UTF8.GetString(bytes));
+            }
+        }
+
+        [Fact]
         public async Task GetSetBytesAsync()
         {
             using (var client = TestClient.CreateClient())

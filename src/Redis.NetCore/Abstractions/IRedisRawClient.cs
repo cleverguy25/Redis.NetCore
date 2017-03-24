@@ -28,10 +28,14 @@ namespace Redis.NetCore.Abstractions
 
         Task<bool> SetExistsAsync(string key, byte[] data, int seconds);
 
+        Task<int> SetRangeAsync(string key, int offset, byte[] data);
+
         Task<byte[][]> GetAsync(params string[] keys);
 
         Task<byte[]> GetAsync(string key);
 
         Task<byte[]> GetSetAsync(string key, byte[] data);
+
+        Task<byte[]> GetRangeAsync(string key, int begin, int end = -1);
     }
 }

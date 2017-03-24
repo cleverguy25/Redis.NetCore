@@ -81,6 +81,11 @@ namespace Redis.NetCore
             return SetExistsAsync(key, data.ToBytes(), seconds);
         }
 
+        public Task<int> SetStringRangeAsync(string key, int offset, string data)
+        {
+            return SetRangeAsync(key, offset, data.ToBytes());
+        }
+
         public async Task<string> GetStringAsync(string key)
         {
             var bytes = await GetAsync(key);
@@ -91,6 +96,12 @@ namespace Redis.NetCore
         {
             var response = await GetAsync(keys);
             return response.Select(ConvertBytesToString).ToArray();
+        }
+
+        public async Task<string> GetStringRangeAsync(string key, int begin, int end = -1)
+        {
+            var response = await GetRangeAsync(key, begin, end);
+            return Encoding.UTF8.GetString(response);
         }
 
         private static string ConvertBytesToString(byte[] bytes)
