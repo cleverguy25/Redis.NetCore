@@ -16,6 +16,16 @@ namespace Redis.NetCore.Abstractions
 
         Task<bool> SetStringNotExistsAsync(string key, string data);
 
+        Task<bool> SetStringNotExistsAsync(string key, string data, int seconds);
+
+        Task<bool> SetStringNotExistsAsync(string key, string data, TimeSpan expiration);
+
+        Task<bool> SetStringExistsAsync(string key, string data);
+
+        Task<bool> SetStringExistsAsync(string key, string data, int seconds);
+
+        Task<bool> SetStringExistsAsync(string key, string data, TimeSpan expiration);
+
         Task<string> GetStringAsync(string key);
 
         Task<string[]> GetStringsAsync(params string[] keys);
@@ -23,5 +33,7 @@ namespace Redis.NetCore.Abstractions
         Task<string> GetSetStringAsync(string key, string data);
 
         Task<int> AppendStringAsync(string key, string data);
+
+        Task<int> GetStringLengthAsync(string key);
     }
 }

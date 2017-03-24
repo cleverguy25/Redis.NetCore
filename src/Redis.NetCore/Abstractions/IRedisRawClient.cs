@@ -16,6 +16,16 @@ namespace Redis.NetCore.Abstractions
 
         Task<bool> SetNotExistsAsync(string key, byte[] data);
 
+        Task<bool> SetNotExistsAsync(string key, byte[] data, TimeSpan expiration);
+
+        Task<bool> SetNotExistsAsync(string key, byte[] data, int seconds);
+
+        Task<bool> SetExistsAsync(string key, byte[] data);
+
+        Task<bool> SetExistsAsync(string key, byte[] data, TimeSpan expiration);
+
+        Task<bool> SetExistsAsync(string key, byte[] data, int seconds);
+
         Task<byte[][]> GetAsync(params string[] keys);
 
         Task<byte[]> GetAsync(string key);

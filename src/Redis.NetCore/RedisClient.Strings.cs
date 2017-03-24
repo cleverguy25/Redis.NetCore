@@ -42,6 +42,31 @@ namespace Redis.NetCore
             return SetNotExistsAsync(key, data.ToBytes());
         }
 
+        public Task<bool> SetStringNotExistsAsync(string key, string data, TimeSpan expiration)
+        {
+            return SetNotExistsAsync(key, data.ToBytes(), expiration);
+        }
+
+        public Task<bool> SetStringNotExistsAsync(string key, string data, int seconds)
+        {
+            return SetNotExistsAsync(key, data.ToBytes(), seconds);
+        }
+
+        public Task<bool> SetStringExistsAsync(string key, string data)
+        {
+            return SetExistsAsync(key, data.ToBytes());
+        }
+
+        public Task<bool> SetStringExistsAsync(string key, string data, TimeSpan expiration)
+        {
+            return SetExistsAsync(key, data.ToBytes(), expiration);
+        }
+
+        public Task<bool> SetStringExistsAsync(string key, string data, int seconds)
+        {
+            return SetExistsAsync(key, data.ToBytes(), seconds);
+        }
+
         public async Task<string> GetStringAsync(string key)
         {
             var bytes = await GetAsync(key);
@@ -51,7 +76,7 @@ namespace Redis.NetCore
         public async Task<string[]> GetStringsAsync(params string[] keys)
         {
             var response = await GetAsync(keys);
-            return response.Select(bytes => ConvertBytesToString(bytes)).ToArray();
+            return response.Select(ConvertBytesToString).ToArray();
         }
 
         private static string ConvertBytesToString(byte[] bytes)
@@ -64,6 +89,14 @@ namespace Redis.NetCore
             CheckKey(key);
 
             var bytes = await SendCommandAsync(RedisCommands.Append, key.ToBytes(), data.ToBytes());
+            return ConvertBytesToInteger(bytes);
+        }
+
+        public async Task<int> GetStringLengthAsync(string key)
+        {
+            CheckKey(key);
+
+            var bytes = await SendCommandAsync(RedisCommands.StringLength, key.ToBytes());
             return ConvertBytesToInteger(bytes);
         }
 

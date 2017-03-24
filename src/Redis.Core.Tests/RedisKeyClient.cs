@@ -16,7 +16,7 @@ namespace Redis.NetCore.Tests
             using (var client = TestClient.CreateClient())
             {
                 const string expected = "Foo!";
-                const string key = "SetGetDelete";
+                const string key = nameof(DeleteAsync);
                 await client.SetAsync(key, Encoding.UTF8.GetBytes(expected));
                 var bytes = await client.GetAsync(key);
                 Assert.Equal(expected, Encoding.UTF8.GetString(bytes));
@@ -31,7 +31,7 @@ namespace Redis.NetCore.Tests
         {
             using (var client = TestClient.CreateClient())
             {
-                const string existsKey = "ExistsAsync";
+                const string existsKey = nameof(ExistAsync);
                 await TestClient.SetGetAsync(client, existsKey, "FooExists!");
                 var exists = await client.ExistsAsync(existsKey);
                 Assert.Equal(true, exists);
@@ -47,9 +47,10 @@ namespace Redis.NetCore.Tests
         {
             using (var client = TestClient.CreateClient())
             {
-                const string existsKey1 = "MultipleExistsAsync1";
+                const string key = nameof(MultipleExistAsync);
+                const string existsKey1 = key + "1";
                 await TestClient.SetGetAsync(client, existsKey1, "FooExists!");
-                const string existsKey2 = "MultipleExistsAsync2";
+                const string existsKey2 = key + "2";
                 await TestClient.SetGetAsync(client, existsKey2, "FooExists!");
                 
                 var count = await client.ExistsAsync(existsKey1, existsKey1, "NoKey");

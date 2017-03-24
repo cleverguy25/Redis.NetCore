@@ -41,7 +41,7 @@ namespace Redis.NetCore
 
             var milliseconds = (long)expiration.TotalMilliseconds;
             var expirationBytes = milliseconds.ToString(CultureInfo.InvariantCulture).ToBytes();
-            return SendCommandAsync(RedisCommands.PrecisionSetExpiration, key.ToBytes(), expirationBytes, data);
+            return SendCommandAsync(RedisCommands.Set, key.ToBytes(), data, RedisCommands.PrecisionExpiration, expirationBytes);
         }
 
         public Task SetAsync(string key, byte[] data, int seconds)
@@ -49,15 +49,61 @@ namespace Redis.NetCore
             CheckKey(key);
 
             var expirationBytes = seconds.ToString(CultureInfo.InvariantCulture).ToBytes();
-            return SendCommandAsync(RedisCommands.SetExpiration, key.ToBytes(), expirationBytes, data);
+            return SendCommandAsync(RedisCommands.Set, key.ToBytes(), data, RedisCommands.Expiration, expirationBytes);
+        }
+
+        public async Task<bool> SetExistsAsync(string key, byte[] data)
+        {
+            CheckKey(key);
+
+            var bytes = await SendCommandAsync(RedisCommands.Set, key.ToBytes(), data, RedisCommands.SetExists);
+            return bytes != null;
+        }
+
+        public async Task<bool> SetExistsAsync(string key, byte[] data, TimeSpan expiration)
+        {
+            CheckKey(key);
+
+            var milliseconds = (long)expiration.TotalMilliseconds;
+            var expirationBytes = milliseconds.ToString(CultureInfo.InvariantCulture).ToBytes();
+            var bytes = await SendCommandAsync(RedisCommands.Set, key.ToBytes(), data, RedisCommands.SetExists, RedisCommands.PrecisionExpiration, expirationBytes);
+            return bytes != null;
+        }
+
+        public async Task<bool> SetExistsAsync(string key, byte[] data, int seconds)
+        {
+            CheckKey(key);
+
+            var expirationBytes = seconds.ToString(CultureInfo.InvariantCulture).ToBytes();
+            var bytes = await SendCommandAsync(RedisCommands.Set, key.ToBytes(), data, RedisCommands.SetExists, RedisCommands.Expiration, expirationBytes);
+            return bytes != null;
         }
 
         public async Task<bool> SetNotExistsAsync(string key, byte[] data)
         {
             CheckKey(key);
 
-            var bytes = await SendCommandAsync(RedisCommands.SetNotExists, key.ToBytes(), data);
-            return bytes[0] == '1';
+            var bytes = await SendCommandAsync(RedisCommands.Set, key.ToBytes(), data, RedisCommands.SetNotExists);
+            return bytes != null;
+        }
+
+        public async Task<bool> SetNotExistsAsync(string key, byte[] data, TimeSpan expiration)
+        {
+            CheckKey(key);
+
+            var milliseconds = (long)expiration.TotalMilliseconds;
+            var expirationBytes = milliseconds.ToString(CultureInfo.InvariantCulture).ToBytes();
+            var bytes = await SendCommandAsync(RedisCommands.Set, key.ToBytes(), data, RedisCommands.SetNotExists, RedisCommands.PrecisionExpiration, expirationBytes);
+            return bytes != null;
+        }
+
+        public async Task<bool> SetNotExistsAsync(string key, byte[] data, int seconds)
+        {
+            CheckKey(key);
+
+            var expirationBytes = seconds.ToString(CultureInfo.InvariantCulture).ToBytes();
+            var bytes = await SendCommandAsync(RedisCommands.Set, key.ToBytes(), data, RedisCommands.SetNotExists, RedisCommands.Expiration, expirationBytes);
+            return bytes != null;
         }
 
         public Task<byte[][]> GetAsync(params string[] keys)

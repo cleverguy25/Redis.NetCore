@@ -3,14 +3,16 @@
     public static class RedisCommands
     {
         public static readonly byte[] Set = "SET".ToBytes();
-        public static readonly byte[] SetNotExists = "SETNX".ToBytes();
-        public static readonly byte[] SetExpiration = "SETEX".ToBytes();
-        public static readonly byte[] PrecisionSetExpiration = "PSETEX".ToBytes();
+        public static readonly byte[] Expiration = "EX".ToBytes();
+        public static readonly byte[] PrecisionExpiration = "PX".ToBytes();
+        public static readonly byte[] SetNotExists = "NX".ToBytes();
+        public static readonly byte[] SetExists = "XX".ToBytes();
         public static readonly byte[] Get = "GET".ToBytes();
         public static readonly byte[] MultipleSet = "MSET".ToBytes();
         public static readonly byte[] MultipleGet = "MGET".ToBytes();
         public static readonly byte[] GetSet = "GETSET".ToBytes();
         public static readonly byte[] Append = "APPEND".ToBytes();
+        public static readonly byte[] StringLength = "STRLEN".ToBytes();
 
         public static readonly byte[] Exists = "EXISTS".ToBytes();
         public static readonly byte[] TimeToLive = "TTL".ToBytes();
