@@ -208,16 +208,52 @@ namespace Redis.NetCore.Tests
             using (var client = TestClient.CreateClient())
             {
                 const string key = nameof(MultipleSetBytesAsync);
-                var data = new List<KeyValuePair<string, byte[]>>
+                const string key1 = key + "1";
+                const string key2 = key + "2";
+                var data = new Dictionary<string, byte[]>
                            {
-                               new KeyValuePair<string, byte[]>(key +"1", "Foo1".ToBytes()),
-                               new KeyValuePair<string, byte[]>(key = "2", "Foo2".ToBytes())
+                               { key1, "Foo1".ToBytes() },
+                               { key2, "Foo2".ToBytes() }
                            };
                 await client.SetAsync(data);
-                var value1 = await client.GetAsync(key + "1");
-                var value2 = await client.GetAsync(key + "2");
+                var value1 = await client.GetAsync(key1);
+                var value2 = await client.GetAsync(key2);
                 Assert.Equal("Foo1", Encoding.UTF8.GetString(value1));
                 Assert.Equal("Foo2", Encoding.UTF8.GetString(value2));
+            }
+        }
+
+        [Fact]
+        public async Task MultipleSetNotExistsBytesAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string key = nameof(MultipleSetNotExistsBytesAsync);
+                const string key1 = key + "1";
+                const string key2 = key + "2";
+                await client.DeleteKeyAsync(key1);
+                await client.DeleteKeyAsync(key2);
+                var data = new Dictionary<string, byte[]>
+                           {
+                               { key1, "Foo1".ToBytes() },
+                               { key2, "Foo2".ToBytes() }
+                           };
+                var set = await client.SetNotExistsAsync(data);
+                Assert.Equal(true, set);
+                var value1 = await client.GetAsync(key1);
+                var value2 = await client.GetAsync(key2);
+                Assert.Equal("Foo1", Encoding.UTF8.GetString(value1));
+                Assert.Equal("Foo2", Encoding.UTF8.GetString(value2));
+
+                data = new Dictionary<string, byte[]>
+                           {
+                               { key1, "Bar1".ToBytes() },
+                               { key + "NotFound", "Bar2".ToBytes() }
+                           };
+                set = await client.SetNotExistsAsync(data);
+                Assert.Equal(false, set);
+                value1 = await client.GetAsync(key1);
+                Assert.Equal("Foo1", Encoding.UTF8.GetString(value1));
             }
         }
 

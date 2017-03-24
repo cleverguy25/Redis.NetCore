@@ -14,10 +14,10 @@ namespace Redis.NetCore
             return SetAsync(key, data.ToBytes());
         }
 
-        public Task SetStringsAsync(IEnumerable<KeyValuePair<string, string>> keyValues)
+        public Task SetStringsAsync(IDictionary<string, string> dictionary)
         {
             var data = new List<byte[]>();
-            foreach (var keyValue in keyValues)
+            foreach (var keyValue in dictionary)
             {
                 data.Add(keyValue.Key.ToBytes());
                 data.Add(keyValue.Value.ToBytes());
@@ -25,6 +25,20 @@ namespace Redis.NetCore
 
             var request = ComposeRequest(RedisCommands.MultipleSet, data);
             return SendMultipleCommandAsync(request);
+        }
+
+        public async Task<bool> SetStringsNotExistsAsync(IDictionary<string, string> dictionary)
+        {
+            var data = new List<byte[]>();
+            foreach (var keyValue in dictionary)
+            {
+                data.Add(keyValue.Key.ToBytes());
+                data.Add(keyValue.Value.ToBytes());
+            }
+
+            var request = ComposeRequest(RedisCommands.MultipleSet, data);
+            var bytes = await SendMultipleCommandAsync(request);
+            return bytes[0][0] == '1';
         }
 
         public Task SetStringAsync(string key, string data, TimeSpan expiration)

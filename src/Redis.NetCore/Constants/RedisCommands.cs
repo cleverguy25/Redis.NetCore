@@ -9,6 +9,7 @@
         public static readonly byte[] SetExists = "XX".ToBytes();
         public static readonly byte[] Get = "GET".ToBytes();
         public static readonly byte[] MultipleSet = "MSET".ToBytes();
+        public static readonly byte[] MultipleSetNotExists = "MSETNX".ToBytes();
         public static readonly byte[] MultipleGet = "MGET".ToBytes();
         public static readonly byte[] GetSet = "GETSET".ToBytes();
         public static readonly byte[] Append = "APPEND".ToBytes();

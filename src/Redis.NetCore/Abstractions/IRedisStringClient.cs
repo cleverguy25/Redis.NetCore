@@ -12,7 +12,9 @@ namespace Redis.NetCore.Abstractions
 
         Task SetStringAsync(string key, string data, int seconds);
 
-        Task SetStringsAsync(IEnumerable<KeyValuePair<string, string>> keyValues);
+        Task SetStringsAsync(IDictionary<string, string> dictionary);
+        
+        Task<bool> SetStringsNotExistsAsync(IDictionary<string, string> dictionary);
 
         Task<bool> SetStringNotExistsAsync(string key, string data);
 

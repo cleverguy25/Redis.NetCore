@@ -51,16 +51,52 @@ namespace Redis.NetCore.Tests
             using (var client = TestClient.CreateClient())
             {
                 const string key = nameof(SetStringsAsync);
-                var data = new List<KeyValuePair<string, string>>
+                const string key1 = key + "1";
+                const string key2 = key + "2";
+                var data = new Dictionary<string, string>()
                            {
-                               new KeyValuePair<string, string>(key + "1", "Foo1"),
-                               new KeyValuePair<string, string>(key + "2", "Foo2")
+                               { key1, "Foo1" },
+                               { key2, "Foo2" }
                            };
                 await client.SetStringsAsync(data);
-                var value1 = await client.GetAsync(key + "1");
-                var value2 = await client.GetAsync(key + "2");
+                var value1 = await client.GetAsync(key1);
+                var value2 = await client.GetAsync(key2);
                 Assert.Equal("Foo1", Encoding.UTF8.GetString(value1));
                 Assert.Equal("Foo2", Encoding.UTF8.GetString(value2));
+            }
+        }
+
+        [Fact]
+        public async Task MultipleSetStringsNotExistsAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string key = nameof(MultipleSetStringsNotExistsAsync);
+                const string key1 = key + "1";
+                const string key2 = key + "2";
+                await client.DeleteKeyAsync(key1);
+                await client.DeleteKeyAsync(key2);
+                var data = new Dictionary<string, string>()
+                           {
+                               { key1, "Foo1" },
+                               { key2, "Foo2" }
+                           };
+                var set = await client.SetStringsNotExistsAsync(data);
+                Assert.Equal(true, set);
+                var value1 = await client.GetAsync(key1);
+                var value2 = await client.GetAsync(key2);
+                Assert.Equal("Foo1", Encoding.UTF8.GetString(value1));
+                Assert.Equal("Foo2", Encoding.UTF8.GetString(value2));
+
+                data = new Dictionary<string, string>()
+                       {
+                           { key1, "Bar1" },
+                           { key + "NotFound", "Bar2" }
+                       };
+                set = await client.SetStringsNotExistsAsync(data);
+                Assert.Equal(false, set);
+                value1 = await client.GetAsync(key1);
+                Assert.Equal("Foo1", Encoding.UTF8.GetString(value1));
             }
         }
 
@@ -232,11 +268,14 @@ namespace Redis.NetCore.Tests
             using (var client = TestClient.CreateClient())
             {
                 const string key = nameof(GetStringsAsync);
+                const string key1 = key + "1";
+                const string key2 = key + "2";
                 const string expected1 = "Foo!";
                 const string expected2 = "Bar!";
-                await client.SetStringAsync(key + "1", expected1);
-                await client.SetStringAsync(key + "2", expected2);
-                var values = await client.GetStringsAsync(key + "1", key + "2", "NoKey");
+                
+                await client.SetStringAsync(key1, expected1);
+                await client.SetStringAsync(key2, expected2);
+                var values = await client.GetStringsAsync(key1, key2, "NoKey");
                 Assert.Equal(expected1, values[0]);
                 Assert.Equal(expected2, values[1]);
                 Assert.Equal(null, values[2]);

@@ -8,7 +8,9 @@ namespace Redis.NetCore.Abstractions
     {
         Task SetAsync(string key, byte[] data);
 
-        Task SetAsync(IEnumerable<KeyValuePair<string, byte[]>> keyValues);
+        Task SetAsync(IDictionary<string, byte[]> dictionary);
+
+        Task<bool> SetNotExistsAsync(IDictionary<string, byte[]> dictionary);
 
         Task SetAsync(string key, byte[] data, TimeSpan expiration);
 

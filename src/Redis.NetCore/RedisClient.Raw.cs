@@ -22,10 +22,10 @@ namespace Redis.NetCore
             return SendCommandAsync(RedisCommands.Set, key.ToBytes(), data);
         }
 
-        public Task SetAsync(IEnumerable<KeyValuePair<string, byte[]>> keyValues)
+        public Task SetAsync(IDictionary<string, byte[]> dictionary)
         {
             var data = new List<byte[]>();
-            foreach (var keyValue in keyValues)
+            foreach (var keyValue in dictionary)
             {
                 data.Add(keyValue.Key.ToBytes());
                 data.Add(keyValue.Value);
@@ -33,6 +33,20 @@ namespace Redis.NetCore
 
             var request = ComposeRequest(RedisCommands.MultipleSet, data);
             return SendMultipleCommandAsync(request);
+        }
+
+        public async Task<bool> SetNotExistsAsync(IDictionary<string, byte[]> dictionary)
+        {
+            var data = new List<byte[]>();
+            foreach (var keyValue in dictionary)
+            {
+                data.Add(keyValue.Key.ToBytes());
+                data.Add(keyValue.Value);
+            }
+
+            var request = ComposeRequest(RedisCommands.MultipleSetNotExists, data);
+            var bytes = await SendMultipleCommandAsync(request);
+            return bytes[0][0] == '1';
         }
 
         public Task SetAsync(string key, byte[] data, TimeSpan expiration)
