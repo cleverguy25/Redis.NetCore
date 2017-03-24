@@ -45,15 +45,18 @@ namespace Redis.NetCore
         public async Task<string> GetStringAsync(string key)
         {
             var bytes = await GetAsync(key);
-            return Encoding.UTF8.GetString(bytes);
+            return ConvertBytesToString(bytes);
         }
 
         public async Task<string[]> GetStringsAsync(params string[] keys)
         {
             var response = await GetAsync(keys);
-            return response.Select(
-                                   bytes => bytes == null ?
-                                       null : Encoding.UTF8.GetString(bytes)).ToArray();
+            return response.Select(bytes => ConvertBytesToString(bytes)).ToArray();
+        }
+
+        private static string ConvertBytesToString(byte[] bytes)
+        {
+            return bytes == null ? null : Encoding.UTF8.GetString(bytes);
         }
 
         public async Task<int> AppendStringAsync(string key, string data)
@@ -67,7 +70,7 @@ namespace Redis.NetCore
         public async Task<string> GetSetStringAsync(string key, string data)
         {
             var bytes = await GetSetAsync(key, data.ToBytes());
-            return Encoding.UTF8.GetString(bytes);
+            return ConvertBytesToString(bytes);
         }
 
         private static void CheckKey(string key)
