@@ -7,3 +7,5 @@ src/Redis.Core.Tests/obj/
 *.user
 src/Redis.Core.Tests/bin/
 src/Redis.NetCore/project.lock.json
+/mscorlib.pdb/B116D8310B3C4CABAC347D63A116D3E51
+/SOS.NETCore.pdb/4F3CDEC4FFCE41C1A109003DCFBBB2251/SOS.NETCore.pdb

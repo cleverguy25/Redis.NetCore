@@ -2,7 +2,7 @@
 
 namespace Redis.NetCore.Abstractions
 {
-    public interface IRedisClient : IRedisConnectionClient, IRedisRawClient, IRedisKeyClient, IRedisStringClient, IDisposable
+    public interface IRedisClient : IRedisConnectionClient, IRedisRawClient, IRedisKeyClient, IRedisStringClient, IRedisBitClient, IDisposable
     {
     }
 }

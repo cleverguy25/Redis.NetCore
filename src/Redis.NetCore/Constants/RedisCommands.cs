@@ -26,5 +26,12 @@
         public static readonly byte[] Echo = "ECHO".ToBytes();
         public static readonly byte[] Quit = "QUIT".ToBytes();
         public static readonly byte[] SelectDatabase = "SELECT".ToBytes();
+
+        public static readonly byte[] BitCount = "BITCOUNT".ToBytes();
+        public static readonly byte[] BitOperation = "BITOP".ToBytes();
+        public const string And = "AND";
+        public const string Or = "OR";
+        public const string Xor = "XOR";
+        public const string Not = "NOT";
     }
 }

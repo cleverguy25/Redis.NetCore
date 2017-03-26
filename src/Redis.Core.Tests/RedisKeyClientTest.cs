@@ -8,7 +8,7 @@ using Xunit;
 namespace Redis.NetCore.Tests
 {
     [Trait("Category", "Integration")]
-    public class RedisKeyClient
+    public class RedisKeyClientTest
     {
         [Fact]
         public async Task DeleteAsync()
