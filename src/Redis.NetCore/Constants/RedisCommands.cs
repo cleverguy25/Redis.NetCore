@@ -36,5 +36,11 @@
         public const string Or = "OR";
         public const string Xor = "XOR";
         public const string Not = "NOT";
+
+        public static readonly byte[] Increment = "INCR".ToBytes();
+        public static readonly byte[] IncrementBy = "INCRBY".ToBytes();
+        public static readonly byte[] IncrementByFloat = "INCRBYFLOAT".ToBytes();
+        public static readonly byte[] Decrement = "DECR".ToBytes();
+        public static readonly byte[] DecrementBy = "DECRBY".ToBytes();
     }
 }
