@@ -37,6 +37,48 @@ namespace Redis.NetCore.Tests
         }
 
         [Fact]
+        public async Task SetBitGetBitAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string expected = "foobar";
+                const string key = nameof(SetBitGetBitAsync);
+                await TestClient.SetGetAsync(client, key, expected);
+                var bit = await client.SetBitAsync(key, 11, true);
+                Assert.Equal(false, bit);
+
+                bit = await client.GetBitAsync(key, 11);
+                Assert.Equal(true, bit);
+            }
+        }
+
+        [Fact]
+        public async Task GetBitPositionRangeAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string expected = "f123";
+                const string key = nameof(GetBitPositionAsync);
+                await TestClient.SetGetAsync(client, key, expected);
+                var position = await client.GetBitPositionAsync(key, false, 1, 1);
+                Assert.Equal(8, position);
+            }
+        }
+
+        [Fact]
+        public async Task GetBitPositionAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string expected = "foobar";
+                const string key = nameof(GetBitPositionAsync);
+                await TestClient.SetGetAsync(client, key, expected);
+                var position = await client.GetBitPositionAsync(key, true);
+                Assert.Equal(1, position);
+            }
+        }
+
+        [Fact]
         public async Task PerformBitOperationAndAsync()
         {
             using (var client = TestClient.CreateClient())

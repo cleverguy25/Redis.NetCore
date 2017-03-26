@@ -29,6 +29,9 @@
 
         public static readonly byte[] BitCount = "BITCOUNT".ToBytes();
         public static readonly byte[] BitOperation = "BITOP".ToBytes();
+        public static readonly byte[] BitPosition = "BITPOS".ToBytes();
+        public static readonly byte[] GetBit = "GETBIT".ToBytes();
+        public static readonly byte[] SetBit = "SETBIT".ToBytes();
         public const string And = "AND";
         public const string Or = "OR";
         public const string Xor = "XOR";
