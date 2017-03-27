@@ -171,13 +171,13 @@ namespace Redis.NetCore
         {
             CheckKey(key);
 
-            var bytes = await SendCommandAsync(RedisCommands.Type, key.ToBytes());
+            var bytes = await SendCommandAsync(RedisCommands.Type, key.ToBytes()).ConfigureAwait(false);
             return Encoding.UTF8.GetString(bytes);
         }
 
         public async Task<ScanCursor> ScanAsync()
         {
-            var bytes = await SendMultipleCommandAsync(RedisCommands.Scan, ZeroBit);
+            var bytes = await SendMultipleCommandAsync(RedisCommands.Scan, ZeroBit).ConfigureAwait(false);
             var cursorPosition = ConvertBytesToInteger(bytes[0]);
 
             return new ScanCursor(cursorPosition, bytes[1]);
@@ -186,7 +186,7 @@ namespace Redis.NetCore
         public async Task<ScanCursor> ScanAsync(ScanCursor cursor)
         {
             var cursorPositionBytes = cursor.CursorPosition.ToString(CultureInfo.InvariantCulture).ToBytes();
-            var bytes = await SendMultipleCommandAsync(RedisCommands.Scan, cursorPositionBytes);
+            var bytes = await SendMultipleCommandAsync(RedisCommands.Scan, cursorPositionBytes).ConfigureAwait(false);
             var cursorPosition = ConvertBytesToInteger(bytes[0]);
 
             return new ScanCursor(cursorPosition, bytes[1]);

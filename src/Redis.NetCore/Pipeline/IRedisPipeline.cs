@@ -17,5 +17,7 @@ namespace Redis.NetCore.Pipeline
         ConcurrentQueue<RedisPipelineItem> RequestQueue { get; }
 
         void ThrowErrorForRemainingResponseQueueItems();
+
+        Task AuthenticateAsync(string password);
     }
 }

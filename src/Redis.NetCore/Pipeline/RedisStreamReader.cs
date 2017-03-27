@@ -28,7 +28,7 @@ namespace Redis.NetCore.Pipeline
 
             var buffer = await BufferManager.CheckOutAsync().ConfigureAwait(false);
             _bufferList.Add(buffer);
-            var bytesRead = await _stream.ReadAsync(buffer.Array, buffer.Offset, buffer.Count);
+            var bytesRead = await _stream.ReadAsync(buffer.Array, buffer.Offset, buffer.Count).ConfigureAwait(false);
             CurrentResponse = new ArraySegment<byte>(buffer.Array, buffer.Offset, bytesRead);
             CurrentPosition = 0;
         }

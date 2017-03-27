@@ -13,7 +13,7 @@ namespace Redis.NetCore.Pipeline
     {
         private readonly IAsyncSocket _asyncSocket;
 
-        public RedisSocketReader(IBufferManager bufferManager, IAsyncSocket asyncSocket) : base(bufferManager)
+        public RedisSocketReader(IAsyncSocket asyncSocket, IBufferManager bufferManager) : base(bufferManager)
         {
             _asyncSocket = asyncSocket;
         }

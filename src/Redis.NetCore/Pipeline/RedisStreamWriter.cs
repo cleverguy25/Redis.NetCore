@@ -20,7 +20,7 @@ namespace Redis.NetCore.Pipeline
                 var bufferList = FlushBuffers();
                 foreach (var buffer in bufferList)
                 {
-                    await _stream.WriteAsync(buffer.Array, buffer.Offset, buffer.Count, CancellationToken.None);
+                    await _stream.WriteAsync(buffer.Array, buffer.Offset, buffer.Count, CancellationToken.None).ConfigureAwait(false);
                 }
 
                 CheckInBuffers();

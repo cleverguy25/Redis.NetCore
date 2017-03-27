@@ -143,11 +143,11 @@ namespace Redis.NetCore.Pipeline
                         continue;
                     }
 
-                    await FlushWriteBuffer().ConfigureAwait(false);
+                    await _redisWriter.FlushWriteBufferAsync().ConfigureAwait(false);
                     break;
                 }
                 
-                await FlushWriteBuffer().ConfigureAwait(false);
+                await _redisWriter.FlushWriteBufferAsync().ConfigureAwait(false);
             }
             catch (Exception error)
             {
@@ -162,20 +162,6 @@ namespace Redis.NetCore.Pipeline
 
         private static void FireAndForget(Task task)
         {
-        }
-
-        private async Task FlushWriteBuffer()
-        {
-            if (_redisWriter.BytesInBuffer > 0)
-            {
-                var bufferList = _redisWriter.FlushBuffers();
-                foreach (var buffer in bufferList)
-                {
-                    await _stream.WriteAsync(buffer.Array, buffer.Offset, buffer.Count, CancellationToken.None);
-                }
-
-                _redisWriter.CheckInBuffers();
-            }
         }
 
         private Task StartReceiveIfNotRunning()

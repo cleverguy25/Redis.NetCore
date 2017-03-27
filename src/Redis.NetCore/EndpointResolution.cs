@@ -9,7 +9,7 @@ namespace Redis.NetCore
 {
     public static class EndpointResolution
     {
-        public static async Task<EndPoint> GetEndpointAsync(string endpointConfiguration)
+        public static async Task<Tuple<string, EndPoint>> GetEndpointAsync(string endpointConfiguration)
         {
             var parts = endpointConfiguration.Split(':');
             if (parts.Length == 0)
@@ -23,7 +23,8 @@ namespace Redis.NetCore
 
             var port = GetPort(endpointConfiguration, parts);
 
-            return new IPEndPoint(address, port);
+            var endpoint = new IPEndPoint(address, port);
+            return Tuple.Create(host, (EndPoint)endpoint);
         }
 
         private static int GetPort(string endpointConfiguration, string[] parts)

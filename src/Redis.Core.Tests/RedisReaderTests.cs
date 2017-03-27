@@ -177,7 +177,7 @@ namespace Redis.NetCore.Tests
         private static RedisBaseReader CreateRedisReader(int chunkSize, IAsyncSocket socket)
         {
             var bufferManager = new BufferManager(2, chunkSize, 2, 10);
-            var redisReader = new RedisSocketReader(bufferManager, socket);
+            var redisReader = new RedisSocketReader(socket, bufferManager);
             return redisReader;
         }
     }
