@@ -11,6 +11,23 @@ namespace Redis.NetCore.Tests
     public class RedisKeyClientTest
     {
         [Fact]
+        public async Task GetKeysAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string key = nameof(GetKeysAsync);
+                const string key1 = key + "1";
+                const string key2 = key + "2";
+                await TestClient.SetGetAsync(client, key1, "Value1");
+                await TestClient.SetGetAsync(client, key2, "Value2");
+                var actualKeys = await client.GetKeysAsync(key + "*");
+                Assert.Equal(2, actualKeys.Length);
+                Assert.Equal(key1, actualKeys[0]);
+                Assert.Equal(key2, actualKeys[1]);
+            }
+        }
+
+        [Fact]
         public async Task DeleteAsync()
         {
             using (var client = TestClient.CreateClient())

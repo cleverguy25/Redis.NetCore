@@ -5,6 +5,8 @@ namespace Redis.NetCore.Abstractions
 {
     public interface IRedisKeyClient
     {
+        Task<string[]> GetKeysAsync(string pattern);
+
         Task DeleteKeyAsync(params string[] keys);
 
         Task<int> GetTimeToLive(string key);

@@ -10,6 +10,14 @@ namespace Redis.NetCore
 {
     public partial class RedisClient
     {
+        public async Task<string[]> GetKeysAsync(string pattern)
+        {
+            CheckKey(pattern);
+
+            var bytes = await SendMultipleCommandAsync(RedisCommands.Keys, pattern.ToBytes());
+            return bytes.Select(item => Encoding.UTF8.GetString(item)).ToArray();
+        }
+
         public async Task<int> GetTimeToLive(string key)
         {
             CheckKey(key);
@@ -58,18 +66,32 @@ namespace Redis.NetCore
 
         public async Task<bool> MoveAsync(string key, int databaseIndex)
         {
+            CheckKey(key);
+
             var bytes = await SendCommandAsync(RedisCommands.Move, key.ToBytes(), databaseIndex.ToString().ToBytes()).ConfigureAwait(false);
             return bytes[0] == '1';
         }
 
         public async Task<bool> ExistsAsync(string key)
         {
+            CheckKey(key);
+
             var bytes = await SendCommandAsync(RedisCommands.Exists, key.ToBytes()).ConfigureAwait(false);
             return bytes[0] == '1';
         }
 
         public async Task<int> ExistsAsync(params string[] keys)
         {
+            if (keys == null)
+            {
+                return 0;
+            }
+
+            if (keys.Length == 0)
+            {
+                return 0;
+            }
+
             var request = ComposeRequest(RedisCommands.Exists, keys);
             var bytes = await SendMultipleCommandAsync(request).ConfigureAwait(false);
             return ConvertBytesToInteger(bytes[0]);
@@ -108,6 +130,8 @@ namespace Redis.NetCore
 
         public async Task<bool> PersistAsync(string key)
         {
+            CheckKey(key);
+
             var bytes = await SendCommandAsync(RedisCommands.Persist, key.ToBytes()).ConfigureAwait(false);
             return bytes[0] == '1';
         }
