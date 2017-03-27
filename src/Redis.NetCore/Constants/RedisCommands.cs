@@ -19,8 +19,12 @@
 
         public static readonly byte[] Exists = "EXISTS".ToBytes();
         public static readonly byte[] TimeToLive = "TTL".ToBytes();
+        public static readonly byte[] PrecisionTimeToLive = "PTTL".ToBytes();
         public static readonly byte[] Delete = "DEL".ToBytes();
         public static readonly byte[] Move = "MOVE".ToBytes();
+        public static readonly byte[] Expire = "EXPIRE".ToBytes();
+        public static readonly byte[] PrecisionExpire = "PEXPIRE".ToBytes();
+        public static readonly byte[] PrecisionExpireAt = "PEXPIREAT".ToBytes();
 
         public static readonly byte[] Ping = "PING".ToBytes();
         public static readonly byte[] Echo = "ECHO".ToBytes();

@@ -27,7 +27,7 @@ namespace Redis.NetCore.Tests
                 const string expected = "FooString!";
                 const string key = nameof(SetStringExpiredTimeSpanAsync);
                 await client.SetStringAsync(key, expected, TimeSpan.FromSeconds(1000));
-                var timeToLive = await client.GetTimeToLive(key);
+                var timeToLive = await client.GetPreciseTimeToLive(key);
                 Assert.NotNull(timeToLive);
             }
         }
@@ -132,7 +132,7 @@ namespace Redis.NetCore.Tests
                 var set = await client.SetStringNotExistsAsync(key, expected, TimeSpan.FromHours(1));
                 Assert.Equal(true, set);
 
-                var timeToLive = await client.GetTimeToLive(key);
+                var timeToLive = await client.GetPreciseTimeToLive(key);
                 Assert.NotNull(timeToLive);
 
                 set = await client.SetStringNotExistsAsync(key, "Bar!");
@@ -202,7 +202,7 @@ namespace Redis.NetCore.Tests
                 var value = await client.GetStringAsync(key);
                 Assert.Equal(expected, value);
 
-                var timeToLive = await client.GetTimeToLive(key);
+                var timeToLive = await client.GetPreciseTimeToLive(key);
                 Assert.NotNull(timeToLive);
             }
         }

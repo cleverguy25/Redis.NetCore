@@ -57,5 +57,55 @@ namespace Redis.NetCore.Tests
                 Assert.Equal(2, count);
             }
         }
+
+        [Fact]
+        public async Task SetExpiredTimeSpanAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string expected = "Foo!";
+                const string key = nameof(SetExpiredTimeSpanAsync);
+                await client.DeleteKeyAsync(key);
+                await TestClient.SetGetAsync(client, key, expected);
+                var set = await client.SetExpirationAsync(key, TimeSpan.FromMinutes(5));
+                Assert.Equal(true, set);
+
+                var timeToLive = await client.GetPreciseTimeToLive(key);
+                Assert.NotNull(timeToLive);
+            }
+        }
+
+        public async Task SetExpiredSecondsAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string expected = "Foo!";
+                const string key = nameof(SetExpiredTimeSpanAsync);
+                await client.DeleteKeyAsync(key);
+                await TestClient.SetGetAsync(client, key, expected);
+                var set = await client.SetExpirationAsync(key, 1000);
+                Assert.Equal(true, set);
+
+                var timeToLive = await client.GetTimeToLive(key);
+                Assert.NotNull(timeToLive);
+            }
+        }
+
+        public async Task SetExpiredDateTimeAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string expected = "Foo!";
+                const string key = nameof(SetExpiredDateTimeAsync);
+                await client.DeleteKeyAsync(key);
+                await TestClient.SetGetAsync(client, key, expected);
+                var set = await client.SetExpirationAsync(key, new DateTime(2020, 1, 1));
+                Assert.Equal(true, set);
+
+                var timeToLive = await client.GetPreciseTimeToLive(key);
+                Assert.NotNull(timeToLive);
+            }
+        }
+
     }
 }
