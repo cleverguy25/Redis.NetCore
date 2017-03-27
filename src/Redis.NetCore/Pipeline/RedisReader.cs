@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Redis.NetCore.Constants;
@@ -252,8 +254,56 @@ namespace Redis.NetCore.Pipeline
                 }
                 else if (firstChar == RedisProtocolContants.BulkString)
                 {
-                    var value = await ReadBulkStringAsync().ConfigureAwait(false);
-                    bytes.Add(value);
+                    var bulkLength = await ReadLengthAsync().ConfigureAwait(false);
+                    if (bulkLength == -1)
+                    {
+                        bytes.Add(null);
+                        continue;
+                    }
+
+                    var bulkBytes = new List<byte>();
+                    var response = (IList<byte>)_currentResponse;
+                    for (var currentIndex = 0; currentIndex < bulkLength; currentIndex++)
+                    {
+                        if (_currentPosition >= _currentResponse.Count)
+                        {
+                            await ReadNextResponseAsync().ConfigureAwait(false);
+                            response = _currentResponse;
+                        }
+
+                        var currentChar = response[_currentPosition];
+                        bulkBytes.Add(currentChar);
+                        _currentPosition++;
+                    }
+
+                    for (var currentIndex = 0; currentIndex < 2; currentIndex++)
+                    {
+                        if (_currentPosition >= _currentResponse.Count)
+                        {
+                            await ReadNextResponseAsync().ConfigureAwait(false);
+                        }
+
+                        _currentPosition++;
+                    }
+                    
+                    bytes.Add(bulkBytes.ToArray());
+                }
+                else if (firstChar == RedisProtocolContants.Array)
+                {
+                    var value = await ReadArrayAsync().ConfigureAwait(false);
+                    var collapseBytes = new List<byte> { RedisProtocolContants.Array };
+                    collapseBytes.AddRange(value.Length.ToString(CultureInfo.InvariantCulture).ToBytes());
+                    collapseBytes.AddRange(RedisProtocolContants.LineEnding);
+                    foreach (var byteArray in value)
+                    {
+                        collapseBytes.Add(RedisProtocolContants.BulkString);
+                        collapseBytes.AddRange(byteArray.Length.ToString(CultureInfo.InvariantCulture).ToBytes());
+                        collapseBytes.AddRange(RedisProtocolContants.LineEnding);
+                        collapseBytes.AddRange(byteArray);
+                        collapseBytes.AddRange(RedisProtocolContants.LineEnding);
+                    }
+
+                    bytes.Add(collapseBytes.ToArray());
                 }
             }
 

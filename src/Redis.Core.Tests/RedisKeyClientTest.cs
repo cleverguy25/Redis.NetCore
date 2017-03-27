@@ -201,6 +201,24 @@ namespace Redis.NetCore.Tests
         }
 
         [Fact]
+        public async Task ScanAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string expected = "Foo!";
+                const string key = nameof(ScanAsync);
+                await TestClient.SetGetAsync(client, key, expected);
+                var cursor = await client.ScanAsync();
+                var keys = cursor.GetKeys().ToArray();
+                Assert.NotEqual(0, keys.Length);
+
+                cursor = await client.ScanAsync(cursor);
+                keys = cursor.GetKeys().ToArray();
+                Assert.NotEqual(0, keys.Length);
+            }
+        }
+
+        [Fact]
         public async Task TouchAsync()
         {
             using (var client = TestClient.CreateClient())

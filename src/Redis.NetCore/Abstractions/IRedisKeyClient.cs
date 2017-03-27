@@ -33,6 +33,10 @@ namespace Redis.NetCore.Abstractions
 
         Task<string> GetRandomKeyAsync();
 
+        Task<ScanCursor> ScanAsync();
+
+        Task<ScanCursor> ScanAsync(ScanCursor cursor);
+
         Task TouchAsync(string key);
 
         Task<string> GetTypeAsync(string key);

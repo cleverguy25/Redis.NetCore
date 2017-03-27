@@ -30,6 +30,7 @@
         public static readonly byte[] Rename = "RENAME".ToBytes();
         public static readonly byte[] RenameNotExists = "RENAMENX".ToBytes();
         public static readonly byte[] RandomKey = "RANDOMKEY".ToBytes();
+        public static readonly byte[] Scan = "SCAN".ToBytes();
         public static readonly byte[] Touch = "TOUCH".ToBytes();
         public static readonly byte[] Type = "TYPE".ToBytes();
 
