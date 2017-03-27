@@ -26,5 +26,9 @@ namespace Redis.NetCore.Abstractions
         Task<bool> SetExpirationAsync(string key, DateTime dateTime);
 
         Task<bool> PersistAsync(string key);
+
+        Task RenameKeyAsync(string key, string newKey);
+
+        Task<bool> RenameKeyNotExistsAsync(string key, string newKey);
     }
 }

@@ -136,6 +136,23 @@ namespace Redis.NetCore
             return bytes[0] == '1';
         }
 
+        public Task RenameKeyAsync(string key, string newKey)
+        {
+            CheckKey(key);
+            CheckKey(newKey);
+
+            return SendCommandAsync(RedisCommands.Rename, key.ToBytes(), newKey.ToBytes());
+        }
+
+        public async Task<bool> RenameKeyNotExistsAsync(string key, string newKey)
+        {
+            CheckKey(key);
+            CheckKey(newKey);
+
+            var bytes = await SendCommandAsync(RedisCommands.RenameNotExists, key.ToBytes(), newKey.ToBytes());
+            return bytes[0] == '1';
+        }
+
         private static int ConvertBytesToInteger(IEnumerable<byte> bytes)
         {
             return bytes.Aggregate(

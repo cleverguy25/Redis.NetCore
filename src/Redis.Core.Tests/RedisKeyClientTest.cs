@@ -146,5 +146,43 @@ namespace Redis.NetCore.Tests
                 Assert.Equal(-1, timeToLive);
             }
         }
+
+        [Fact]
+        public async Task RenameKeyAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string expected = "Foo!";
+                const string key = nameof(RenameKeyAsync);
+                await TestClient.SetGetAsync(client, key, expected);
+                await client.RenameKeyAsync(key, "NewName");
+                var value = await client.GetStringAsync("NewName");
+                Assert.Equal(expected, value);
+            }
+        }
+
+        [Fact]
+        public async Task RenameKeyNotExistsAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string expected = "Foo!";
+                const string key = nameof(RenameKeyNotExistsAsync);
+                const string key1 = key + "1";
+                const string newKey = "NewNameNotExists";
+                await client.DeleteKeyAsync(newKey);
+                await TestClient.SetGetAsync(client, key, expected);
+                await TestClient.SetGetAsync(client, key1, "Bar!");
+                
+                var set = await client.RenameKeyNotExistsAsync(key, newKey);
+                Assert.Equal(true, set);
+
+                var value = await client.GetStringAsync(newKey);
+                Assert.Equal(expected, value);
+
+                set = await client.RenameKeyNotExistsAsync(key1, newKey);
+                Assert.Equal(false, set);
+            }
+        }
     }
 }
