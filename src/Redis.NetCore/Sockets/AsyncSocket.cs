@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
+using System.Net.Security;
 using System.Net.Sockets;
 
 namespace Redis.NetCore.Sockets
@@ -45,6 +47,14 @@ namespace Redis.NetCore.Sockets
             return _sendSocketAwaitable;
         }
 
+        public ISocketAwaitable<int> SendAsync(ArraySegment<byte> buffer)
+        {
+            _sendSocketAwaitable.Reset();
+            _sendSocketEventArgs.SetBuffer(buffer.Array, buffer.Offset, buffer.Count);
+            _sendSocketAwaitable.IsCompleted = _socket.SendAsync(_sendSocketEventArgs) == false;
+            return _sendSocketAwaitable;
+        }
+
         public ISocketAwaitable<ArraySegment<byte>> ReceiveAsync(ArraySegment<byte> buffer)
         {
             _receiveSocketAwaitable.Reset();
@@ -52,7 +62,7 @@ namespace Redis.NetCore.Sockets
             _receiveSocketAwaitable.IsCompleted = _socket.ReceiveAsync(_receiveSocketEventArgs) == false;
             return _receiveSocketAwaitable;
         }
-
+        
         public void Dispose()
         {
             _socket?.Dispose();

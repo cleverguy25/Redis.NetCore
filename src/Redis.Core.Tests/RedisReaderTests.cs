@@ -174,10 +174,10 @@ namespace Redis.NetCore.Tests
             socket.ReceiveAsync(Arg.Any<ArraySegment<byte>>()).Returns(awaitable);
         }
 
-        private static RedisReader CreateRedisReader(int chunkSize, IAsyncSocket socket)
+        private static RedisBaseReader CreateRedisReader(int chunkSize, IAsyncSocket socket)
         {
             var bufferManager = new BufferManager(2, chunkSize, 2, 10);
-            var redisReader = new RedisReader(bufferManager, socket);
+            var redisReader = new RedisSocketReader(bufferManager, socket);
             return redisReader;
         }
     }

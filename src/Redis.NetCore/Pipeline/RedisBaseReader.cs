@@ -9,20 +9,17 @@ using Redis.NetCore.Sockets;
 
 namespace Redis.NetCore.Pipeline
 {
-    public class RedisReader : IRedisReader
+    public abstract class RedisBaseReader : IRedisReader
     {
-        private readonly IAsyncSocket _asyncSocket;
-        private readonly List<ArraySegment<byte>> _bufferList = new List<ArraySegment<byte>>();
-        private readonly IBufferManager _bufferManager;
-        private readonly object _lockObject = new object();
-        private int _currentPosition;
-        private ArraySegment<byte> _currentResponse;
+        protected readonly List<ArraySegment<byte>> _bufferList = new List<ArraySegment<byte>>();
+        protected readonly object _lockObject = new object();
+        protected readonly IBufferManager BufferManager;
+        protected int CurrentPosition;
+        protected ArraySegment<byte> CurrentResponse;
 
-        public RedisReader(IBufferManager bufferManager, IAsyncSocket asyncSocket)
+        protected RedisBaseReader(IBufferManager bufferManager)
         {
-            _bufferManager = bufferManager;
-            _bufferManager = new BufferManager(15, 8192, 10, 20);
-            _asyncSocket = asyncSocket;
+            BufferManager = bufferManager;
         }
 
         public async Task ReadAsync(RedisPipelineItem redisItem)
@@ -31,7 +28,7 @@ namespace Redis.NetCore.Pipeline
             // this code is called A LOT
             await ReadResponseAsync().ConfigureAwait(false);
 
-            if (_currentPosition >= _currentResponse.Count)
+            if (CurrentPosition >= CurrentResponse.Count)
             {
                 await ReadNextResponseAsync().ConfigureAwait(false);
             }
@@ -39,14 +36,14 @@ namespace Redis.NetCore.Pipeline
             var firstChar = ReadFirstChar();
             if (firstChar == RedisProtocolContants.SimpleString)
             {
-                if (_currentPosition >= _currentResponse.Count)
+                if (CurrentPosition >= CurrentResponse.Count)
                 {
                     await ReadNextResponseAsync().ConfigureAwait(false);
                 }
 
                 var bytes = new List<byte>();
-                var response = (IList<byte>)_currentResponse;
-                var currentChar = response[_currentPosition];
+                var response = (IList<byte>)CurrentResponse;
+                var currentChar = response[CurrentPosition];
                 while (currentChar != RedisProtocolContants.LineFeed)
                 {
                     if (currentChar != RedisProtocolContants.CarriageReturn)
@@ -54,29 +51,29 @@ namespace Redis.NetCore.Pipeline
                         bytes.Add(currentChar);
                     }
 
-                    _currentPosition++;
-                    if (_currentPosition >= _currentResponse.Count)
+                    CurrentPosition++;
+                    if (CurrentPosition >= CurrentResponse.Count)
                     {
                         await ReadNextResponseAsync().ConfigureAwait(false);
-                        response = _currentResponse;
+                        response = CurrentResponse;
                     }
 
-                    currentChar = response[_currentPosition];
+                    currentChar = response[CurrentPosition];
                 }
 
-                _currentPosition++;
+                CurrentPosition++;
                 ProcessValue(redisItem, bytes.ToArray());
             }
             else if (firstChar == RedisProtocolContants.Integer)
             {
-                if (_currentPosition >= _currentResponse.Count)
+                if (CurrentPosition >= CurrentResponse.Count)
                 {
                     await ReadNextResponseAsync().ConfigureAwait(false);
                 }
 
                 var bytes = new List<byte>();
-                var response = (IList<byte>)_currentResponse;
-                var currentChar = response[_currentPosition];
+                var response = (IList<byte>)CurrentResponse;
+                var currentChar = response[CurrentPosition];
                 while (currentChar != RedisProtocolContants.LineFeed)
                 {
                     if (currentChar != RedisProtocolContants.CarriageReturn)
@@ -84,17 +81,17 @@ namespace Redis.NetCore.Pipeline
                         bytes.Add(currentChar);
                     }
 
-                    _currentPosition++;
-                    if (_currentPosition >= _currentResponse.Count)
+                    CurrentPosition++;
+                    if (CurrentPosition >= CurrentResponse.Count)
                     {
                         await ReadNextResponseAsync().ConfigureAwait(false);
-                        response = _currentResponse;
+                        response = CurrentResponse;
                     }
 
-                    currentChar = response[_currentPosition];
+                    currentChar = response[CurrentPosition];
                 }
 
-                _currentPosition++;
+                CurrentPosition++;
                 ProcessValue(redisItem, bytes.ToArray());
             }
             else if (firstChar == RedisProtocolContants.BulkString)
@@ -107,28 +104,28 @@ namespace Redis.NetCore.Pipeline
                 }
 
                 var bytes = new List<byte>();
-                var response = (IList<byte>)_currentResponse;
+                var response = (IList<byte>)CurrentResponse;
                 for (var i = 0; i < length; i++)
                 {
-                    if (_currentPosition >= _currentResponse.Count)
+                    if (CurrentPosition >= CurrentResponse.Count)
                     {
                         await ReadNextResponseAsync().ConfigureAwait(false);
-                        response = _currentResponse;
+                        response = CurrentResponse;
                     }
 
-                    var currentChar = response[_currentPosition];
+                    var currentChar = response[CurrentPosition];
                     bytes.Add(currentChar);
-                    _currentPosition++;
+                    CurrentPosition++;
                 }
 
                 for (var i = 0; i < 2; i++)
                 {
-                    if (_currentPosition >= _currentResponse.Count)
+                    if (CurrentPosition >= CurrentResponse.Count)
                     {
                         await ReadNextResponseAsync().ConfigureAwait(false);
                     }
 
-                    _currentPosition++;
+                    CurrentPosition++;
                 }
 
                 ProcessValue(redisItem, bytes?.ToArray());
@@ -140,14 +137,14 @@ namespace Redis.NetCore.Pipeline
             }
             else if (firstChar == RedisProtocolContants.Error)
             {
-                if (_currentPosition >= _currentResponse.Count)
+                if (CurrentPosition >= CurrentResponse.Count)
                 {
                     await ReadNextResponseAsync().ConfigureAwait(false);
                 }
 
                 var bytes = new List<byte>();
-                var response = (IList<byte>)_currentResponse;
-                var currentChar = response[_currentPosition];
+                var response = (IList<byte>)CurrentResponse;
+                var currentChar = response[CurrentPosition];
                 while (currentChar != RedisProtocolContants.LineFeed)
                 {
                     if (currentChar != RedisProtocolContants.CarriageReturn)
@@ -155,17 +152,17 @@ namespace Redis.NetCore.Pipeline
                         bytes.Add(currentChar);
                     }
 
-                    _currentPosition++;
-                    if (_currentPosition >= _currentResponse.Count)
+                    CurrentPosition++;
+                    if (CurrentPosition >= CurrentResponse.Count)
                     {
                         await ReadNextResponseAsync().ConfigureAwait(false);
-                        response = _currentResponse;
+                        response = CurrentResponse;
                     }
 
-                    currentChar = response[_currentPosition];
+                    currentChar = response[CurrentPosition];
                 }
 
-                _currentPosition++;
+                CurrentPosition++;
                 var errorText = Encoding.UTF8.GetString(bytes.ToArray());
                 var exception = new RedisException(errorText);
                 redisItem.OnError(exception);
@@ -183,7 +180,7 @@ namespace Redis.NetCore.Pipeline
             {
                 foreach (var buffer in _bufferList)
                 {
-                    _bufferManager.CheckIn(buffer);
+                    BufferManager.CheckIn(buffer);
                 }
 
                 _bufferList.Clear();
@@ -205,8 +202,8 @@ namespace Redis.NetCore.Pipeline
         
         private byte ReadFirstChar()
         {
-            var firstChar = _currentResponse.Array[_currentResponse.Offset + _currentPosition];
-            _currentPosition++;
+            var firstChar = CurrentResponse.Array[CurrentResponse.Offset + CurrentPosition];
+            CurrentPosition++;
             return firstChar;
         }
 
@@ -216,7 +213,7 @@ namespace Redis.NetCore.Pipeline
             var bytes = new List<byte[]>();
             for (var i = 0; i < length; i++)
             {
-                if (_currentPosition >= _currentResponse.Count)
+                if (CurrentPosition >= CurrentResponse.Count)
                 {
                     await ReadNextResponseAsync().ConfigureAwait(false);
                 }
@@ -224,14 +221,14 @@ namespace Redis.NetCore.Pipeline
                 var firstChar = ReadFirstChar();
                 if (firstChar == RedisProtocolContants.SimpleString)
                 {
-                    if (_currentPosition >= _currentResponse.Count)
+                    if (CurrentPosition >= CurrentResponse.Count)
                     {
                         await ReadNextResponseAsync().ConfigureAwait(false);
                     }
 
                     var stringBytes = new List<byte>();
-                    var response = (IList<byte>)_currentResponse;
-                    var currentChar = response[_currentPosition];
+                    var response = (IList<byte>)CurrentResponse;
+                    var currentChar = response[CurrentPosition];
                     while (currentChar != RedisProtocolContants.LineFeed)
                     {
                         if (currentChar != RedisProtocolContants.CarriageReturn)
@@ -239,17 +236,17 @@ namespace Redis.NetCore.Pipeline
                             stringBytes.Add(currentChar);
                         }
 
-                        _currentPosition++;
-                        if (_currentPosition >= _currentResponse.Count)
+                        CurrentPosition++;
+                        if (CurrentPosition >= CurrentResponse.Count)
                         {
                             await ReadNextResponseAsync().ConfigureAwait(false);
-                            response = _currentResponse;
+                            response = CurrentResponse;
                         }
 
-                        currentChar = response[_currentPosition];
+                        currentChar = response[CurrentPosition];
                     }
 
-                    _currentPosition++;
+                    CurrentPosition++;
                     bytes.Add(stringBytes.ToArray());
                 }
                 else if (firstChar == RedisProtocolContants.BulkString)
@@ -262,28 +259,28 @@ namespace Redis.NetCore.Pipeline
                     }
 
                     var bulkBytes = new List<byte>();
-                    var response = (IList<byte>)_currentResponse;
+                    var response = (IList<byte>)CurrentResponse;
                     for (var currentIndex = 0; currentIndex < bulkLength; currentIndex++)
                     {
-                        if (_currentPosition >= _currentResponse.Count)
+                        if (CurrentPosition >= CurrentResponse.Count)
                         {
                             await ReadNextResponseAsync().ConfigureAwait(false);
-                            response = _currentResponse;
+                            response = CurrentResponse;
                         }
 
-                        var currentChar = response[_currentPosition];
+                        var currentChar = response[CurrentPosition];
                         bulkBytes.Add(currentChar);
-                        _currentPosition++;
+                        CurrentPosition++;
                     }
 
                     for (var currentIndex = 0; currentIndex < 2; currentIndex++)
                     {
-                        if (_currentPosition >= _currentResponse.Count)
+                        if (CurrentPosition >= CurrentResponse.Count)
                         {
                             await ReadNextResponseAsync().ConfigureAwait(false);
                         }
 
-                        _currentPosition++;
+                        CurrentPosition++;
                     }
                     
                     bytes.Add(bulkBytes.ToArray());
@@ -319,28 +316,28 @@ namespace Redis.NetCore.Pipeline
             }
 
             var bytes = new List<byte>();
-            var response = (IList<byte>)_currentResponse;
+            var response = (IList<byte>)CurrentResponse;
             for (var i = 0; i < length; i++)
             {
-                if (_currentPosition >= _currentResponse.Count)
+                if (CurrentPosition >= CurrentResponse.Count)
                 {
                     await ReadNextResponseAsync().ConfigureAwait(false);
-                    response = _currentResponse;
+                    response = CurrentResponse;
                 }
 
-                var currentChar = response[_currentPosition];
+                var currentChar = response[CurrentPosition];
                 bytes.Add(currentChar);
-                _currentPosition++;
+                CurrentPosition++;
             }
 
             for (var i = 0; i < 2; i++)
             {
-                if (_currentPosition >= _currentResponse.Count)
+                if (CurrentPosition >= CurrentResponse.Count)
                 {
                     await ReadNextResponseAsync().ConfigureAwait(false);
                 }
 
-                _currentPosition++;
+                CurrentPosition++;
             }
 
             return bytes.ToArray();
@@ -348,28 +345,28 @@ namespace Redis.NetCore.Pipeline
         
         private async Task<int> ReadLengthAsync()
         {
-            if (_currentPosition >= _currentResponse.Count)
+            if (CurrentPosition >= CurrentResponse.Count)
             {
                 await ReadNextResponseAsync().ConfigureAwait(false);
             }
 
-            var response = (IList<byte>)_currentResponse;
+            var response = (IList<byte>)CurrentResponse;
             var length = 0;
             var sign = 1;
 
-            var currentChar = response[_currentPosition];
+            var currentChar = response[CurrentPosition];
             if (currentChar == RedisProtocolContants.Minus)
             {
                 sign = -1;
-                _currentPosition++;
-                if (_currentPosition >= _currentResponse.Count)
+                CurrentPosition++;
+                if (CurrentPosition >= CurrentResponse.Count)
                 {
                     await ReadNextResponseAsync().ConfigureAwait(false);
-                    response = _currentResponse;
+                    response = CurrentResponse;
                 }
             }
 
-            currentChar = response[_currentPosition];
+            currentChar = response[CurrentPosition];
             while (currentChar != RedisProtocolContants.LineFeed)
             {
                 if (currentChar != RedisProtocolContants.CarriageReturn)
@@ -377,23 +374,23 @@ namespace Redis.NetCore.Pipeline
                     length = length * 10 + currentChar - RedisProtocolContants.Zero;
                 }
                 
-                _currentPosition++;
-                if (_currentPosition >= _currentResponse.Count)
+                CurrentPosition++;
+                if (CurrentPosition >= CurrentResponse.Count)
                 {
                     await ReadNextResponseAsync().ConfigureAwait(false);
-                    response = _currentResponse;
+                    response = CurrentResponse;
                 }
 
-                currentChar = response[_currentPosition];
+                currentChar = response[CurrentPosition];
             }
 
-            _currentPosition++;
+            CurrentPosition++;
             return length * sign;
         }
 
         private async Task ReadResponseAsync()
         {
-            if (_currentPosition < _currentResponse.Count)
+            if (CurrentPosition < CurrentResponse.Count)
             {
                 return;
             }
@@ -401,12 +398,6 @@ namespace Redis.NetCore.Pipeline
             await ReadNextResponseAsync().ConfigureAwait(false);
         }
 
-        private async Task ReadNextResponseAsync()
-        {
-            var buffer = await _bufferManager.CheckOutAsync().ConfigureAwait(false);
-            _bufferList.Add(buffer);
-            _currentResponse = await _asyncSocket.ReceiveAsync(buffer);
-            _currentPosition = 0;
-        }
+        protected abstract Task ReadNextResponseAsync();
     }
 }

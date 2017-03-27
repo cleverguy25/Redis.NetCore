@@ -95,7 +95,7 @@ namespace Redis.NetCore.Pipeline
                 var pipelines = new List<Task<IRedisPipeline>>();
                 for (var i = 0; i < _capacity; i++)
                 {
-                    var pipeline = await ConnectPipelineAsync(i, endpoint).ConfigureAwait(false);
+                    var pipeline = await ConnectPipelineAsync(i, endpoint, _configuration.Password).ConfigureAwait(false);
                     pipelines.Add(Task.FromResult(pipeline));
                 }
 
@@ -116,7 +116,7 @@ namespace Redis.NetCore.Pipeline
         private async Task<IRedisPipeline> ReplaceErrorPipelineAsync(int currentIndex, IRedisPipeline pipeline)
         {
             var endpoint = await ResolveEndpointAsync().ConfigureAwait(false);
-            var newPipeline = await ConnectPipelineAsync(currentIndex, endpoint).ConfigureAwait(false);
+            var newPipeline = await ConnectPipelineAsync(currentIndex, endpoint, _configuration.Password).ConfigureAwait(false);
             _pipelines[currentIndex] = Task.FromResult(newPipeline);
 
             try
@@ -133,15 +133,22 @@ namespace Redis.NetCore.Pipeline
             return newPipeline;
         }
 
-        private async Task<IRedisPipeline> ConnectPipelineAsync(int index, EndPoint endpoint)
+        private async Task<IRedisPipeline> ConnectPipelineAsync(int index, EndPoint endpoint, string password)
         {
             var socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
             var asyncSocket = new AsyncSocket(socket.Wrap(), endpoint);
             await asyncSocket.ConnectAsync();
-            var redisReader = new RedisReader(_bufferManager, asyncSocket);
-            var redisWriter = new RedisWriter(_bufferManager);
-            return new RedisPipeline(index, asyncSocket, redisWriter, redisReader);
+            var stream = new AsyncSocketStream(asyncSocket);
+            var redisReader = new RedisStreamReader(stream, _bufferManager);
+            var redisWriter = new RedisStreamWriter(stream, _bufferManager);
+            var pipeline =  new RedisPipeline(index, asyncSocket, stream, redisWriter, redisReader);
+            if (string.IsNullOrWhiteSpace(password) == false)
+            {
+                await pipeline.AuthenticateAsync(password);
+            }
+
+            return pipeline;
         }
 
         private async Task<EndPoint> ResolveEndpointAsync()

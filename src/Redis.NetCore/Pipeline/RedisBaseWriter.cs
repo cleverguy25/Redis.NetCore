@@ -6,7 +6,7 @@ using Redis.NetCore.Constants;
 
 namespace Redis.NetCore.Pipeline
 {
-    public class RedisWriter : IRedisWriter
+    public abstract class RedisBaseWriter : IRedisWriter
     {
         private readonly List<ArraySegment<byte>> _bufferList = new List<ArraySegment<byte>>();
 
@@ -16,7 +16,7 @@ namespace Redis.NetCore.Pipeline
         private ArraySegment<byte> _buffer;
         private int _currentPosition;
 
-        public RedisWriter(IBufferManager bufferManager)
+        public RedisBaseWriter(IBufferManager bufferManager)
         {
             _bufferManager = bufferManager;
         }
@@ -91,6 +91,8 @@ namespace Redis.NetCore.Pipeline
 
             return false;
         }
+
+        public abstract Task FlushWriteBufferAsync();
 
         public List<ArraySegment<byte>> FlushBuffers()
         {

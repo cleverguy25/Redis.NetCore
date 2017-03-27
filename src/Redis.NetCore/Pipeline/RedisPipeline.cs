@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.IO;
+using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
+using Redis.NetCore.Constants;
 using Redis.NetCore.Sockets;
 
 namespace Redis.NetCore.Pipeline
@@ -13,16 +16,18 @@ namespace Redis.NetCore.Pipeline
         private readonly ConcurrentQueue<RedisPipelineItem> _responseQueue = new ConcurrentQueue<RedisPipelineItem>();
         private readonly int _pipelineId;
         private readonly IAsyncSocket _socket;
+        private readonly Stream _stream;
         private Exception _pipelineException;
         private int _sendIsRunning = 0;
         private int _receiveIsRunning = 0;
         private Task _sendTask;
         private Task _receiveTask;
-
-        public RedisPipeline(int pipelineId, IAsyncSocket socket, IRedisWriter redisWriter, IRedisReader redisReader)
+        
+        public RedisPipeline(int pipelineId, IAsyncSocket socket, Stream stream, IRedisWriter redisWriter, IRedisReader redisReader)
         {
             _pipelineId = pipelineId;
             _socket = socket;
+            _stream = stream;
             _redisWriter = redisWriter;
             _redisReader = redisReader;
         }
@@ -30,6 +35,11 @@ namespace Redis.NetCore.Pipeline
         public bool IsErrorState => _pipelineException != null;
 
         public ConcurrentQueue<RedisPipelineItem> RequestQueue { get; } = new ConcurrentQueue<RedisPipelineItem>();
+
+        public Task AuthenticateAsync(string password)
+        {
+            return SendCommandAsync(RedisCommands.Authenticate, password.ToBytes());
+        }
 
         public Task<byte[]> SendCommandAsync(params byte[][] requestData)
         {
@@ -76,6 +86,7 @@ namespace Redis.NetCore.Pipeline
 
         public void Dispose()
         {
+            _stream?.Dispose();
             _socket?.Dispose();
         }
 
@@ -158,7 +169,11 @@ namespace Redis.NetCore.Pipeline
             if (_redisWriter.BytesInBuffer > 0)
             {
                 var bufferList = _redisWriter.FlushBuffers();
-                await _socket.SendAsync(bufferList);
+                foreach (var buffer in bufferList)
+                {
+                    await _stream.WriteAsync(buffer.Array, buffer.Offset, buffer.Count, CancellationToken.None);
+                }
+
                 _redisWriter.CheckInBuffers();
             }
         }

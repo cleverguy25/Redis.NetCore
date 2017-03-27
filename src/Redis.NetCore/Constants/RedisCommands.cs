@@ -38,6 +38,7 @@
         public static readonly byte[] Echo = "ECHO".ToBytes();
         public static readonly byte[] Quit = "QUIT".ToBytes();
         public static readonly byte[] SelectDatabase = "SELECT".ToBytes();
+        public static readonly byte[] Authenticate = "AUTH".ToBytes();
 
         public static readonly byte[] BitCount = "BITCOUNT".ToBytes();
         public static readonly byte[] BitOperation = "BITOP".ToBytes();

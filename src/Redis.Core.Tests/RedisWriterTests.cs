@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NSubstitute;
 using Redis.NetCore.Constants;
 using Redis.NetCore.Pipeline;
 using Redis.NetCore.Sockets;
@@ -41,10 +42,11 @@ namespace Redis.NetCore.Tests
             Assert.Equal("*2\r\n$3\r\nGET\r\n$26\r\nTHIS IS A REALLY LONG KEY.\r\n", result);
         }
 
-        private static async Task<RedisWriter> CreateRedisWriter(int chunkSize)
+        private static async Task<IRedisWriter> CreateRedisWriter(int chunkSize)
         {
+            var socket = Substitute.For<IAsyncSocket>();
             var bufferManager = new BufferManager(2, chunkSize, 2, 10);
-            var redisWriter = new RedisWriter(bufferManager);
+            var redisWriter = new RedisSocketWriter(socket, bufferManager);
             await redisWriter.CreateNewBufferAsync();
             return redisWriter;
         }

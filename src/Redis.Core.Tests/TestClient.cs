@@ -11,9 +11,15 @@ namespace Redis.NetCore.Tests
         public static IRedisClient CreateClient()
         {
             var redisConfiguration = new RedisConfiguration
-                                     {
-                                         Endpoints = new[] { "localhost:32768" }
-                                     };
+            {
+                Endpoints = new[] { "localhost:32768" }
+            };
+            ////var redisConfiguration = new RedisConfiguration
+            ////                         {
+            ////                             Endpoints = new[] { "answer-cache.redis.cache.windows.net:6380" },
+            ////                             Password = "X/4M1PbxfRWrxvyakNEWyYwDHfVr7QvzBpLGLnagDG4="
+            ////                         };
+
             var client = RedisClient.CreateClient(redisConfiguration);
             return client;
         }

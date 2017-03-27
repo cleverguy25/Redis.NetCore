@@ -4,7 +4,8 @@
     "NETStandard.Library": "1.6.1",
     "Microsoft.Extensions.Options.ConfigurationExtensions": "1.1.0",
     "System.Net.NameResolution": "4.3.0",
-    "Microsoft.Extensions.Caching.Abstractions": "1.1.0"
+    "Microsoft.Extensions.Caching.Abstractions": "1.1.0",
+    "System.Net.Security": "4.3.0"
   },
   "frameworks": {
     "netstandard1.6": {
