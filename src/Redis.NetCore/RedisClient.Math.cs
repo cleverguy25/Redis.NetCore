@@ -14,7 +14,7 @@ namespace Redis.NetCore
         {
             CheckKey(key);
 
-            var bytes = await SendCommandAsync(RedisCommands.Increment, key.ToBytes());
+            var bytes = await SendCommandAsync(RedisCommands.Increment, key.ToBytes()).ConfigureAwait(false);
             return ConvertBytesToInteger(bytes);
         }
 
@@ -23,7 +23,7 @@ namespace Redis.NetCore
             CheckKey(key);
 
             var amountBytes = amount.ToString(CultureInfo.InvariantCulture).ToBytes();
-            var bytes = await SendCommandAsync(RedisCommands.IncrementBy, key.ToBytes(), amountBytes);
+            var bytes = await SendCommandAsync(RedisCommands.IncrementBy, key.ToBytes(), amountBytes).ConfigureAwait(false);
             return ConvertBytesToInteger(bytes);
         }
 
@@ -31,7 +31,7 @@ namespace Redis.NetCore
         {
             CheckKey(key);
 
-            var bytes = await SendCommandAsync(RedisCommands.Decrement, key.ToBytes());
+            var bytes = await SendCommandAsync(RedisCommands.Decrement, key.ToBytes()).ConfigureAwait(false);
             return ConvertBytesToInteger(bytes);
         }
 
@@ -40,7 +40,7 @@ namespace Redis.NetCore
             CheckKey(key);
 
             var amountBytes = amount.ToString(CultureInfo.InvariantCulture).ToBytes();
-            var bytes = await SendCommandAsync(RedisCommands.DecrementBy, key.ToBytes(), amountBytes);
+            var bytes = await SendCommandAsync(RedisCommands.DecrementBy, key.ToBytes(), amountBytes).ConfigureAwait(false);
             return ConvertBytesToInteger(bytes);
         }
 
@@ -49,7 +49,7 @@ namespace Redis.NetCore
             CheckKey(key);
 
             var amountBytes = amount.ToString(CultureInfo.InvariantCulture).ToBytes();
-            var bytes = await SendCommandAsync(RedisCommands.IncrementByFloat, key.ToBytes(), amountBytes);
+            var bytes = await SendCommandAsync(RedisCommands.IncrementByFloat, key.ToBytes(), amountBytes).ConfigureAwait(false);
             var stringValue = Encoding.UTF8.GetString(bytes);
             float value;
             if (float.TryParse(stringValue, out value))

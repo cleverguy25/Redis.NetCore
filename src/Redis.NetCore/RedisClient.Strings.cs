@@ -37,7 +37,7 @@ namespace Redis.NetCore
             }
 
             var request = ComposeRequest(RedisCommands.MultipleSetNotExists, data);
-            var bytes = await SendMultipleCommandAsync(request);
+            var bytes = await SendMultipleCommandAsync(request).ConfigureAwait(false);
             return bytes[0][0] == '1';
         }
 
@@ -88,19 +88,19 @@ namespace Redis.NetCore
 
         public async Task<string> GetStringAsync(string key)
         {
-            var bytes = await GetAsync(key);
+            var bytes = await GetAsync(key).ConfigureAwait(false);
             return ConvertBytesToString(bytes);
         }
 
         public async Task<string[]> GetStringsAsync(params string[] keys)
         {
-            var response = await GetAsync(keys);
+            var response = await GetAsync(keys).ConfigureAwait(false);
             return response.Select(ConvertBytesToString).ToArray();
         }
 
         public async Task<string> GetStringRangeAsync(string key, int begin, int end = -1)
         {
-            var response = await GetRangeAsync(key, begin, end);
+            var response = await GetRangeAsync(key, begin, end).ConfigureAwait(false);
             return Encoding.UTF8.GetString(response);
         }
 
@@ -113,7 +113,7 @@ namespace Redis.NetCore
         {
             CheckKey(key);
 
-            var bytes = await SendCommandAsync(RedisCommands.Append, key.ToBytes(), data.ToBytes());
+            var bytes = await SendCommandAsync(RedisCommands.Append, key.ToBytes(), data.ToBytes()).ConfigureAwait(false);
             return ConvertBytesToInteger(bytes);
         }
 
@@ -121,13 +121,13 @@ namespace Redis.NetCore
         {
             CheckKey(key);
 
-            var bytes = await SendCommandAsync(RedisCommands.StringLength, key.ToBytes());
+            var bytes = await SendCommandAsync(RedisCommands.StringLength, key.ToBytes()).ConfigureAwait(false);
             return ConvertBytesToInteger(bytes);
         }
 
         public async Task<string> GetSetStringAsync(string key, string data)
         {
-            var bytes = await GetSetAsync(key, data.ToBytes());
+            var bytes = await GetSetAsync(key, data.ToBytes()).ConfigureAwait(false);
             return ConvertBytesToString(bytes);
         }
 

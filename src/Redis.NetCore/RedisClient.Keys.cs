@@ -14,11 +14,11 @@ namespace Redis.NetCore
         {
             CheckKey(pattern);
 
-            var bytes = await SendMultipleCommandAsync(RedisCommands.Keys, pattern.ToBytes());
+            var bytes = await SendMultipleCommandAsync(RedisCommands.Keys, pattern.ToBytes()).ConfigureAwait(false);
             return bytes.Select(item => Encoding.UTF8.GetString(item)).ToArray();
         }
 
-        public async Task<int> GetTimeToLive(string key)
+        public async Task<int> GetTimeToLiveAsync(string key)
         {
             CheckKey(key);
 
@@ -33,7 +33,7 @@ namespace Redis.NetCore
             return timeToLive;
         }
 
-        public async Task<long> GetPreciseTimeToLive(string key)
+        public async Task<long> GetPreciseTimeToLiveAsync(string key)
         {
             CheckKey(key);
 
@@ -69,7 +69,7 @@ namespace Redis.NetCore
             CheckKey(key);
 
             var bytes = await SendCommandAsync(RedisCommands.Move, key.ToBytes(), databaseIndex.ToString().ToBytes()).ConfigureAwait(false);
-            return bytes[0] == '1';
+            return ConvertBytesToBool(bytes);
         }
 
         public async Task<bool> ExistsAsync(string key)
@@ -77,7 +77,7 @@ namespace Redis.NetCore
             CheckKey(key);
 
             var bytes = await SendCommandAsync(RedisCommands.Exists, key.ToBytes()).ConfigureAwait(false);
-            return bytes[0] == '1';
+            return ConvertBytesToBool(bytes);
         }
 
         public async Task<int> ExistsAsync(params string[] keys)
@@ -103,8 +103,8 @@ namespace Redis.NetCore
 
             var milliseconds = (long)expiration.TotalMilliseconds;
             var expirationBytes = milliseconds.ToString(CultureInfo.InvariantCulture).ToBytes();
-            var bytes = await SendCommandAsync(RedisCommands.PrecisionExpire, key.ToBytes(), expirationBytes);
-            return bytes[0] == '1';
+            var bytes = await SendCommandAsync(RedisCommands.PrecisionExpire, key.ToBytes(), expirationBytes).ConfigureAwait(false);
+            return ConvertBytesToBool(bytes);
         }
 
         public async Task<bool> SetExpirationAsync(string key, int seconds)
@@ -112,8 +112,8 @@ namespace Redis.NetCore
             CheckKey(key);
 
             var expirationBytes = seconds.ToString(CultureInfo.InvariantCulture).ToBytes();
-            var bytes = await SendCommandAsync(RedisCommands.Expire, key.ToBytes(), expirationBytes);
-            return bytes[0] == '1';
+            var bytes = await SendCommandAsync(RedisCommands.Expire, key.ToBytes(), expirationBytes).ConfigureAwait(false);
+            return ConvertBytesToBool(bytes);
         }
 
         public async Task<bool> SetExpirationAsync(string key, DateTime dateTime)
@@ -124,8 +124,8 @@ namespace Redis.NetCore
             var timeSpan = dateTime - epoch;
             var milliseconds = (long)timeSpan.TotalMilliseconds;
             var expirationBytes = milliseconds.ToString(CultureInfo.InvariantCulture).ToBytes();
-            var bytes = await SendCommandAsync(RedisCommands.PrecisionExpireAt, key.ToBytes(), expirationBytes);
-            return bytes[0] == '1';
+            var bytes = await SendCommandAsync(RedisCommands.PrecisionExpireAt, key.ToBytes(), expirationBytes).ConfigureAwait(false);
+            return ConvertBytesToBool(bytes);
         }
 
         public async Task<bool> PersistAsync(string key)
@@ -133,7 +133,7 @@ namespace Redis.NetCore
             CheckKey(key);
 
             var bytes = await SendCommandAsync(RedisCommands.Persist, key.ToBytes()).ConfigureAwait(false);
-            return bytes[0] == '1';
+            return ConvertBytesToBool(bytes);
         }
 
         public Task RenameKeyAsync(string key, string newKey)
@@ -149,8 +149,29 @@ namespace Redis.NetCore
             CheckKey(key);
             CheckKey(newKey);
 
-            var bytes = await SendCommandAsync(RedisCommands.RenameNotExists, key.ToBytes(), newKey.ToBytes());
-            return bytes[0] == '1';
+            var bytes = await SendCommandAsync(RedisCommands.RenameNotExists, key.ToBytes(), newKey.ToBytes()).ConfigureAwait(false);
+            return ConvertBytesToBool(bytes);
+        }
+
+        public async Task<string> GetRandomKeyAsync()
+        {
+            var bytes = await SendCommandAsync(RedisCommands.RandomKey).ConfigureAwait(false);
+            return Encoding.UTF8.GetString(bytes);
+        }
+
+        public Task TouchAsync(string key)
+        {
+            CheckKey(key);
+
+            return SendCommandAsync(RedisCommands.Touch, key.ToBytes());
+        }
+
+        public async Task<string> GetTypeAsync(string key)
+        {
+            CheckKey(key);
+
+            var bytes = await SendCommandAsync(RedisCommands.Type, key.ToBytes());
+            return Encoding.UTF8.GetString(bytes);
         }
 
         private static int ConvertBytesToInteger(IEnumerable<byte> bytes)
@@ -158,6 +179,18 @@ namespace Redis.NetCore
             return bytes.Aggregate(
                 0, 
                 (current, currentByte) => current * 10 + currentByte - RedisProtocolContants.Zero);
+        }
+
+        private static long ConvertBytesToLong(IEnumerable<byte> bytes)
+        {
+            return bytes.Aggregate(
+                0,
+                (current, currentByte) => current * 10 + currentByte - RedisProtocolContants.Zero);
+        }
+
+        private static bool ConvertBytesToBool(IReadOnlyList<byte> bytes)
+        {
+            return bytes[0] == '1';
         }
     }
 }

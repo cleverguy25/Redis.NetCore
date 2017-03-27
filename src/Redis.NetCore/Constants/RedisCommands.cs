@@ -29,6 +29,9 @@
         public static readonly byte[] Keys = "KEYS".ToBytes();
         public static readonly byte[] Rename = "RENAME".ToBytes();
         public static readonly byte[] RenameNotExists = "RENAMENX".ToBytes();
+        public static readonly byte[] RandomKey = "RANDOMKEY".ToBytes();
+        public static readonly byte[] Touch = "TOUCH".ToBytes();
+        public static readonly byte[] Type = "TYPE".ToBytes();
 
         public static readonly byte[] Ping = "PING".ToBytes();
         public static readonly byte[] Echo = "ECHO".ToBytes();

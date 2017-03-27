@@ -9,9 +9,9 @@ namespace Redis.NetCore.Abstractions
 
         Task DeleteKeyAsync(params string[] keys);
 
-        Task<int> GetTimeToLive(string key);
+        Task<int> GetTimeToLiveAsync(string key);
 
-        Task<long> GetPreciseTimeToLive(string key);
+        Task<long> GetPreciseTimeToLiveAsync(string key);
 
         Task<bool> MoveAsync(string key, int databaseIndex);
 
@@ -30,5 +30,11 @@ namespace Redis.NetCore.Abstractions
         Task RenameKeyAsync(string key, string newKey);
 
         Task<bool> RenameKeyNotExistsAsync(string key, string newKey);
+
+        Task<string> GetRandomKeyAsync();
+
+        Task TouchAsync(string key);
+
+        Task<string> GetTypeAsync(string key);
     }
 }

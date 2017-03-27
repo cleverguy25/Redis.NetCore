@@ -87,11 +87,12 @@ namespace Redis.NetCore.Tests
                 var set = await client.SetExpirationAsync(key, TimeSpan.FromMinutes(5));
                 Assert.Equal(true, set);
 
-                var timeToLive = await client.GetPreciseTimeToLive(key);
+                var timeToLive = await client.GetPreciseTimeToLiveAsync(key);
                 Assert.NotNull(timeToLive);
             }
         }
 
+        [Fact]
         public async Task SetExpiredSecondsAsync()
         {
             using (var client = TestClient.CreateClient())
@@ -103,11 +104,12 @@ namespace Redis.NetCore.Tests
                 var set = await client.SetExpirationAsync(key, 1000);
                 Assert.Equal(true, set);
 
-                var timeToLive = await client.GetTimeToLive(key);
+                var timeToLive = await client.GetTimeToLiveAsync(key);
                 Assert.NotNull(timeToLive);
             }
         }
 
+        [Fact]
         public async Task SetExpiredDateTimeAsync()
         {
             using (var client = TestClient.CreateClient())
@@ -119,7 +121,7 @@ namespace Redis.NetCore.Tests
                 var set = await client.SetExpirationAsync(key, new DateTime(2020, 1, 1));
                 Assert.Equal(true, set);
 
-                var timeToLive = await client.GetPreciseTimeToLive(key);
+                var timeToLive = await client.GetPreciseTimeToLiveAsync(key);
                 Assert.NotNull(timeToLive);
             }
         }
@@ -136,13 +138,13 @@ namespace Redis.NetCore.Tests
                 var set = await client.SetExpirationAsync(key, TimeSpan.FromMinutes(5));
                 Assert.Equal(true, set);
 
-                var timeToLive = await client.GetPreciseTimeToLive(key);
+                var timeToLive = await client.GetPreciseTimeToLiveAsync(key);
                 Assert.NotNull(timeToLive);
 
                 set = await client.PersistAsync(key);
                 Assert.Equal(true, set);
 
-                timeToLive = await client.GetPreciseTimeToLive(key);
+                timeToLive = await client.GetPreciseTimeToLiveAsync(key);
                 Assert.Equal(-1, timeToLive);
             }
         }
@@ -182,6 +184,44 @@ namespace Redis.NetCore.Tests
 
                 set = await client.RenameKeyNotExistsAsync(key1, newKey);
                 Assert.Equal(false, set);
+            }
+        }
+
+        [Fact]
+        public async Task GetRandomKeyAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string expected = "Foo!";
+                const string key = nameof(GetRandomKeyAsync);
+                await TestClient.SetGetAsync(client, key, expected);
+                var randomKey = await client.GetRandomKeyAsync();
+                Assert.NotNull(randomKey);
+            }
+        }
+
+        [Fact]
+        public async Task TouchAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string expected = "Foo!";
+                const string key = nameof(TouchAsync);
+                await TestClient.SetGetAsync(client, key, expected);
+                await client.TouchAsync(key);
+            }
+        }
+
+        [Fact]
+        public async Task GetTypeAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string expected = "Foo!";
+                const string key = nameof(GetTypeAsync);
+                await TestClient.SetGetAsync(client, key, expected);
+                var type = await client.GetTypeAsync(key);
+                Assert.Equal("string", type);
             }
         }
     }

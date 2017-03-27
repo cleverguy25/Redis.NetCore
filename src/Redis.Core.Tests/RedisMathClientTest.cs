@@ -48,6 +48,7 @@ namespace Redis.NetCore.Tests
             }
         }
 
+        [Fact]
         public async Task DecrementAsync()
         {
             using (var client = TestClient.CreateClient())

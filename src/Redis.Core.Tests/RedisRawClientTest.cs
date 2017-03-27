@@ -66,7 +66,7 @@ namespace Redis.NetCore.Tests
                 await client.SetAsync(key, Encoding.UTF8.GetBytes(expected));
                 var bytes = await client.GetAsync(key);
                 Assert.Equal(expected, Encoding.UTF8.GetString(bytes));
-                var timeToLive = await client.GetTimeToLive(key);
+                var timeToLive = await client.GetTimeToLiveAsync(key);
                 Assert.Equal(-1, timeToLive);
             }
         }
@@ -84,7 +84,7 @@ namespace Redis.NetCore.Tests
                 var bytes = await client.GetAsync(key);
                 Assert.Equal(expected, Encoding.UTF8.GetString(bytes));
 
-                var timeToLive = await client.GetTimeToLive(key);
+                var timeToLive = await client.GetTimeToLiveAsync(key);
                 Assert.Equal(-1, timeToLive);
 
                 set = await client.SetNotExistsAsync(key, Encoding.UTF8.GetBytes("Bar!"));
@@ -105,7 +105,7 @@ namespace Redis.NetCore.Tests
                 var set = await client.SetNotExistsAsync(key, Encoding.UTF8.GetBytes(expected), 3600);
                 Assert.Equal(true, set);
 
-                var timeToLive = await client.GetTimeToLive(key);
+                var timeToLive = await client.GetTimeToLiveAsync(key);
                 Assert.NotNull(timeToLive);
 
                 set = await client.SetNotExistsAsync(key, Encoding.UTF8.GetBytes("Bar!"), 3600);
@@ -126,7 +126,7 @@ namespace Redis.NetCore.Tests
                 var set = await client.SetNotExistsAsync(key, Encoding.UTF8.GetBytes(expected), TimeSpan.FromDays(1));
                 Assert.Equal(true, set);
 
-                var timeToLive = await client.GetPreciseTimeToLive(key);
+                var timeToLive = await client.GetPreciseTimeToLiveAsync(key);
                 Assert.NotNull(timeToLive);
 
                 set = await client.SetNotExistsAsync(key, Encoding.UTF8.GetBytes("Bar!"), TimeSpan.FromDays(1));
@@ -153,7 +153,7 @@ namespace Redis.NetCore.Tests
                 var bytes = await client.GetAsync(key);
                 Assert.Equal(expected, Encoding.UTF8.GetString(bytes));
 
-                var timeToLive = await client.GetTimeToLive(key);
+                var timeToLive = await client.GetTimeToLiveAsync(key);
                 Assert.Equal(-1, timeToLive);
             }
         }
@@ -175,7 +175,7 @@ namespace Redis.NetCore.Tests
                 var bytes = await client.GetAsync(key);
                 Assert.Equal(expected, Encoding.UTF8.GetString(bytes));
 
-                var timeToLive = await client.GetPreciseTimeToLive(key);
+                var timeToLive = await client.GetPreciseTimeToLiveAsync(key);
                 Assert.NotNull(timeToLive);
             }
         }
@@ -197,7 +197,7 @@ namespace Redis.NetCore.Tests
                 var bytes = await client.GetAsync(key);
                 Assert.Equal(expected, Encoding.UTF8.GetString(bytes));
 
-                var timeToLive = await client.GetTimeToLive(key);
+                var timeToLive = await client.GetTimeToLiveAsync(key);
                 Assert.NotNull(timeToLive);
             }
         }
@@ -265,7 +265,7 @@ namespace Redis.NetCore.Tests
                 const string expected = "Foo!";
                 const string key = nameof(SetExpiredTimeSpanBytesAsync);
                 await client.SetAsync(key, Encoding.UTF8.GetBytes(expected), TimeSpan.FromSeconds(1000));
-                var timeToLive = await client.GetPreciseTimeToLive(key);
+                var timeToLive = await client.GetPreciseTimeToLiveAsync(key);
                 Assert.NotNull(timeToLive);
             }
         }
@@ -278,7 +278,7 @@ namespace Redis.NetCore.Tests
                 const string expected = "Foo!";
                 const string key = nameof(SetExpiredSecondsBytesAsync);
                 await client.SetAsync(key, Encoding.UTF8.GetBytes(expected), 1000);
-                var timeToLive = await client.GetTimeToLive(key);
+                var timeToLive = await client.GetTimeToLiveAsync(key);
                 Assert.NotNull(timeToLive);
             }
         }

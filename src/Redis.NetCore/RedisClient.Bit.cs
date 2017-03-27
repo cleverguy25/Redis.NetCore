@@ -18,7 +18,7 @@ namespace Redis.NetCore
 
             var beginBytes = begin.ToString(CultureInfo.InvariantCulture).ToBytes();
             var endBytes = end.ToString(CultureInfo.InvariantCulture).ToBytes();
-            var bytes = await SendCommandAsync(RedisCommands.BitCount, key.ToBytes(), beginBytes, endBytes);
+            var bytes = await SendCommandAsync(RedisCommands.BitCount, key.ToBytes(), beginBytes, endBytes).ConfigureAwait(false);
             return ConvertBytesToInteger(bytes);
         }
 
@@ -29,7 +29,7 @@ namespace Redis.NetCore
             var bitBytes = bit ? OneBit : ZeroBit;
             var beginBytes = begin.ToString(CultureInfo.InvariantCulture).ToBytes();
             var endBytes = end.ToString(CultureInfo.InvariantCulture).ToBytes();
-            var bytes = await SendCommandAsync(RedisCommands.BitPosition, key.ToBytes(), bitBytes, beginBytes, endBytes);
+            var bytes = await SendCommandAsync(RedisCommands.BitPosition, key.ToBytes(), bitBytes, beginBytes, endBytes).ConfigureAwait(false);
             return ConvertBytesToInteger(bytes);
         }
 
@@ -39,8 +39,8 @@ namespace Redis.NetCore
 
             var bitBytes = bit ? OneBit : ZeroBit;
             var indexBytes = index.ToString(CultureInfo.InvariantCulture).ToBytes();
-            var bytes = await SendCommandAsync(RedisCommands.SetBit, key.ToBytes(), indexBytes, bitBytes);
-            return bytes[0] == '1';
+            var bytes = await SendCommandAsync(RedisCommands.SetBit, key.ToBytes(), indexBytes, bitBytes).ConfigureAwait(false);
+            return ConvertBytesToBool(bytes);
         }
 
         public async Task<bool> GetBitAsync(string key, int index)
@@ -48,8 +48,8 @@ namespace Redis.NetCore
             CheckKey(key);
 
             var indexBytes = index.ToString(CultureInfo.InvariantCulture).ToBytes();
-            var bytes = await SendCommandAsync(RedisCommands.GetBit, key.ToBytes(), indexBytes);
-            return bytes[0] == '1';
+            var bytes = await SendCommandAsync(RedisCommands.GetBit, key.ToBytes(), indexBytes).ConfigureAwait(false);
+            return ConvertBytesToBool(bytes);
         }
 
         public Task<int> PerformBitwiseAndAsync(string destinationKey, params string[] sourceKeys)
@@ -79,7 +79,7 @@ namespace Redis.NetCore
             var keys = new List<string> { operation, destinationKey };
             keys.AddRange(sourceKeys);
             var request = ComposeRequest(RedisCommands.BitOperation, keys);
-            var bytes = await SendMultipleCommandAsync(request);
+            var bytes = await SendMultipleCommandAsync(request).ConfigureAwait(false);
             return ConvertBytesToInteger(bytes[0]);
         }
     }
