@@ -106,6 +106,12 @@ namespace Redis.NetCore
             return bytes[0] == '1';
         }
 
+        public async Task<bool> PersistAsync(string key)
+        {
+            var bytes = await SendCommandAsync(RedisCommands.Persist, key.ToBytes()).ConfigureAwait(false);
+            return bytes[0] == '1';
+        }
+
         private static int ConvertBytesToInteger(IEnumerable<byte> bytes)
         {
             return bytes.Aggregate(

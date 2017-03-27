@@ -25,6 +25,7 @@
         public static readonly byte[] Expire = "EXPIRE".ToBytes();
         public static readonly byte[] PrecisionExpire = "PEXPIRE".ToBytes();
         public static readonly byte[] PrecisionExpireAt = "PEXPIREAT".ToBytes();
+        public static readonly byte[] Persist = "PERSIST".ToBytes();
 
         public static readonly byte[] Ping = "PING".ToBytes();
         public static readonly byte[] Echo = "ECHO".ToBytes();

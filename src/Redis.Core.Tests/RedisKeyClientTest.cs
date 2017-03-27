@@ -107,5 +107,27 @@ namespace Redis.NetCore.Tests
             }
         }
 
+        [Fact]
+        public async Task PersistAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string expected = "Foo!";
+                const string key = nameof(PersistAsync);
+                await client.DeleteKeyAsync(key);
+                await TestClient.SetGetAsync(client, key, expected);
+                var set = await client.SetExpirationAsync(key, TimeSpan.FromMinutes(5));
+                Assert.Equal(true, set);
+
+                var timeToLive = await client.GetPreciseTimeToLive(key);
+                Assert.NotNull(timeToLive);
+
+                set = await client.PersistAsync(key);
+                Assert.Equal(true, set);
+
+                timeToLive = await client.GetPreciseTimeToLive(key);
+                Assert.Equal(-1, timeToLive);
+            }
+        }
     }
 }
