@@ -13,7 +13,7 @@
     "xunit.runner.visualstudio": "2.2.0-beta5-build1225",
     "dotnet-test-xunit": "2.2.0-preview2-build1029",
     "NSubstitute": "2.0.2",
-    "StyleCop.Analyzers": "1.0.0"
+    "StyleCop.Analyzers": { "version" : "1.0.0", "type" : "build"}
   },
 
   "frameworks": {
