@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
+﻿// <copyright file="RedisStreamReader.cs" company="PayScale">
+// Copyright (c) PayScale. All rights reserved.
+// Licensed under the APACHE 2.0 license. See LICENSE file in the project root for full license information.
+// </copyright>
+
+using System;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Redis.NetCore.Constants;
-using Redis.NetCore.Sockets;
 
 namespace Redis.NetCore.Pipeline
 {
@@ -14,20 +13,21 @@ namespace Redis.NetCore.Pipeline
     {
         private readonly Stream _stream;
 
-        public RedisStreamReader(Stream stream, IBufferManager bufferManager) : base(bufferManager)
+        public RedisStreamReader(Stream stream, IBufferManager bufferManager)
+            : base(bufferManager)
         {
             _stream = stream;
         }
 
         protected override async Task ReadNextResponseAsync()
         {
-            if (_bufferList.Count > 10)
+            if (BufferList.Count > 10)
             {
                 CheckInBuffers();
             }
 
             var buffer = await BufferManager.CheckOutAsync().ConfigureAwait(false);
-            _bufferList.Add(buffer);
+            BufferList.Add(buffer);
             var bytesRead = await _stream.ReadAsync(buffer.Array, buffer.Offset, buffer.Count).ConfigureAwait(false);
             CurrentResponse = new ArraySegment<byte>(buffer.Array, buffer.Offset, bytesRead);
             CurrentPosition = 0;

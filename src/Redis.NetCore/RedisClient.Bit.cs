@@ -1,7 +1,10 @@
-﻿using System;
+﻿// <copyright file="RedisClient.Bit.cs" company="PayScale">
+// Copyright (c) PayScale. All rights reserved.
+// Licensed under the APACHE 2.0 license. See LICENSE file in the project root for full license information.
+// </copyright>
+
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Threading.Tasks;
 using Redis.NetCore.Constants;
 
@@ -14,7 +17,7 @@ namespace Redis.NetCore
 
         public async Task<int> GetBitCountAsync(string key, int begin = 0, int end = -1)
         {
-			CheckKey(key);
+            CheckKey(key);
 
             var beginBytes = begin.ToString(CultureInfo.InvariantCulture).ToBytes();
             var endBytes = end.ToString(CultureInfo.InvariantCulture).ToBytes();
@@ -29,7 +32,8 @@ namespace Redis.NetCore
             var bitBytes = bit ? OneBit : ZeroBit;
             var beginBytes = begin.ToString(CultureInfo.InvariantCulture).ToBytes();
             var endBytes = end.ToString(CultureInfo.InvariantCulture).ToBytes();
-            var bytes = await SendCommandAsync(RedisCommands.BitPosition, key.ToBytes(), bitBytes, beginBytes, endBytes).ConfigureAwait(false);
+            var bytes =
+                await SendCommandAsync(RedisCommands.BitPosition, key.ToBytes(), bitBytes, beginBytes, endBytes).ConfigureAwait(false);
             return ConvertBytesToInteger(bytes);
         }
 

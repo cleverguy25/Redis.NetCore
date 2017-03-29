@@ -1224,6 +1224,9 @@
           }
         }
       },
+      "StyleCop.Analyzers/1.0.0": {
+        "type": "package"
+      },
       "System.AppContext/4.3.0": {
         "type": "package",
         "dependencies": {
@@ -3277,13 +3280,14 @@
           "System.Threading.ThreadPool": "4.0.10"
         }
       },
-      "Redis.NetCore/1.0.0": {
+      "Redis.NetCore/0.7.0-beta": {
         "type": "project",
         "framework": ".NETStandard,Version=v1.6",
         "dependencies": {
           "Microsoft.Extensions.Caching.Abstractions": "1.1.0",
           "Microsoft.Extensions.Options.ConfigurationExtensions": "1.1.0",
           "NETStandard.Library": "1.6.1",
+          "StyleCop.Analyzers": "1.0.0",
           "System.Net.NameResolution": "4.3.0",
           "System.Net.Security": "4.3.0"
         },
@@ -3352,7 +3356,7 @@
       ]
     },
     "Microsoft.CodeAnalysis.Analyzers/1.1.0": {
-      "sha512": "hA0JDwf8/WynHLNkAB1BjUz2Q95iljasxFngTSVsRs2vUjL2hJqQiUUMCcPepkssIC7JWhqhupXde3cY0aOacg==",
+      "sha512": "N6e/u4hFJPjgoMuZ+ja7hwjLlPIpUbGP+NF78hDxjYg5I5yyekNLCyOJmSAzzAmeX+liB1J9knTnUruZ7h2bmQ==",
       "type": "package",
       "path": "Microsoft.CodeAnalysis.Analyzers/1.1.0",
       "files": [
@@ -3368,7 +3372,7 @@
       ]
     },
     "Microsoft.CodeAnalysis.Common/1.3.0": {
-      "sha512": "t11rduUugtHJAn0guCmw5LakiD/p/7uh9iQXFm7h0DezUQ5K9hv32LAgunaUgDQkVRMiNWDFIsTlPj9//kVBqg==",
+      "sha512": "gf0f3KbuAxS7mta7rzu2EJ83rvN8Nug7NRXF/KtTuEZm9I5q0TBpd1WpR4aNDcNFf0cDfTfSizWgm/8qrHLMRw==",
       "type": "package",
       "path": "Microsoft.CodeAnalysis.Common/1.3.0",
       "files": [
@@ -3384,7 +3388,7 @@
       ]
     },
     "Microsoft.CodeAnalysis.CSharp/1.3.0": {
-      "sha512": "NsHTKBjGEnHEfNe2ykghFTiYgwIlms1FTOUqQNf0FZyRwhWpOkr3MV/p2LZSO88R+VB34SsxDp73Dvgt6ClGng==",
+      "sha512": "vmi3LEE+AK2urfG6RsOgXCWt2n+xYP27eMeLrK9Cbk9kmBoNv5W0H6bvLyaAnrLwXj8HdcFVH700TndWhVamJw==",
       "type": "package",
       "path": "Microsoft.CodeAnalysis.CSharp/1.3.0",
       "files": [
@@ -3400,7 +3404,7 @@
       ]
     },
     "Microsoft.CodeAnalysis.VisualBasic/1.3.0": {
-      "sha512": "FrPerjcHharxwriT5OmRwXEGanVxEo1Vmn9DcXRy6CPQx4+8RS8PXLcSPNqOBm+WSduaDedSkODs+JTma4RT1w==",
+      "sha512": "i/nwQbb6wKRN7beOTnPO7ASxvtAsZNgPnLZ4pb9HFV+GyE4N11ByEztggzgtR6io2Aj7umS22F0ozkl4KR/xbg==",
       "type": "package",
       "path": "Microsoft.CodeAnalysis.VisualBasic/1.3.0",
       "files": [
@@ -3746,7 +3750,7 @@
       ]
     },
     "Microsoft.NETCore.Windows.ApiSets/1.0.1": {
-      "sha512": "0WdwQCHEdEBcRhcUsItrcE3HBCCbRayL6cFD9h7yYhgLHONJaDJkzXyJP1p7mp2QEZsaz4FEjSXZ4bYLxyn7pA==",
+      "sha512": "p/g/lfyUpfEmFbzxp7WFWAN+57oNCG/BFUUDL624RnurJAAUQeR79e+X2170dkg8mRggS8Z+NZVqIueRE/tjyw==",
       "type": "package",
       "path": "Microsoft.NETCore.Windows.ApiSets/1.0.1",
       "files": [
@@ -4341,6 +4345,20 @@
         "runtime.ubuntu.16.10-x64.runtime.native.System.Security.Cryptography.OpenSsl.4.3.0.nupkg.sha512",
         "runtime.ubuntu.16.10-x64.runtime.native.System.Security.Cryptography.OpenSsl.nuspec",
         "runtimes/ubuntu.16.10-x64/native/System.Security.Cryptography.Native.OpenSsl.so"
+      ]
+    },
+    "StyleCop.Analyzers/1.0.0": {
+      "sha512": "NT0qdVF8gfXn6YcajL/s9orWNbO9NAr9AM8MDHIxXHstMvxi7+viLxAlZIoWRAA25Cs4O91qFcMt06cL/61TjQ==",
+      "type": "package",
+      "path": "StyleCop.Analyzers/1.0.0",
+      "files": [
+        "StyleCop.Analyzers.1.0.0.nupkg.sha512",
+        "StyleCop.Analyzers.nuspec",
+        "analyzers/dotnet/cs/Newtonsoft.Json.dll",
+        "analyzers/dotnet/cs/StyleCop.Analyzers.CodeFixes.dll",
+        "analyzers/dotnet/cs/StyleCop.Analyzers.dll",
+        "tools/install.ps1",
+        "tools/uninstall.ps1"
       ]
     },
     "System.AppContext/4.3.0": {
@@ -5042,7 +5060,7 @@
       ]
     },
     "System.Diagnostics.FileVersionInfo/4.0.0": {
-      "sha512": "RWFbyU+W+DNtSx2bicYVgQTFh01ekK8GmAhbji2GtAr7qMeUqGoTYH1vY7SzfbOturNL9vaESD7M4CMVsxk3bQ==",
+      "sha512": "viXGpEDW5RmckzHJmMQxf0olOFr7BJmUycBdFSyaYY1Uq0/BHsfPDuNn7hp5vn8RVk76EBPrFnGOIwfVqVnwQg==",
       "type": "package",
       "path": "System.Diagnostics.FileVersionInfo/4.0.0",
       "files": [
@@ -5137,7 +5155,7 @@
       ]
     },
     "System.Diagnostics.StackTrace/4.0.1": {
-      "sha512": "OaFToBCQ1yn4rTcY8Vv10pTlEw4TKb3R4FIWcjOeyfHfF7KJ+0BKtLvLumkSXp/D36kmItCy/p/eXleXcaxtHQ==",
+      "sha512": "CpXTXoABBZ7nggblkKi5X/wJI+GeKeR+2EK/0A6f8n70XNoXv3gYjhebE3Maxcn7/d/S6khkzl6kKH4uBx7hHw==",
       "type": "package",
       "path": "System.Diagnostics.StackTrace/4.0.1",
       "files": [
@@ -8200,7 +8218,7 @@
       ]
     },
     "System.Text.Encoding.CodePages/4.0.1": {
-      "sha512": "FqwUFVMM29aeT583QPLV8U69IzeWk32OzI/w/nr8JmIClTkbwCpr6Uq158fT2SCjTOJvnSPNygszb4o99yYL5Q==",
+      "sha512": "h4z6rrA/hxWf4655D18IIZ0eaLRa3tQC/j+e26W+VinIHY0l07iEXaAvO0YSYq3MvCjMYy8Zs5AdC1sxNQOB7Q==",
       "type": "package",
       "path": "System.Text.Encoding.CodePages/4.0.1",
       "files": [
@@ -8902,7 +8920,7 @@
       ]
     },
     "System.Xml.XmlDocument/4.0.1": {
-      "sha512": "c5CnBhZKAGYa3A5IVNATxVERMhfzX/izHCHYNgEbN/f0QhysPNILgZ44H24yzDBbAklpQ6HqOzrRR85+PbDD5g==",
+      "sha512": "2eZu6IP+etFVBBFUFzw2w6J21DqIN5eL9Y8r8JfJWUmV28Z5P0SNU01oCisVHQgHsDhHPnmq2s1hJrJCFZWloQ==",
       "type": "package",
       "path": "System.Xml.XmlDocument/4.0.1",
       "files": [
@@ -9008,7 +9026,7 @@
       ]
     },
     "System.Xml.XPath/4.0.1": {
-      "sha512": "/IIXF/O6HujBFrwlXkMz14DXIbDw7sNTle8hlBetQbvzHoecZDGnW+Lx1Gy+FgRx7Pppa+x14NMlYk/myaaLDg==",
+      "sha512": "cr2lKH9K3o3ILy9FmBTVSfXQaZUPseXbnD8svK7KmuqlyyXCNVm1qDsM0KsuvENX/FpoU4E/nQo4iKY42sP8bg==",
       "type": "package",
       "path": "System.Xml.XPath/4.0.1",
       "files": [
@@ -9045,7 +9063,7 @@
       ]
     },
     "System.Xml.XPath.XDocument/4.0.1": {
-      "sha512": "1F9oiUe9QPWu3IwLAJS2JlDY+nDA0TZ7wjuYI4pfzqqNQ2pc1Uh4ApqKo6AWh3gZkGgoa8Gb+QXCilyeSHUfdQ==",
+      "sha512": "BfrpVdhPzkcFB79NUQ7Jj97AQHjuJdFTkhSuYdzjwJRbIlILJVGuguftiqk8+yfw/s1BvN4DeXvgcbvvl+4p8g==",
       "type": "package",
       "path": "System.Xml.XPath.XDocument/4.0.1",
       "files": [
@@ -9257,7 +9275,7 @@
         "xunit.runner.visualstudio.nuspec"
       ]
     },
-    "Redis.NetCore/1.0.0": {
+    "Redis.NetCore/0.7.0-beta": {
       "type": "project",
       "path": "../Redis.NetCore/project.json",
       "msbuildProject": "../Redis.NetCore/Redis.NetCore.xproj"
@@ -9269,7 +9287,8 @@
       "Microsoft.NETCore.App >= 1.1.0",
       "NETStandard.Library >= 1.6.1",
       "NSubstitute >= 2.0.2",
-      "Redis.NetCore >= 1.0.0-*",
+      "Redis.NetCore >= 0.7.0-*",
+      "StyleCop.Analyzers >= 1.0.0",
       "dotnet-test-xunit >= 2.2.0-preview2-build1029",
       "xunit >= 2.2.0-beta5-build3474",
       "xunit.runner.visualstudio >= 2.2.0-beta5-build1225"

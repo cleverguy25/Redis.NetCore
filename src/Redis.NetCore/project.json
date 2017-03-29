@@ -1,11 +1,23 @@
 {
-  "version": "1.0.0-*",
+  "version": "0.7.0-beta",
+  "copyright": "Copyright (c) PayScale",
+  "title": "Redis Client for .Net Core",
+  "description": "Async only library for accessing Redis from DotNet Core",
+  "authors": [ "PayScale", "cleve.littlefield" ],
+  "packOptions": {
+    "summary": "Redis Client for .Net Core",
+    "projectUrl": "https://github.com/cleverguy25/Redis.NetCore",
+    "licenseUrl": "https://raw.githubusercontent.com/cleverguy25/Redis.NetCore/LICENSE",
+    "tags": [ "Redis dotnet core async" ],
+    "requireLicenseAcceptance": true
+  },
   "dependencies": {
     "NETStandard.Library": "1.6.1",
     "Microsoft.Extensions.Options.ConfigurationExtensions": "1.1.0",
     "System.Net.NameResolution": "4.3.0",
     "Microsoft.Extensions.Caching.Abstractions": "1.1.0",
-    "System.Net.Security": "4.3.0"
+    "System.Net.Security": "4.3.0",
+    "StyleCop.Analyzers": "1.0.0"
   },
   "frameworks": {
     "netstandard1.6": {
@@ -15,7 +27,8 @@
   "buildOptions": {
     "debugType": "portable",
     "preserveCompilationContext": true,
+    "additionalArguments": [ "/ruleset:../../payscale.stylecop.ruleset" ],
     "warningsAsErrors": true,
-    "nowarn": ["1701"]
+    "nowarn": [ "1701" ]
   }
 }

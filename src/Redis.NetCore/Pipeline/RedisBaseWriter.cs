@@ -1,4 +1,9 @@
-﻿using System;
+﻿// <copyright file="RedisBaseWriter.cs" company="PayScale">
+// Copyright (c) PayScale. All rights reserved.
+// Licensed under the APACHE 2.0 license. See LICENSE file in the project root for full license information.
+// </copyright>
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -59,7 +64,10 @@ namespace Redis.NetCore.Pipeline
 
                 while (true)
                 {
-                    if (WriteData(item, ref startPosition)) break;
+                    if (WriteData(item, ref startPosition))
+                    {
+                        break;
+                    }
 
                     SaveExistingBuffer();
                     await CreateNewBufferAsync().ConfigureAwait(false);
@@ -70,26 +78,15 @@ namespace Redis.NetCore.Pipeline
 
                 while (true)
                 {
-                    if (WriteData(RedisProtocolContants.LineEnding, ref startPosition)) break;
+                    if (WriteData(RedisProtocolContants.LineEnding, ref startPosition))
+                    {
+                        break;
+                    }
 
                     SaveExistingBuffer();
                     await CreateNewBufferAsync().ConfigureAwait(false);
                 }
             }
-        }
-
-        private bool WriteData(byte[] data, ref int startPosition)
-        {
-            var length = Math.Min(_buffer.Count - _currentPosition, data.Length - startPosition);
-
-            WriteBytes(data, startPosition, length);
-            startPosition += length;
-            if (startPosition == data.Length)
-            {
-                return true;
-            }
-
-            return false;
         }
 
         public abstract Task FlushWriteBufferAsync();
@@ -121,6 +118,20 @@ namespace Redis.NetCore.Pipeline
             _buffer = await _bufferManager.CheckOutAsync().ConfigureAwait(false);
             _bufferList.Add(_buffer);
             _currentPosition = 0;
+        }
+
+        private bool WriteData(byte[] data, ref int startPosition)
+        {
+            var length = Math.Min(_buffer.Count - _currentPosition, data.Length - startPosition);
+
+            WriteBytes(data, startPosition, length);
+            startPosition += length;
+            if (startPosition == data.Length)
+            {
+                return true;
+            }
+
+            return false;
         }
 
         private void SaveExistingBuffer()

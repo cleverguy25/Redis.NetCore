@@ -1,4 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿// <copyright file="RedisClient.IDistributedCache.cs" company="PayScale">
+// Copyright (c) PayScale. All rights reserved.
+// Licensed under the APACHE 2.0 license. See LICENSE file in the project root for full license information.
+// </copyright>
+
+using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Distributed;
 
 namespace Redis.NetCore
@@ -9,7 +14,7 @@ namespace Redis.NetCore
         {
             return GetAsync(key).GetAwaiter().GetResult();
         }
-        
+
         public void Set(string key, byte[] value, DistributedCacheEntryOptions options)
         {
             SetAsync(key, value, options).GetAwaiter().GetResult();

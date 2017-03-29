@@ -1,6 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿// <copyright file="RedisReaderTests.cs" company="PayScale">
+// Copyright (c) PayScale. All rights reserved.
+// Licensed under the APACHE 2.0 license. See LICENSE file in the project root for full license information.
+// </copyright>
+
+using System;
 using System.Text;
 using System.Threading.Tasks;
 using NSubstitute;
@@ -49,7 +52,7 @@ namespace Redis.NetCore.Tests
             byte[][] responseData = null;
             var redisReader = CreateRedisReader(100, socket);
             var redisPiplineItem = new RedisPipelineItem(null, null, response => responseData = response);
-            SetupSocketResponse(socket, "*2\r\n","$5\r\nBoom!\r\n$", "10\r\nShakalaka!", "\r\n");
+            SetupSocketResponse(socket, "*2\r\n", "$5\r\nBoom!\r\n$", "10\r\nShakalaka!", "\r\n");
 
             await redisReader.ReadAsync(redisPiplineItem);
             Assert.Equal("Boom!", Encoding.UTF8.GetString(responseData[0]));
@@ -59,7 +62,7 @@ namespace Redis.NetCore.Tests
         public async Task ReadBulkStringAsync()
         {
             var socket = Substitute.For<IAsyncSocket>();
-            
+
             byte[][] responseData = null;
             var redisReader = CreateRedisReader(100, socket);
             var redisPiplineItem = new RedisPipelineItem(null, null, response => responseData = response);
@@ -157,7 +160,6 @@ namespace Redis.NetCore.Tests
 
         private static void SetupSocketResponse(IAsyncSocket socket, params string[] dataString)
         {
-            
             var awaitable = Substitute.For<ISocketAwaitable<ArraySegment<byte>>>();
             awaitable.GetAwaiter().Returns(awaitable);
             awaitable.IsCompleted.Returns(true);
@@ -170,7 +172,7 @@ namespace Redis.NetCore.Tests
                                               i++;
                                               return data;
                                           });
-            
+
             socket.ReceiveAsync(Arg.Any<ArraySegment<byte>>()).Returns(awaitable);
         }
 

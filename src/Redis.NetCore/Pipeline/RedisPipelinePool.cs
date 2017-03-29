@@ -1,4 +1,9 @@
-﻿using System;
+﻿// <copyright file="RedisPipelinePool.cs" company="PayScale">
+// Copyright (c) PayScale. All rights reserved.
+// Licensed under the APACHE 2.0 license. See LICENSE file in the project root for full license information.
+// </copyright>
+
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Security;
@@ -152,7 +157,7 @@ namespace Redis.NetCore.Pipeline
 
         private Task<IRedisPipeline> CreatePipelineAsync(int index, string host, AsyncSocket asyncSocket)
         {
-            return _configuration.UseSsl ? 
+            return _configuration.UseSsl ?
                 CreateSslPipelineAsync(index, host, asyncSocket) : Task.FromResult(CreateSocketPipeline(index, asyncSocket));
         }
 
@@ -181,7 +186,8 @@ namespace Redis.NetCore.Pipeline
             {
                 currentIndex = _currentIndex;
                 nextIndex = currentIndex == _maxIndex ? 0 : currentIndex + 1;
-            } while (Interlocked.CompareExchange(ref _currentIndex, nextIndex, currentIndex) != currentIndex);
+            }
+            while (Interlocked.CompareExchange(ref _currentIndex, nextIndex, currentIndex) != currentIndex);
 
             return currentIndex;
         }

@@ -1,14 +1,13 @@
-﻿using System;
+﻿// <copyright file="AsyncSocketStream.cs" company="PayScale">
+// Copyright (c) PayScale. All rights reserved.
+// Licensed under the APACHE 2.0 license. See LICENSE file in the project root for full license information.
+// </copyright>
+
+using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Net.Sockets;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using Redis.NetCore.Pipeline;
 
 namespace Redis.NetCore.Sockets
 {
@@ -19,6 +18,24 @@ namespace Redis.NetCore.Sockets
         public AsyncSocketStream(IAsyncSocket socket)
         {
             _socket = socket;
+        }
+
+        public override bool CanRead { get; } = true;
+
+        public override bool CanSeek { get; } = false;
+
+        public override bool CanWrite { get; } = true;
+
+        public override long Length
+        {
+            get { throw new NotSupportedException($"{nameof(Length)} is not supported."); }
+        }
+
+        public override long Position
+        {
+            get { throw new NotSupportedException($"{nameof(Position)} is not supported."); }
+
+            set { throw new NotSupportedException($"{nameof(Position)} is not supported."); }
         }
 
         public override void Flush()
@@ -53,43 +70,18 @@ namespace Redis.NetCore.Sockets
             var list = new List<ArraySegment<byte>> { new ArraySegment<byte>(buffer, offset, count) };
             _socket.Send(list);
         }
-        
+
         public override async Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
         {
             var bufferSegment = new ArraySegment<byte>(buffer, offset, count);
             await _socket.SendAsync(bufferSegment);
         }
 
-        public override bool CanRead { get; } = true;
-
-        public override bool CanSeek { get; } = false;
-
-        public override bool CanWrite { get; } = true;
-
-        public override long Length
-        {
-            get { throw new NotSupportedException($"{nameof(Length)} is not supported."); }
-        }
-
-
-        public override long Position
-        {
-            get
-            {
-                throw new NotSupportedException($"{nameof(Position)} is not supported.");
-            }
-
-            set
-            {
-                throw new NotSupportedException($"{nameof(Position)} is not supported.");
-            }
-        }
-
         protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
-                _socket.Dispose();    
+                _socket.Dispose();
             }
 
             base.Dispose(disposing);

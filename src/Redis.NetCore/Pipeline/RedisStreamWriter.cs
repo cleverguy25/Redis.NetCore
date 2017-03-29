@@ -1,4 +1,9 @@
-﻿using System.IO;
+﻿// <copyright file="RedisStreamWriter.cs" company="PayScale">
+// Copyright (c) PayScale. All rights reserved.
+// Licensed under the APACHE 2.0 license. See LICENSE file in the project root for full license information.
+// </copyright>
+
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -8,7 +13,8 @@ namespace Redis.NetCore.Pipeline
     {
         private readonly Stream _stream;
 
-        public RedisStreamWriter(Stream stream, IBufferManager bufferManager) : base(bufferManager)
+        public RedisStreamWriter(Stream stream, IBufferManager bufferManager)
+            : base(bufferManager)
         {
             _stream = stream;
         }

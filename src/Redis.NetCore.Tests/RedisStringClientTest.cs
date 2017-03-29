@@ -1,6 +1,10 @@
-﻿using System;
+﻿// <copyright file="RedisStringClientTest.cs" company="PayScale">
+// Copyright (c) PayScale. All rights reserved.
+// Licensed under the APACHE 2.0 license. See LICENSE file in the project root for full license information.
+// </copyright>
+
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
@@ -300,7 +304,7 @@ namespace Redis.NetCore.Tests
                 const string key2 = key + "2";
                 const string expected1 = "Foo!";
                 const string expected2 = "Bar!";
-                
+
                 await client.SetStringAsync(key1, expected1);
                 await client.SetStringAsync(key2, expected2);
                 var values = await client.GetStringsAsync(key1, key2, "NoKey");

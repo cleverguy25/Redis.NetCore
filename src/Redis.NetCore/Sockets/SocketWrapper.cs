@@ -1,4 +1,9 @@
-﻿using System;
+﻿// <copyright file="SocketWrapper.cs" company="PayScale">
+// Copyright (c) PayScale. All rights reserved.
+// Licensed under the APACHE 2.0 license. See LICENSE file in the project root for full license information.
+// </copyright>
+
+using System;
 using System.Collections.Generic;
 using System.Net.Sockets;
 
@@ -6,43 +11,41 @@ namespace Redis.NetCore.Sockets
 {
     internal sealed class SocketWrapper : ISocket
     {
-        private readonly Socket _socket;
-
         public SocketWrapper(Socket socket)
         {
-            _socket = socket;
+            UnderlyingSocket = socket;
         }
+
+        public Socket UnderlyingSocket { get; }
 
         public int Send(IList<ArraySegment<byte>> buffers)
         {
-            return _socket.Send(buffers);
+            return UnderlyingSocket.Send(buffers);
         }
 
         public bool SendAsync(SocketAsyncEventArgs args)
         {
-            return _socket.SendAsync(args);
+            return UnderlyingSocket.SendAsync(args);
         }
 
         public int Receive(IList<ArraySegment<byte>> buffers)
         {
-            return _socket.Receive(buffers);
+            return UnderlyingSocket.Receive(buffers);
         }
 
         public bool ReceiveAsync(SocketAsyncEventArgs args)
         {
-            return _socket.ReceiveAsync(args);
+            return UnderlyingSocket.ReceiveAsync(args);
         }
 
         public bool ConnectAsync(SocketAsyncEventArgs args)
         {
-            return _socket.ConnectAsync(args);
-        }
-        
-        public void Dispose()
-        {
-            _socket.Dispose();
+            return UnderlyingSocket.ConnectAsync(args);
         }
 
-        public Socket UnderlyingSocket => _socket;
+        public void Dispose()
+        {
+            UnderlyingSocket.Dispose();
+        }
     }
 }

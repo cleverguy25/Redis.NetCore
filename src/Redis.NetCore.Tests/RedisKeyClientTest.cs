@@ -1,5 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿// <copyright file="RedisKeyClientTest.cs" company="PayScale">
+// Copyright (c) PayScale. All rights reserved.
+// Licensed under the APACHE 2.0 license. See LICENSE file in the project root for full license information.
+// </copyright>
+
+using System;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -69,7 +73,7 @@ namespace Redis.NetCore.Tests
                 await TestClient.SetGetAsync(client, existsKey1, "FooExists!");
                 const string existsKey2 = key + "2";
                 await TestClient.SetGetAsync(client, existsKey2, "FooExists!");
-                
+
                 var count = await client.ExistsAsync(existsKey1, existsKey1, "NoKey");
                 Assert.Equal(2, count);
             }
@@ -175,7 +179,7 @@ namespace Redis.NetCore.Tests
                 await client.DeleteKeyAsync(newKey);
                 await TestClient.SetGetAsync(client, key, expected);
                 await TestClient.SetGetAsync(client, key1, "Bar!");
-                
+
                 var set = await client.RenameKeyNotExistsAsync(key, newKey);
                 Assert.Equal(true, set);
 

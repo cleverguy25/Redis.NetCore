@@ -1,8 +1,11 @@
-﻿using System;
+﻿// <copyright file="AsyncSocket.cs" company="PayScale">
+// Copyright (c) PayScale. All rights reserved.
+// Licensed under the APACHE 2.0 license. See LICENSE file in the project root for full license information.
+// </copyright>
+
+using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Net;
-using System.Net.Security;
 using System.Net.Sockets;
 
 namespace Redis.NetCore.Sockets
@@ -18,7 +21,7 @@ namespace Redis.NetCore.Sockets
 
         private readonly SocketAsyncEventArgs _receiveSocketEventArgs;
         private readonly ReceiveSocketAwaitable _receiveSocketAwaitable;
-        
+
         public AsyncSocket(ISocket socket, EndPoint endPoint)
         {
             _socket = socket;
@@ -38,7 +41,7 @@ namespace Redis.NetCore.Sockets
             _connectSocketAwaitable.IsCompleted = _socket.ConnectAsync(_connectSocketEventArgs) == false;
             return _connectSocketAwaitable;
         }
-        
+
         public ISocketAwaitable<int> SendAsync(IList<ArraySegment<byte>> bufferList)
         {
             _sendSocketAwaitable.Reset();
@@ -72,7 +75,7 @@ namespace Redis.NetCore.Sockets
             _receiveSocketAwaitable.IsCompleted = _socket.ReceiveAsync(_receiveSocketEventArgs) == false;
             return _receiveSocketAwaitable;
         }
-        
+
         public void Dispose()
         {
             _socket?.Dispose();

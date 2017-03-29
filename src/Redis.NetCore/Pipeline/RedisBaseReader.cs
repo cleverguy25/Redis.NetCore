@@ -1,26 +1,33 @@
-﻿using System;
+﻿// <copyright file="RedisBaseReader.cs" company="PayScale">
+// Copyright (c) PayScale. All rights reserved.
+// Licensed under the APACHE 2.0 license. See LICENSE file in the project root for full license information.
+// </copyright>
+
+using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Redis.NetCore.Constants;
-using Redis.NetCore.Sockets;
 
 namespace Redis.NetCore.Pipeline
 {
     public abstract class RedisBaseReader : IRedisReader
     {
-        protected readonly List<ArraySegment<byte>> _bufferList = new List<ArraySegment<byte>>();
-        protected readonly object _lockObject = new object();
-        protected readonly IBufferManager BufferManager;
-        protected int CurrentPosition;
-        protected ArraySegment<byte> CurrentResponse;
+        private readonly object _lockObject = new object();
 
         protected RedisBaseReader(IBufferManager bufferManager)
         {
             BufferManager = bufferManager;
         }
+
+        protected List<ArraySegment<byte>> BufferList { get; } = new List<ArraySegment<byte>>();
+
+        protected IBufferManager BufferManager { get; }
+
+        protected int CurrentPosition { get; set; }
+
+        protected ArraySegment<byte> CurrentResponse { get; set;  }
 
         public async Task ReadAsync(RedisPipelineItem redisItem)
         {
@@ -178,14 +185,16 @@ namespace Redis.NetCore.Pipeline
         {
             lock (_lockObject)
             {
-                foreach (var buffer in _bufferList)
+                foreach (var buffer in BufferList)
                 {
                     BufferManager.CheckIn(buffer);
                 }
 
-                _bufferList.Clear();
+                BufferList.Clear();
             }
         }
+
+        protected abstract Task ReadNextResponseAsync();
 
         private static void ProcessValue(RedisPipelineItem redisItem, byte[] value)
         {
@@ -199,7 +208,7 @@ namespace Redis.NetCore.Pipeline
             result[0] = value;
             redisItem.OnSuccess(result);
         }
-        
+
         private byte ReadFirstChar()
         {
             var firstChar = CurrentResponse.Array[CurrentResponse.Offset + CurrentPosition];
@@ -282,7 +291,7 @@ namespace Redis.NetCore.Pipeline
 
                         CurrentPosition++;
                     }
-                    
+
                     bytes.Add(bulkBytes.ToArray());
                 }
                 else if (firstChar == RedisProtocolContants.Array)
@@ -342,7 +351,7 @@ namespace Redis.NetCore.Pipeline
 
             return bytes.ToArray();
         }
-        
+
         private async Task<int> ReadLengthAsync()
         {
             if (CurrentPosition >= CurrentResponse.Count)
@@ -371,9 +380,9 @@ namespace Redis.NetCore.Pipeline
             {
                 if (currentChar != RedisProtocolContants.CarriageReturn)
                 {
-                    length = length * 10 + currentChar - RedisProtocolContants.Zero;
+                    length = (length * 10) + currentChar - RedisProtocolContants.Zero;
                 }
-                
+
                 CurrentPosition++;
                 if (CurrentPosition >= CurrentResponse.Count)
                 {
@@ -397,7 +406,5 @@ namespace Redis.NetCore.Pipeline
 
             await ReadNextResponseAsync().ConfigureAwait(false);
         }
-
-        protected abstract Task ReadNextResponseAsync();
     }
 }

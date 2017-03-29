@@ -1,7 +1,17 @@
-﻿namespace Redis.NetCore.Constants
+﻿// <copyright file="RedisCommands.cs" company="PayScale">
+// Copyright (c) PayScale. All rights reserved.
+// Licensed under the APACHE 2.0 license. See LICENSE file in the project root for full license information.
+// </copyright>
+
+namespace Redis.NetCore.Constants
 {
     public static class RedisCommands
     {
+        public const string And = "AND";
+        public const string Or = "OR";
+        public const string Xor = "XOR";
+        public const string Not = "NOT";
+
         public static readonly byte[] Set = "SET".ToBytes();
         public static readonly byte[] SetRange = "SETRANGE".ToBytes();
         public static readonly byte[] Expiration = "EX".ToBytes();
@@ -45,10 +55,6 @@
         public static readonly byte[] BitPosition = "BITPOS".ToBytes();
         public static readonly byte[] GetBit = "GETBIT".ToBytes();
         public static readonly byte[] SetBit = "SETBIT".ToBytes();
-        public const string And = "AND";
-        public const string Or = "OR";
-        public const string Xor = "XOR";
-        public const string Not = "NOT";
 
         public static readonly byte[] Increment = "INCR".ToBytes();
         public static readonly byte[] IncrementBy = "INCRBY".ToBytes();

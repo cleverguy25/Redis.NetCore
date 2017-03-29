@@ -1,7 +1,11 @@
-﻿using System;
+﻿// <copyright file="RedisPipeline.cs" company="PayScale">
+// Copyright (c) PayScale. All rights reserved.
+// Licensed under the APACHE 2.0 license. See LICENSE file in the project root for full license information.
+// </copyright>
+
+using System;
 using System.Collections.Concurrent;
 using System.IO;
-using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using Redis.NetCore.Constants;
@@ -11,18 +15,18 @@ namespace Redis.NetCore.Pipeline
 {
     public class RedisPipeline : IRedisPipeline
     {
+        private readonly int _pipelineId;
         private readonly IRedisReader _redisReader;
         private readonly IRedisWriter _redisWriter;
         private readonly ConcurrentQueue<RedisPipelineItem> _responseQueue = new ConcurrentQueue<RedisPipelineItem>();
-        private readonly int _pipelineId;
         private readonly IAsyncSocket _socket;
         private readonly Stream _stream;
         private Exception _pipelineException;
-        private int _sendIsRunning = 0;
-        private int _receiveIsRunning = 0;
-        private Task _sendTask;
+        private int _receiveIsRunning;
         private Task _receiveTask;
-        
+        private int _sendIsRunning;
+        private Task _sendTask;
+
         public RedisPipeline(int pipelineId, IAsyncSocket socket, Stream stream, IRedisWriter redisWriter, IRedisReader redisReader)
         {
             _pipelineId = pipelineId;
@@ -90,6 +94,10 @@ namespace Redis.NetCore.Pipeline
             _socket?.Dispose();
         }
 
+        private static void FireAndForget(Task task)
+        {
+        }
+
         private Task<T> EnsureSendCommandAsync<T>(TaskCompletionSource<T> taskCompletion)
         {
             StartSendIfNotRunning();
@@ -146,7 +154,7 @@ namespace Redis.NetCore.Pipeline
                     await _redisWriter.FlushWriteBufferAsync().ConfigureAwait(false);
                     break;
                 }
-                
+
                 await _redisWriter.FlushWriteBufferAsync().ConfigureAwait(false);
             }
             catch (Exception error)
@@ -158,10 +166,6 @@ namespace Redis.NetCore.Pipeline
             {
                 _redisWriter.CheckInBuffers();
             }
-        }
-
-        private static void FireAndForget(Task task)
-        {
         }
 
         private Task StartReceiveIfNotRunning()

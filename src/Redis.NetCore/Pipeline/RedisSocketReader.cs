@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Text;
+﻿// <copyright file="RedisSocketReader.cs" company="PayScale">
+// Copyright (c) PayScale. All rights reserved.
+// Licensed under the APACHE 2.0 license. See LICENSE file in the project root for full license information.
+// </copyright>
+
 using System.Threading.Tasks;
-using Redis.NetCore.Constants;
 using Redis.NetCore.Sockets;
 
 namespace Redis.NetCore.Pipeline
@@ -13,20 +12,21 @@ namespace Redis.NetCore.Pipeline
     {
         private readonly IAsyncSocket _asyncSocket;
 
-        public RedisSocketReader(IAsyncSocket asyncSocket, IBufferManager bufferManager) : base(bufferManager)
+        public RedisSocketReader(IAsyncSocket asyncSocket, IBufferManager bufferManager)
+            : base(bufferManager)
         {
             _asyncSocket = asyncSocket;
         }
 
         protected override async Task ReadNextResponseAsync()
         {
-            if (_bufferList.Count > 10)
+            if (BufferList.Count > 10)
             {
                 CheckInBuffers();
             }
 
             var buffer = await BufferManager.CheckOutAsync().ConfigureAwait(false);
-            _bufferList.Add(buffer);
+            BufferList.Add(buffer);
             CurrentResponse = await _asyncSocket.ReceiveAsync(buffer);
             CurrentPosition = 0;
         }

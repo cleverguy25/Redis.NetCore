@@ -1,4 +1,9 @@
-﻿using System;
+﻿// <copyright file="EndpointResolution.cs" company="PayScale">
+// Copyright (c) PayScale. All rights reserved.
+// Licensed under the APACHE 2.0 license. See LICENSE file in the project root for full license information.
+// </copyright>
+
+using System;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -16,7 +21,6 @@ namespace Redis.NetCore
             {
                 throw new ArgumentException($"Could not parse value [{endpointConfiguration}]", nameof(endpointConfiguration));
             }
-
 
             var host = parts[0];
             var address = await GetIpAddressAsync(host).ConfigureAwait(false);

@@ -1,4 +1,9 @@
-﻿using System;
+﻿// <copyright file="SocketAwaitable.cs" company="PayScale">
+// Copyright (c) PayScale. All rights reserved.
+// Licensed under the APACHE 2.0 license. See LICENSE file in the project root for full license information.
+// </copyright>
+
+using System;
 using System.Net.Sockets;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -8,7 +13,6 @@ namespace Redis.NetCore.Sockets
 {
     public class SocketAwaitable : INotifyCompletion
     {
-        protected readonly SocketAsyncEventArgs EventArgs;
         private static readonly Action SocketCompleted = () => { };
         private Action _onCompleted;
 
@@ -24,6 +28,8 @@ namespace Redis.NetCore.Sockets
         }
 
         public bool IsCompleted { get; set; }
+
+        protected SocketAsyncEventArgs EventArgs { get; }
 
         public void OnCompleted(Action continuation)
         {

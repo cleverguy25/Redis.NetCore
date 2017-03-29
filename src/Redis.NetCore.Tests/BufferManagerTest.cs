@@ -1,4 +1,9 @@
-﻿using System;
+﻿// <copyright file="BufferManagerTest.cs" company="PayScale">
+// Copyright (c) PayScale. All rights reserved.
+// Licensed under the APACHE 2.0 license. See LICENSE file in the project root for full license information.
+// </copyright>
+
+using System;
 using System.Threading.Tasks;
 using Redis.NetCore.Pipeline;
 using Xunit;
@@ -9,25 +14,6 @@ namespace Redis.NetCore.Tests
     public class BufferManagerTest
     {
         private const int SegmentSize = 8192;
-
-        private static BufferManager CreateTestBufferManager()
-        {
-            return new BufferManager(2, SegmentSize, 1, 2);
-        }
-
-        private static async Task RepeatCheckout(int count, IBufferManager bufferManager)
-        {
-            for (var i = 0; i < count; i++)
-            {
-                await bufferManager.CheckOutAsync();
-            }
-        }
-
-        private static async Task CheckInAfterWait(ArraySegment<byte> buffer, IBufferManager bufferManager)
-        {
-            await Task.Delay(3000);
-            bufferManager.CheckIn(buffer);
-        }
 
         [Fact]
         public async Task CheckOutAsync()
@@ -87,6 +73,25 @@ namespace Redis.NetCore.Tests
             var bufferManager = new BufferManager(segments, SegmentSize, initialCount, 100);
             Assert.Equal(expectedBufferCount * SegmentSize, bufferManager.TotalBufferSize);
             Assert.Equal(expectedBufferCount, bufferManager.AvailableBuffers);
+        }
+
+        private static BufferManager CreateTestBufferManager()
+        {
+            return new BufferManager(2, SegmentSize, 1, 2);
+        }
+
+        private static async Task RepeatCheckout(int count, IBufferManager bufferManager)
+        {
+            for (var i = 0; i < count; i++)
+            {
+                await bufferManager.CheckOutAsync();
+            }
+        }
+
+        private static async Task CheckInAfterWait(ArraySegment<byte> buffer, IBufferManager bufferManager)
+        {
+            await Task.Delay(3000);
+            bufferManager.CheckIn(buffer);
         }
     }
 }

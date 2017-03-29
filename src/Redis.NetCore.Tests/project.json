@@ -7,12 +7,13 @@
       "version": "1.1.0"
     },
     "NETStandard.Library": "1.6.1",
-    "Redis.NetCore": "1.0.0-*",
+    "Redis.NetCore": "0.7.0-*",
     "Microsoft.NET.Test.Sdk": "15.0.0-preview-20170125-04",
     "xunit": "2.2.0-beta5-build3474",
     "xunit.runner.visualstudio": "2.2.0-beta5-build1225",
     "dotnet-test-xunit": "2.2.0-preview2-build1029",
-    "NSubstitute": "2.0.2"
+    "NSubstitute": "2.0.2",
+    "StyleCop.Analyzers": "1.0.0"
   },
 
   "frameworks": {
@@ -23,6 +24,7 @@
   "buildOptions": {
     "debugType": "portable",
     "preserveCompilationContext": true,
+    "additionalArguments": [ "/ruleset:../../payscale.stylecop.ruleset" ],
     "warningsAsErrors": true,
     "nowarn": [ "1701" ]
   }
