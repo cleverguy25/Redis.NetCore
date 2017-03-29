@@ -1,4 +1,6 @@
-﻿using System.Net.Sockets;
+﻿using System;
+using System.Collections.Generic;
+using System.Net.Sockets;
 
 namespace Redis.NetCore.Sockets
 {
@@ -11,9 +13,19 @@ namespace Redis.NetCore.Sockets
             _socket = socket;
         }
 
+        public int Send(IList<ArraySegment<byte>> buffers)
+        {
+            return _socket.Send(buffers);
+        }
+
         public bool SendAsync(SocketAsyncEventArgs args)
         {
             return _socket.SendAsync(args);
+        }
+
+        public int Receive(IList<ArraySegment<byte>> buffers)
+        {
+            return _socket.Receive(buffers);
         }
 
         public bool ReceiveAsync(SocketAsyncEventArgs args)
@@ -31,9 +43,6 @@ namespace Redis.NetCore.Sockets
             _socket.Dispose();
         }
 
-        public Socket UnderlyingSocket
-        {
-            get { return _socket; }
-        }
+        public Socket UnderlyingSocket => _socket;
     }
 }

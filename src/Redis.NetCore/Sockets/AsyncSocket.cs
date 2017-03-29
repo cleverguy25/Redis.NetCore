@@ -55,6 +55,16 @@ namespace Redis.NetCore.Sockets
             return _sendSocketAwaitable;
         }
 
+        public int Send(IList<ArraySegment<byte>> buffers)
+        {
+            return _socket.Send(buffers);
+        }
+
+        public int Receive(IList<ArraySegment<byte>> buffers)
+        {
+            return _socket.Receive(buffers);
+        }
+
         public ISocketAwaitable<ArraySegment<byte>> ReceiveAsync(ArraySegment<byte> buffer)
         {
             _receiveSocketAwaitable.Reset();

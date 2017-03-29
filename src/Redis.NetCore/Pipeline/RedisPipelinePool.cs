@@ -167,10 +167,11 @@ namespace Redis.NetCore.Pipeline
         {
             var stream = new AsyncSocketStream(asyncSocket);
             var sslStream = new SslStream(stream);
+            var passThrough = new PassThroughStream(sslStream); // required for .net 4.62
             await sslStream.AuthenticateAsClientAsync(host).ConfigureAwait(false);
-            var redisReader = new RedisStreamReader(sslStream, _bufferManager);
-            var redisWriter = new RedisStreamWriter(sslStream, _bufferManager);
-            return new RedisPipeline(index, asyncSocket, sslStream, redisWriter, redisReader);
+            var redisReader = new RedisStreamReader(passThrough, _bufferManager);
+            var redisWriter = new RedisStreamWriter(passThrough, _bufferManager);
+            return new RedisPipeline(index, asyncSocket, passThrough, redisWriter, redisReader);
         }
 
         private int GetPipelineIndex()

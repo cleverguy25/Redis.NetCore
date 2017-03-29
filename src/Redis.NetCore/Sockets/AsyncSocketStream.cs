@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Sockets;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -25,7 +27,8 @@ namespace Redis.NetCore.Sockets
 
         public override int Read(byte[] buffer, int offset, int count)
         {
-            throw new NotSupportedException($"{nameof(Read)} is not supported.");
+            var list = new List<ArraySegment<byte>> { new ArraySegment<byte>(buffer, offset, count) };
+            return _socket.Receive(list);
         }
 
         public override async Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
@@ -47,9 +50,10 @@ namespace Redis.NetCore.Sockets
 
         public override void Write(byte[] buffer, int offset, int count)
         {
-            throw new NotSupportedException($"{nameof(Seek)} is not supported.");
+            var list = new List<ArraySegment<byte>> { new ArraySegment<byte>(buffer, offset, count) };
+            _socket.Send(list);
         }
-
+        
         public override async Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
         {
             var bufferSegment = new ArraySegment<byte>(buffer, offset, count);
@@ -59,6 +63,7 @@ namespace Redis.NetCore.Sockets
         public override bool CanRead { get; } = true;
 
         public override bool CanSeek { get; } = false;
+
         public override bool CanWrite { get; } = true;
 
         public override long Length

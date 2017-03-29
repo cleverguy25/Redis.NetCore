@@ -11,6 +11,10 @@ namespace Redis.NetCore.Sockets
 
         ISocketAwaitable<int> SendAsync(ArraySegment<byte> buffer);
 
+        int Send(IList<ArraySegment<byte>> buffers);
+
+        int Receive(IList<ArraySegment<byte>> buffers);
+
         ISocketAwaitable<ArraySegment<byte>> ReceiveAsync(ArraySegment<byte> buffer);
     }
 }
