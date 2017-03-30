@@ -1,5 +1,5 @@
 {
-  "version": "0.7.1-beta",
+  "version": "0.7.2-beta",
   "copyright": "Copyright (c) PayScale",
   "title": "Redis Client for .Net Core",
   "description": "Async only library for accessing Redis from DotNet Core",
@@ -21,6 +21,9 @@
   },
   "frameworks": {
     "netstandard1.6": {
+      "imports": "dnxcore50"
+    },
+    "net462": {
       "imports": "dnxcore50"
     }
   },
