@@ -7,7 +7,7 @@
   "packOptions": {
     "summary": "Redis Client for .Net Core",
     "projectUrl": "https://github.com/cleverguy25/Redis.NetCore",
-    "licenseUrl": "https://raw.githubusercontent.com/cleverguy25/Redis.NetCore/LICENSE",
+    "licenseUrl": "https://raw.githubusercontent.com/cleverguy25/Redis.NetCore/master/LICENSE",
     "tags": [ "Redis dotnet core async" ],
     "requireLicenseAcceptance": true
   },
