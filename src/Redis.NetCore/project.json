@@ -1,5 +1,5 @@
 {
-  "version": "0.7.0-beta",
+  "version": "0.7.1-beta",
   "copyright": "Copyright (c) PayScale",
   "title": "Redis Client for .Net Core",
   "description": "Async only library for accessing Redis from DotNet Core",
