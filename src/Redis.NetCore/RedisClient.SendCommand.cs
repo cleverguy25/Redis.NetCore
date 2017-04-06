@@ -14,17 +14,9 @@ namespace Redis.NetCore
 {
     public partial class RedisClient
     {
-        private static byte[][] ComposeRequest(byte[] commandName, IReadOnlyList<string> values)
+        private static byte[][] ComposeRequest(byte[] commandName, IEnumerable<string> values)
         {
-            var request = new byte[values.Count + 1][];
-            request[0] = commandName;
-
-            for (var i = 0; i < values.Count; i++)
-            {
-                request[i + 1] = values[i].ToBytes();
-            }
-
-            return request;
+            return ComposeRequest(commandName, values.Select(value => value.ToBytes()).ToList());
         }
 
         private static byte[][] ComposeRequest(byte[] commandName, IReadOnlyList<byte[]> values)
@@ -35,6 +27,25 @@ namespace Redis.NetCore
             for (var i = 0; i < values.Count; i++)
             {
                 request[i + 1] = values[i];
+            }
+
+            return request;
+        }
+
+        private static byte[][] ComposeRequest(byte[] commandName, byte[] extra, IEnumerable<string> values)
+        {
+            return ComposeRequest(commandName, extra, values.Select(value => value.ToBytes()).ToList());
+        }
+
+        private static byte[][] ComposeRequest(byte[] commandName, byte[] extra, IReadOnlyList<byte[]> values)
+        {
+            var request = new byte[values.Count + 2][];
+            request[0] = commandName;
+            request[1] = extra;
+
+            for (var i = 0; i < values.Count; i++)
+            {
+                request[i + 2] = values[i];
             }
 
             return request;

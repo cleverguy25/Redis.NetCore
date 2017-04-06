@@ -4,6 +4,7 @@
 // </copyright>
 
 using System;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -25,6 +26,7 @@ namespace Redis.NetCore.Tests
                 await TestClient.SetGetAsync(client, key1, "Value1");
                 await TestClient.SetGetAsync(client, key2, "Value2");
                 var actualKeys = await client.GetKeysAsync(key + "*");
+                Array.Sort(actualKeys);
                 Assert.Equal(2, actualKeys.Length);
                 Assert.Equal(key1, actualKeys[0]);
                 Assert.Equal(key2, actualKeys[1]);

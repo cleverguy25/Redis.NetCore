@@ -27,6 +27,14 @@ namespace Redis.NetCore.Constants
         public static readonly byte[] Append = "APPEND".ToBytes();
         public static readonly byte[] StringLength = "STRLEN".ToBytes();
 
+        public static readonly byte[] HashSet = "HSET".ToBytes();
+        public static readonly byte[] HashGet = "HGET".ToBytes();
+        public static readonly byte[] HashMultipleSet = "HMSET".ToBytes();
+        public static readonly byte[] HashSetNotExists = "HSETNX".ToBytes();
+        public static readonly byte[] HashMultipleGet = "HMGET".ToBytes();
+        public static readonly byte[] HashDelete = "HDEL".ToBytes();
+        public static readonly byte[] HashExists = "HEXISTS".ToBytes();
+
         public static readonly byte[] Exists = "EXISTS".ToBytes();
         public static readonly byte[] TimeToLive = "TTL".ToBytes();
         public static readonly byte[] PrecisionTimeToLive = "PTTL".ToBytes();
