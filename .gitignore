@@ -11,3 +11,4 @@ src/Redis.NetCore/project.lock.json
 /SOS.NETCore.pdb/4F3CDEC4FFCE41C1A109003DCFBBB2251/SOS.NETCore.pdb
 src/Redis.NetCore.Tests/obj/
 src/Redis.NetCore.Tests/bin/
+src/Redis.NetCore.Tests/project.lock.json
