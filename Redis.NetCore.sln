@@ -1,21 +1,20 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26403.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{C1666BDB-4BB4-4397-8FC9-43177B8C3D2D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A9BB4AC5-DE17-4E31-A965-0B367AD25E31}"
 	ProjectSection(SolutionItems) = preProject
-		global.json = global.json
 		LICENSE = LICENSE
 		payscale.stylecop.ruleset = payscale.stylecop.ruleset
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Redis.NetCore", "src\Redis.NetCore\Redis.NetCore.xproj", "{5F3E66F5-5A7B-49D2-BF62-4BB03E6D941A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Redis.NetCore", "src\Redis.NetCore\Redis.NetCore.csproj", "{5F3E66F5-5A7B-49D2-BF62-4BB03E6D941A}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Redis.NetCore.Tests", "src\Redis.NetCore.Tests\Redis.NetCore.Tests.xproj", "{B8DC7042-2E0A-4626-870F-A78415BBB8F8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Redis.NetCore.Tests", "src\Redis.NetCore.Tests\Redis.NetCore.Tests.csproj", "{5925DA12-B6FF-410F-AFFC-0208B2ADF33E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,16 +26,16 @@ Global
 		{5F3E66F5-5A7B-49D2-BF62-4BB03E6D941A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5F3E66F5-5A7B-49D2-BF62-4BB03E6D941A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5F3E66F5-5A7B-49D2-BF62-4BB03E6D941A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B8DC7042-2E0A-4626-870F-A78415BBB8F8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B8DC7042-2E0A-4626-870F-A78415BBB8F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B8DC7042-2E0A-4626-870F-A78415BBB8F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B8DC7042-2E0A-4626-870F-A78415BBB8F8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5925DA12-B6FF-410F-AFFC-0208B2ADF33E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5925DA12-B6FF-410F-AFFC-0208B2ADF33E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5925DA12-B6FF-410F-AFFC-0208B2ADF33E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5925DA12-B6FF-410F-AFFC-0208B2ADF33E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{5F3E66F5-5A7B-49D2-BF62-4BB03E6D941A} = {C1666BDB-4BB4-4397-8FC9-43177B8C3D2D}
-		{B8DC7042-2E0A-4626-870F-A78415BBB8F8} = {C1666BDB-4BB4-4397-8FC9-43177B8C3D2D}
+		{5925DA12-B6FF-410F-AFFC-0208B2ADF33E} = {C1666BDB-4BB4-4397-8FC9-43177B8C3D2D}
 	EndGlobalSection
 EndGlobal
