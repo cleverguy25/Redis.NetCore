@@ -75,6 +75,7 @@ namespace Redis.NetCore.Tests
             {
                 const string field = nameof(HasheGetLengthAsync);
                 const string hashKey = "Hash" + field;
+                await client.DeleteKeyAsync(hashKey);
                 const string expected1 = "Foo!";
                 const string expected2 = "Bar!";
                 await client.HashSetFieldAsync(hashKey, field + "1", Encoding.UTF8.GetBytes(expected1));
@@ -191,6 +192,34 @@ namespace Redis.NetCore.Tests
                 var keys = await client.HashGetKeysAsync(hashKey);
                 Assert.Equal(field + "1", keys[0]);
                 Assert.Equal(field + "2", keys[1]);
+            }
+        }
+
+        [Fact]
+        public async Task HashIncrementByAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string field = nameof(HashIncrementByAsync);
+                const string hashKey = "Hash" + field;
+                const string expected = "10";
+                await client.HashSetFieldAsync(hashKey, field, Encoding.UTF8.GetBytes(expected));
+                var value = await client.HashIncrementAsync(hashKey, field, 5);
+                Assert.Equal(15, value);
+            }
+        }
+
+        [Fact]
+        public async Task HashIncrementByFloatAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string field = nameof(HashIncrementByAsync);
+                const string hashKey = "Hash" + field;
+                const string expected = "10.5";
+                await client.HashSetFieldAsync(hashKey, field, Encoding.UTF8.GetBytes(expected));
+                var value = await client.HashIncrementAsync(hashKey, field, .75f);
+                Assert.Equal(11.25, value);
             }
         }
     }

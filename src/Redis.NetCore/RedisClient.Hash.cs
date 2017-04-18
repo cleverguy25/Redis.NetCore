@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Distributed;
 using Redis.NetCore.Constants;
@@ -137,6 +138,32 @@ namespace Redis.NetCore
 
             var bytes = await SendCommandAsync(RedisCommands.HashExists, hashKey.ToBytes(), field.ToBytes()).ConfigureAwait(false);
             return ConvertBytesToBool(bytes);
+        }
+
+        public async Task<int> HashIncrementAsync(string hashKey, string field, int amount)
+        {
+            CheckKey(hashKey);
+            CheckField(field);
+
+            var amountBytes = amount.ToString(CultureInfo.InvariantCulture).ToBytes();
+            var bytes = await SendCommandAsync(RedisCommands.HashIncrementBy, hashKey.ToBytes(), field.ToBytes(), amountBytes).ConfigureAwait(false);
+            return ConvertBytesToInteger(bytes);
+        }
+
+        public async Task<float> HashIncrementAsync(string hashKey, string field, float amount)
+        {
+            CheckKey(hashKey);
+            CheckField(field);
+
+            var amountBytes = amount.ToString(CultureInfo.InvariantCulture).ToBytes();
+            var bytes = await SendCommandAsync(RedisCommands.HashIncrementByFloat, hashKey.ToBytes(), field.ToBytes(), amountBytes).ConfigureAwait(false);
+            var stringValue = Encoding.UTF8.GetString(bytes);
+            if (float.TryParse(stringValue, out float value))
+            {
+                return value;
+            }
+
+            throw new RedisException($"Could not parse [{stringValue}] for Hash [{hashKey}] and field [{field}]");
         }
 
         private static void CheckHashKey(string hashKey)

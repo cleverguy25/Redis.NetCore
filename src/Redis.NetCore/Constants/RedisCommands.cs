@@ -39,6 +39,8 @@ namespace Redis.NetCore.Constants
         public static readonly byte[] HashExists = "HEXISTS".ToBytes();
         public static readonly byte[] HashLength = "HLEN".ToBytes();
         public static readonly byte[] HashFieldStringLength = "HSTRLEN".ToBytes();
+        public static readonly byte[] HashIncrementBy = "HINCRBY".ToBytes();
+        public static readonly byte[] HashIncrementByFloat = "HINCRBYFLOAT".ToBytes();
 
         public static readonly byte[] Exists = "EXISTS".ToBytes();
         public static readonly byte[] TimeToLive = "TTL".ToBytes();
