@@ -37,6 +37,15 @@ namespace Redis.NetCore
             return ComposeRequest(commandName, extra, values.Select(value => value.ToBytes()).ToList());
         }
 
+        private static byte[][] ComposeRequest(byte[] commandName, byte[] extra)
+        {
+            var request = new byte[2][];
+            request[0] = commandName;
+            request[1] = extra;
+
+            return request;
+        }
+
         private static byte[][] ComposeRequest(byte[] commandName, byte[] extra, IReadOnlyList<byte[]> values)
         {
             var request = new byte[values.Count + 2][];

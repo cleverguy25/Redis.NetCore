@@ -51,5 +51,17 @@ namespace Redis.NetCore
             var bytes = await HashGetFieldsAsync(hashKey, fields);
             return bytes.Select(ConvertBytesToString).ToArray();
         }
+
+        public async Task<string[]> HashGetAllFieldsStringAsync(string hashKey)
+        {
+            var bytes = await HashGetAllFieldsAsync(hashKey);
+            return bytes.Select(ConvertBytesToString).ToArray();
+        }
+
+        public async Task<string[]> HashGetValuesStringAsync(string hashKey)
+        {
+            var bytes = await HashGetValuesAsync(hashKey);
+            return bytes.Select(ConvertBytesToString).ToArray();
+        }
     }
 }

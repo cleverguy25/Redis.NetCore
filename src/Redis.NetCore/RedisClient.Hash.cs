@@ -83,6 +83,31 @@ namespace Redis.NetCore
             return SendCommandAsync(RedisCommands.HashGet, hashKey.ToBytes(), field.ToBytes());
         }
 
+        public Task<byte[][]> HashGetAllFieldsAsync(string hashKey)
+        {
+            CheckHashKey(hashKey);
+
+            var request = ComposeRequest(RedisCommands.HashGetAll, hashKey.ToBytes());
+            return SendMultipleCommandAsync(request);
+        }
+
+        public async Task<string[]> HashGetKeysAsync(string hashKey)
+        {
+            CheckHashKey(hashKey);
+
+            var request = ComposeRequest(RedisCommands.HashKeys, hashKey.ToBytes());
+            var bytes = await SendMultipleCommandAsync(request);
+            return bytes.Select(ConvertBytesToString).ToArray();
+        }
+
+        public Task<byte[][]> HashGetValuesAsync(string hashKey)
+        {
+            CheckHashKey(hashKey);
+
+            var request = ComposeRequest(RedisCommands.HashValues, hashKey.ToBytes());
+            return SendMultipleCommandAsync(request);
+        }
+
         public async Task<int> HashDeleteFieldsAsync(string hashKey, params string[] fields)
         {
             CheckHashKey(hashKey);

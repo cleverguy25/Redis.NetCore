@@ -33,6 +33,42 @@ namespace Redis.NetCore.Tests
         }
 
         [Fact]
+        public async Task HasheGetAllBytesAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string field = nameof(HasheGetAllBytesAsync);
+                const string hashKey = "Hash" + field;
+                const string expected1 = "Foo!";
+                const string expected2 = "Bar!";
+                await client.HashSetFieldAsync(hashKey, field + "1", Encoding.UTF8.GetBytes(expected1));
+                await client.HashSetFieldAsync(hashKey, field + "2", Encoding.UTF8.GetBytes(expected2));
+                var bytes = await client.HashGetAllFieldsAsync(hashKey);
+                Assert.Equal(field + "1", Encoding.UTF8.GetString(bytes[0]));
+                Assert.Equal(expected1, Encoding.UTF8.GetString(bytes[1]));
+                Assert.Equal(field + "2", Encoding.UTF8.GetString(bytes[2]));
+                Assert.Equal(expected2, Encoding.UTF8.GetString(bytes[3]));
+            }
+        }
+
+        [Fact]
+        public async Task HasheGetValuesBytesAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string field = nameof(HasheGetValuesBytesAsync);
+                const string hashKey = "Hash" + field;
+                const string expected1 = "Foo!";
+                const string expected2 = "Bar!";
+                await client.HashSetFieldAsync(hashKey, field + "1", Encoding.UTF8.GetBytes(expected1));
+                await client.HashSetFieldAsync(hashKey, field + "2", Encoding.UTF8.GetBytes(expected2));
+                var bytes = await client.HashGetValuesAsync(hashKey);
+                Assert.Equal(expected1, Encoding.UTF8.GetString(bytes[0]));
+                Assert.Equal(expected2, Encoding.UTF8.GetString(bytes[1]));
+            }
+        }
+
+        [Fact]
         public async Task HashSetBytesAsync()
         {
             using (var client = TestClient.CreateClient())
@@ -120,6 +156,23 @@ namespace Redis.NetCore.Tests
                 const string noExistsField = "NoExistsAsync";
                 exists = await client.HashFieldExistsAsync(hashKey, noExistsField);
                 Assert.Equal(false, exists);
+            }
+        }
+
+        [Fact]
+        public async Task HasheGetKeysAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string field = nameof(HasheGetKeysAsync);
+                const string hashKey = "Hash" + field;
+                const string expected1 = "Foo!";
+                const string expected2 = "Bar!";
+                await client.HashSetFieldAsync(hashKey, field + "1", Encoding.UTF8.GetBytes(expected1));
+                await client.HashSetFieldAsync(hashKey, field + "2", Encoding.UTF8.GetBytes(expected2));
+                var keys = await client.HashGetKeysAsync(hashKey);
+                Assert.Equal(field + "1", keys[0]);
+                Assert.Equal(field + "2", keys[1]);
             }
         }
     }

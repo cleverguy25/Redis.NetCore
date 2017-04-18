@@ -33,6 +33,42 @@ namespace Redis.NetCore.Tests
         }
 
         [Fact]
+        public async Task HashGetAllStringAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string field = nameof(HashGetAllStringAsync);
+                const string hashKey = "Hash" + field;
+                const string expected1 = "Foo!";
+                const string expected2 = "Bar!";
+                await client.HashSetFieldStringAsync(hashKey, field + "1", expected1);
+                await client.HashSetFieldStringAsync(hashKey, field + "2", expected2);
+                var values = await client.HashGetAllFieldsStringAsync(hashKey);
+                Assert.Equal(field + "1", values[0]);
+                Assert.Equal(expected1, values[1]);
+                Assert.Equal(field + "2", values[2]);
+                Assert.Equal(expected2, values[3]);
+            }
+        }
+
+        [Fact]
+        public async Task HashGetValuesStringAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string field = nameof(HashGetAllStringAsync);
+                const string hashKey = "Hash" + field;
+                const string expected1 = "Foo!";
+                const string expected2 = "Bar!";
+                await client.HashSetFieldStringAsync(hashKey, field + "1", expected1);
+                await client.HashSetFieldStringAsync(hashKey, field + "2", expected2);
+                var values = await client.HashGetValuesStringAsync(hashKey);
+                Assert.Equal(expected1, values[0]);
+                Assert.Equal(expected2, values[1]);
+            }
+        }
+
+        [Fact]
         public async Task HashSetStringAsync()
         {
             using (var client = TestClient.CreateClient())
