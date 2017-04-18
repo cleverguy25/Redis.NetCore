@@ -108,6 +108,14 @@ namespace Redis.NetCore
             return SendMultipleCommandAsync(request);
         }
 
+        public async Task<int> HashGetLengthAsync(string hashKey)
+        {
+            CheckHashKey(hashKey);
+
+            var bytes = await SendCommandAsync(RedisCommands.HashLength, hashKey.ToBytes());
+            return ConvertBytesToInteger(bytes);
+        }
+
         public async Task<int> HashDeleteFieldsAsync(string hashKey, params string[] fields)
         {
             CheckHashKey(hashKey);

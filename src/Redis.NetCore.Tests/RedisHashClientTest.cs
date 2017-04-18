@@ -69,6 +69,24 @@ namespace Redis.NetCore.Tests
         }
 
         [Fact]
+        public async Task HasheGetLengthAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string field = nameof(HasheGetLengthAsync);
+                const string hashKey = "Hash" + field;
+                const string expected1 = "Foo!";
+                const string expected2 = "Bar!";
+                await client.HashSetFieldAsync(hashKey, field + "1", Encoding.UTF8.GetBytes(expected1));
+                var length = await client.HashGetLengthAsync(hashKey);
+                Assert.Equal(1, length);
+                await client.HashSetFieldAsync(hashKey, field + "2", Encoding.UTF8.GetBytes(expected2));
+                length = await client.HashGetLengthAsync(hashKey);
+                Assert.Equal(2, length);
+            }
+        }
+
+        [Fact]
         public async Task HashSetBytesAsync()
         {
             using (var client = TestClient.CreateClient())
