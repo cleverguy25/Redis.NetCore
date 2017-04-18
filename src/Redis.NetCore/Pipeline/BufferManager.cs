@@ -54,8 +54,7 @@ namespace Redis.NetCore.Pipeline
         {
             while (true)
             {
-                ArraySegment<byte> bytes;
-                if (_buffers.TryPop(out bytes))
+                if (_buffers.TryPop(out ArraySegment<byte> bytes))
                 {
                     return bytes;
                 }

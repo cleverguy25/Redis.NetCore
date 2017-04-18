@@ -72,8 +72,7 @@ namespace Redis.NetCore.Pipeline
 
         public void SaveQueue(IRedisPipeline redisPipeline)
         {
-            RedisPipelineItem currentItem;
-            while (RequestQueue.TryDequeue(out currentItem))
+            while (RequestQueue.TryDequeue(out RedisPipelineItem currentItem))
             {
                 redisPipeline.RequestQueue.Enqueue(currentItem);
             }
@@ -81,8 +80,7 @@ namespace Redis.NetCore.Pipeline
 
         public void ThrowErrorForRemainingResponseQueueItems()
         {
-            RedisPipelineItem currentItem;
-            while (_responseQueue.TryDequeue(out currentItem))
+            while (_responseQueue.TryDequeue(out RedisPipelineItem currentItem))
             {
                 currentItem.OnError(_pipelineException);
             }
@@ -140,8 +138,7 @@ namespace Redis.NetCore.Pipeline
             {
                 await _redisWriter.CreateNewBufferAsync().ConfigureAwait(false);
 
-                RedisPipelineItem currentItem;
-                while (RequestQueue.TryDequeue(out currentItem))
+                while (RequestQueue.TryDequeue(out RedisPipelineItem currentItem))
                 {
                     await _redisWriter.WriteRedisRequestAsync(currentItem.Data).ConfigureAwait(false);
                     _responseQueue.Enqueue(currentItem);
@@ -207,8 +204,7 @@ namespace Redis.NetCore.Pipeline
 
             try
             {
-                RedisPipelineItem currentItem;
-                while (_responseQueue.TryDequeue(out currentItem))
+                while (_responseQueue.TryDequeue(out RedisPipelineItem currentItem))
                 {
                     await _redisReader.ReadAsync(currentItem).ConfigureAwait(false);
                 }

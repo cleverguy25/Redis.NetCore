@@ -29,8 +29,7 @@ namespace Redis.NetCore
 
             var bytes = await SendCommandAsync(RedisCommands.TimeToLive, key.ToBytes()).ConfigureAwait(false);
             var timeToLiveString = Encoding.UTF8.GetString(bytes);
-            int timeToLive;
-            if (int.TryParse(timeToLiveString, out timeToLive) == false)
+            if (int.TryParse(timeToLiveString, out int timeToLive) == false)
             {
                 throw new FormatException($"Cannot parse time to live [{timeToLiveString}]");
             }
@@ -44,8 +43,7 @@ namespace Redis.NetCore
 
             var bytes = await SendCommandAsync(RedisCommands.PrecisionTimeToLive, key.ToBytes()).ConfigureAwait(false);
             var timeToLiveString = Encoding.UTF8.GetString(bytes);
-            long timeToLive;
-            if (long.TryParse(timeToLiveString, out timeToLive) == false)
+            if (long.TryParse(timeToLiveString, out long timeToLive) == false)
             {
                 throw new FormatException($"Cannot parse time to live [{timeToLiveString}]");
             }

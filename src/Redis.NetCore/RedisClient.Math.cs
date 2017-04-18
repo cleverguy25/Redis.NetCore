@@ -53,8 +53,7 @@ namespace Redis.NetCore
             var amountBytes = amount.ToString(CultureInfo.InvariantCulture).ToBytes();
             var bytes = await SendCommandAsync(RedisCommands.IncrementByFloat, key.ToBytes(), amountBytes).ConfigureAwait(false);
             var stringValue = Encoding.UTF8.GetString(bytes);
-            float value;
-            if (float.TryParse(stringValue, out value))
+            if (float.TryParse(stringValue, out float value))
             {
                 return value;
             }
