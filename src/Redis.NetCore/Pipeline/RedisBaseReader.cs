@@ -316,42 +316,6 @@ namespace Redis.NetCore.Pipeline
             return bytes.ToArray();
         }
 
-        private async Task<byte[]> ReadBulkStringAsync()
-        {
-            var length = await ReadLengthAsync().ConfigureAwait(false);
-            if (length == -1)
-            {
-                return null;
-            }
-
-            var bytes = new List<byte>();
-            var response = (IList<byte>)CurrentResponse;
-            for (var i = 0; i < length; i++)
-            {
-                if (CurrentPosition >= CurrentResponse.Count)
-                {
-                    await ReadNextResponseAsync().ConfigureAwait(false);
-                    response = CurrentResponse;
-                }
-
-                var currentChar = response[CurrentPosition];
-                bytes.Add(currentChar);
-                CurrentPosition++;
-            }
-
-            for (var i = 0; i < 2; i++)
-            {
-                if (CurrentPosition >= CurrentResponse.Count)
-                {
-                    await ReadNextResponseAsync().ConfigureAwait(false);
-                }
-
-                CurrentPosition++;
-            }
-
-            return bytes.ToArray();
-        }
-
         private async Task<int> ReadLengthAsync()
         {
             if (CurrentPosition >= CurrentResponse.Count)
