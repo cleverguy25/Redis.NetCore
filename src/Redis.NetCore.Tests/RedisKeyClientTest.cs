@@ -4,10 +4,11 @@
 // </copyright>
 
 using System;
-using System.Collections.Immutable;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Redis.NetCore.Abstractions;
 using Xunit;
 
 namespace Redis.NetCore.Tests
@@ -15,24 +16,6 @@ namespace Redis.NetCore.Tests
     [Trait("Category", "Integration")]
     public class RedisKeyClientTest
     {
-        [Fact]
-        public async Task GetKeysAsync()
-        {
-            using (var client = TestClient.CreateClient())
-            {
-                const string key = nameof(GetKeysAsync);
-                const string key1 = key + "1";
-                const string key2 = key + "2";
-                await TestClient.SetGetAsync(client, key1, "Value1");
-                await TestClient.SetGetAsync(client, key2, "Value2");
-                var actualKeys = await client.GetKeysAsync(key + "*");
-                Array.Sort(actualKeys);
-                Assert.Equal(2, actualKeys.Length);
-                Assert.Equal(key1, actualKeys[0]);
-                Assert.Equal(key2, actualKeys[1]);
-            }
-        }
-
         [Fact]
         public async Task DeleteAsync()
         {
@@ -66,6 +49,50 @@ namespace Redis.NetCore.Tests
         }
 
         [Fact]
+        public async Task GetKeysAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string key = nameof(GetKeysAsync);
+                const string key1 = key + "1";
+                const string key2 = key + "2";
+                await TestClient.SetGetAsync(client, key1, "Value1");
+                await TestClient.SetGetAsync(client, key2, "Value2");
+                var actualKeys = await client.GetKeysAsync(key + "*");
+                Array.Sort(actualKeys);
+                Assert.Equal(2, actualKeys.Length);
+                Assert.Equal(key1, actualKeys[0]);
+                Assert.Equal(key2, actualKeys[1]);
+            }
+        }
+
+        [Fact]
+        public async Task GetRandomKeyAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string expected = "Foo!";
+                const string key = nameof(GetRandomKeyAsync);
+                await TestClient.SetGetAsync(client, key, expected);
+                var randomKey = await client.GetRandomKeyAsync();
+                Assert.NotNull(randomKey);
+            }
+        }
+
+        [Fact]
+        public async Task GetTypeAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string expected = "Foo!";
+                const string key = nameof(GetTypeAsync);
+                await TestClient.SetGetAsync(client, key, expected);
+                var type = await client.GetTypeAsync(key);
+                Assert.Equal("string", type);
+            }
+        }
+
+        [Fact]
         public async Task MultipleExistAsync()
         {
             using (var client = TestClient.CreateClient())
@@ -78,57 +105,6 @@ namespace Redis.NetCore.Tests
 
                 var count = await client.ExistsAsync(existsKey1, existsKey1, "NoKey");
                 Assert.Equal(2, count);
-            }
-        }
-
-        [Fact]
-        public async Task SetExpiredTimeSpanAsync()
-        {
-            using (var client = TestClient.CreateClient())
-            {
-                const string expected = "Foo!";
-                const string key = nameof(SetExpiredTimeSpanAsync);
-                await client.DeleteKeyAsync(key);
-                await TestClient.SetGetAsync(client, key, expected);
-                var set = await client.SetExpirationAsync(key, TimeSpan.FromMinutes(5));
-                Assert.Equal(true, set);
-
-                var timeToLive = await client.GetPreciseTimeToLiveAsync(key);
-                Assert.NotNull(timeToLive);
-            }
-        }
-
-        [Fact]
-        public async Task SetExpiredSecondsAsync()
-        {
-            using (var client = TestClient.CreateClient())
-            {
-                const string expected = "Foo!";
-                const string key = nameof(SetExpiredTimeSpanAsync);
-                await client.DeleteKeyAsync(key);
-                await TestClient.SetGetAsync(client, key, expected);
-                var set = await client.SetExpirationAsync(key, 1000);
-                Assert.Equal(true, set);
-
-                var timeToLive = await client.GetTimeToLiveAsync(key);
-                Assert.NotNull(timeToLive);
-            }
-        }
-
-        [Fact]
-        public async Task SetExpiredDateTimeAsync()
-        {
-            using (var client = TestClient.CreateClient())
-            {
-                const string expected = "Foo!";
-                const string key = nameof(SetExpiredDateTimeAsync);
-                await client.DeleteKeyAsync(key);
-                await TestClient.SetGetAsync(client, key, expected);
-                var set = await client.SetExpirationAsync(key, new DateTime(2020, 1, 1));
-                Assert.Equal(true, set);
-
-                var timeToLive = await client.GetPreciseTimeToLiveAsync(key);
-                Assert.NotNull(timeToLive);
             }
         }
 
@@ -194,19 +170,6 @@ namespace Redis.NetCore.Tests
         }
 
         [Fact]
-        public async Task GetRandomKeyAsync()
-        {
-            using (var client = TestClient.CreateClient())
-            {
-                const string expected = "Foo!";
-                const string key = nameof(GetRandomKeyAsync);
-                await TestClient.SetGetAsync(client, key, expected);
-                var randomKey = await client.GetRandomKeyAsync();
-                Assert.NotNull(randomKey);
-            }
-        }
-
-        [Fact]
         public async Task ScanAsync()
         {
             using (var client = TestClient.CreateClient())
@@ -225,6 +188,119 @@ namespace Redis.NetCore.Tests
         }
 
         [Fact]
+        public async Task ScanWithCountAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string expected = "Foo!";
+                const string key = nameof(ScanWithCountAsync);
+                await AddKeys(10, client, key, expected);
+
+                var cursor = await client.ScanAsync(5);
+                var keys = cursor.GetKeys().ToArray();
+                Assert.Equal(5, keys.Length);
+
+                cursor = await client.ScanAsync(cursor, 5);
+                keys = cursor.GetKeys().ToArray();
+                Assert.Equal(5, keys.Length);
+            }
+        }
+
+        [Fact]
+        public async Task ScanWithMatchAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string expected = "Foo!";
+                const string key = nameof(ScanWithMatchAsync);
+                await AddKeys(100, client, key, expected);
+
+                const string match = key + "*";
+                var cursor = await client.ScanAsync(match);
+                var keys = cursor.GetKeys().ToArray();
+                CheckKeys(keys, key);
+
+                cursor = await client.ScanAsync(cursor, match);
+                keys = cursor.GetKeys().ToArray();
+                CheckKeys(keys, key);
+            }
+        }
+
+        [Fact]
+        public async Task ScanWithMatchAndCountAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string expected = "Foo!";
+                const string key = nameof(ScanWithMatchAndCountAsync);
+                await AddKeys(100, client, key, expected);
+
+                const string match = key + "*";
+                var cursor = await client.ScanAsync(match, 5);
+                var keys = cursor.GetKeys().ToArray();
+                CheckKeys(keys, key);
+
+                for (var i = 0; i < 15; i++)
+                {
+                    cursor = await client.ScanAsync(cursor, match, 5);
+                    keys = cursor.GetKeys().ToArray();
+                    CheckKeys(keys, key);
+                }
+            }
+        }
+
+        [Fact]
+        public async Task SetExpiredDateTimeAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string expected = "Foo!";
+                const string key = nameof(SetExpiredDateTimeAsync);
+                await client.DeleteKeyAsync(key);
+                await TestClient.SetGetAsync(client, key, expected);
+                var set = await client.SetExpirationAsync(key, new DateTime(2020, 1, 1));
+                Assert.Equal(true, set);
+
+                var timeToLive = await client.GetPreciseTimeToLiveAsync(key);
+                Assert.NotNull(timeToLive);
+            }
+        }
+
+        [Fact]
+        public async Task SetExpiredSecondsAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string expected = "Foo!";
+                const string key = nameof(SetExpiredTimeSpanAsync);
+                await client.DeleteKeyAsync(key);
+                await TestClient.SetGetAsync(client, key, expected);
+                var set = await client.SetExpirationAsync(key, 1000);
+                Assert.Equal(true, set);
+
+                var timeToLive = await client.GetTimeToLiveAsync(key);
+                Assert.NotNull(timeToLive);
+            }
+        }
+
+        [Fact]
+        public async Task SetExpiredTimeSpanAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string expected = "Foo!";
+                const string key = nameof(SetExpiredTimeSpanAsync);
+                await client.DeleteKeyAsync(key);
+                await TestClient.SetGetAsync(client, key, expected);
+                var set = await client.SetExpirationAsync(key, TimeSpan.FromMinutes(5));
+                Assert.Equal(true, set);
+
+                var timeToLive = await client.GetPreciseTimeToLiveAsync(key);
+                Assert.NotNull(timeToLive);
+            }
+        }
+
+        [Fact]
         public async Task TouchAsync()
         {
             using (var client = TestClient.CreateClient())
@@ -236,16 +312,19 @@ namespace Redis.NetCore.Tests
             }
         }
 
-        [Fact]
-        public async Task GetTypeAsync()
+        private static void CheckKeys(IEnumerable<string> keys, string key)
         {
-            using (var client = TestClient.CreateClient())
+            foreach (var scanKey in keys)
             {
-                const string expected = "Foo!";
-                const string key = nameof(GetTypeAsync);
-                await TestClient.SetGetAsync(client, key, expected);
-                var type = await client.GetTypeAsync(key);
-                Assert.Equal("string", type);
+                Assert.Contains(key, scanKey);
+            }
+        }
+
+        private static async Task AddKeys(int count, IRedisClient client, string key, string expected)
+        {
+            for (var i = 0; i < count; i++)
+            {
+                await TestClient.SetGetAsync(client, key + i, expected);
             }
         }
     }

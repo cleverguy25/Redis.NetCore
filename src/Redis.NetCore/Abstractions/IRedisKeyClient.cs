@@ -42,6 +42,18 @@ namespace Redis.NetCore.Abstractions
 
         Task<ScanCursor> ScanAsync(ScanCursor cursor);
 
+        Task<ScanCursor> ScanAsync(int count);
+
+        Task<ScanCursor> ScanAsync(ScanCursor cursor, int count);
+
+        Task<ScanCursor> ScanAsync(string match);
+
+        Task<ScanCursor> ScanAsync(ScanCursor cursor, string match);
+
+        Task<ScanCursor> ScanAsync(string match, int count);
+
+        Task<ScanCursor> ScanAsync(ScanCursor cursor, string match, int count);
+
         Task TouchAsync(string key);
 
         Task<string> GetTypeAsync(string key);
