@@ -97,7 +97,7 @@ namespace Redis.NetCore
             CheckHashKey(hashKey);
 
             var request = ComposeRequest(RedisCommands.HashKeys, hashKey.ToBytes());
-            var bytes = await SendMultipleCommandAsync(request);
+            var bytes = await SendMultipleCommandAsync(request).ConfigureAwait(false);
             return bytes.Select(ConvertBytesToString).ToArray();
         }
 
@@ -113,7 +113,7 @@ namespace Redis.NetCore
         {
             CheckHashKey(hashKey);
 
-            var bytes = await SendCommandAsync(RedisCommands.HashLength, hashKey.ToBytes());
+            var bytes = await SendCommandAsync(RedisCommands.HashLength, hashKey.ToBytes()).ConfigureAwait(false);
             return ConvertBytesToInteger(bytes);
         }
 

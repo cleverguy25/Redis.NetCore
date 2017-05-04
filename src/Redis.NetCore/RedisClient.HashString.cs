@@ -42,25 +42,25 @@ namespace Redis.NetCore
 
         public async Task<string> HashGetFieldStringAsync(string hashKey, string field)
         {
-            var bytes = await HashGetFieldAsync(hashKey, field);
+            var bytes = await HashGetFieldAsync(hashKey, field).ConfigureAwait(false);
             return ConvertBytesToString(bytes);
         }
 
         public async Task<string[]> HashGetFieldsStringAsync(string hashKey, params string[] fields)
         {
-            var bytes = await HashGetFieldsAsync(hashKey, fields);
+            var bytes = await HashGetFieldsAsync(hashKey, fields).ConfigureAwait(false);
             return bytes.Select(ConvertBytesToString).ToArray();
         }
 
         public async Task<string[]> HashGetAllFieldsStringAsync(string hashKey)
         {
-            var bytes = await HashGetAllFieldsAsync(hashKey);
+            var bytes = await HashGetAllFieldsAsync(hashKey).ConfigureAwait(false);
             return bytes.Select(ConvertBytesToString).ToArray();
         }
 
         public async Task<string[]> HashGetValuesStringAsync(string hashKey)
         {
-            var bytes = await HashGetValuesAsync(hashKey);
+            var bytes = await HashGetValuesAsync(hashKey).ConfigureAwait(false);
             return bytes.Select(ConvertBytesToString).ToArray();
         }
 
@@ -68,7 +68,7 @@ namespace Redis.NetCore
         {
             CheckHashKey(hashKey);
 
-            var bytes = await SendCommandAsync(RedisCommands.HashFieldStringLength, hashKey.ToBytes(), field.ToBytes());
+            var bytes = await SendCommandAsync(RedisCommands.HashFieldStringLength, hashKey.ToBytes(), field.ToBytes()).ConfigureAwait(false);
             return ConvertBytesToInteger(bytes);
         }
     }
