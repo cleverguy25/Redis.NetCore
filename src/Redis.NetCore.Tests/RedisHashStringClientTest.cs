@@ -44,10 +44,8 @@ namespace Redis.NetCore.Tests
                 await client.HashSetFieldStringAsync(hashKey, field + "1", expected1);
                 await client.HashSetFieldStringAsync(hashKey, field + "2", expected2);
                 var values = await client.HashGetAllFieldsStringAsync(hashKey);
-                Assert.Equal(field + "1", values[0]);
-                Assert.Equal(expected1, values[1]);
-                Assert.Equal(field + "2", values[2]);
-                Assert.Equal(expected2, values[3]);
+                Assert.Equal(expected1, values[field + "1"]);
+                Assert.Equal(expected2, values[field + "2"]);
             }
         }
 

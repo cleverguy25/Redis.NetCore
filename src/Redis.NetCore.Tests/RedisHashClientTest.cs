@@ -43,11 +43,9 @@ namespace Redis.NetCore.Tests
                 const string expected2 = "Bar!";
                 await client.HashSetFieldAsync(hashKey, field + "1", Encoding.UTF8.GetBytes(expected1));
                 await client.HashSetFieldAsync(hashKey, field + "2", Encoding.UTF8.GetBytes(expected2));
-                var bytes = await client.HashGetAllFieldsAsync(hashKey);
-                Assert.Equal(field + "1", Encoding.UTF8.GetString(bytes[0]));
-                Assert.Equal(expected1, Encoding.UTF8.GetString(bytes[1]));
-                Assert.Equal(field + "2", Encoding.UTF8.GetString(bytes[2]));
-                Assert.Equal(expected2, Encoding.UTF8.GetString(bytes[3]));
+                var results = await client.HashGetAllFieldsAsync(hashKey);
+                Assert.Equal(expected1, Encoding.UTF8.GetString(results[field + "1"]));
+                Assert.Equal(expected2, Encoding.UTF8.GetString(results[field + "2"]));
             }
         }
 

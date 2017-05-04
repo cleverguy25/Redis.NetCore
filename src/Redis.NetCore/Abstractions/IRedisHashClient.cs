@@ -21,7 +21,7 @@ namespace Redis.NetCore.Abstractions
 
         Task<byte[]> HashGetFieldAsync(string hashKey, string field);
 
-        Task<byte[][]> HashGetAllFieldsAsync(string hashKey);
+        Task<IDictionary<string, byte[]>> HashGetAllFieldsAsync(string hashKey);
 
         Task<string[]> HashGetKeysAsync(string hashKey);
 

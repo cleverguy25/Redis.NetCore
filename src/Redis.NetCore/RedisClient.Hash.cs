@@ -84,12 +84,20 @@ namespace Redis.NetCore
             return SendCommandAsync(RedisCommands.HashGet, hashKey.ToBytes(), field.ToBytes());
         }
 
-        public Task<byte[][]> HashGetAllFieldsAsync(string hashKey)
+        public async Task<IDictionary<string, byte[]>> HashGetAllFieldsAsync(string hashKey)
         {
             CheckHashKey(hashKey);
 
             var request = ComposeRequest(RedisCommands.HashGetAll, hashKey.ToBytes());
-            return SendMultipleCommandAsync(request);
+            var bytes = await SendMultipleCommandAsync(request);
+            var results = new Dictionary<string, byte[]>();
+            for (var i = 0; i < bytes.Length - 1; i += 2)
+            {
+                var key = Encoding.UTF8.GetString(bytes[i]);
+                results[key] = bytes[i + 1];
+            }
+
+            return results;
         }
 
         public async Task<string[]> HashGetKeysAsync(string hashKey)
