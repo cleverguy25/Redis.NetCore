@@ -16,11 +16,23 @@ namespace Redis.NetCore
             return ConvertBytesToInteger(bytes[0]);
         }
 
+        public async Task<int> ListPushIfExistsAsync(string listKey, byte[] value)
+        {
+            var bytes = await SendCommandAsync(RedisCommands.ListPushIfExists, listKey.ToBytes(), value).ConfigureAwait(false);
+            return ConvertBytesToInteger(bytes);
+        }
+
         public async Task<int> ListTailPushAsync(string listKey, params byte[][] values)
         {
             var request = ComposeRequest(RedisCommands.ListTailPush, listKey.ToBytes(), values);
             var bytes = await SendMultipleCommandAsync(request).ConfigureAwait(false);
             return ConvertBytesToInteger(bytes[0]);
+        }
+
+        public async Task<int> ListTailPushIfExistsAsync(string listKey, byte[] value)
+        {
+            var bytes = await SendCommandAsync(RedisCommands.ListTailPushIfExists, listKey.ToBytes(), value).ConfigureAwait(false);
+            return ConvertBytesToInteger(bytes);
         }
 
         public Task<byte[]> ListPopAsync(string listKey)

@@ -9,7 +9,11 @@ namespace Redis.NetCore.Abstractions
     {
         Task<int> ListPushAsync(string listKey, params byte[][] values);
 
+        Task<int> ListPushIfExistsAsync(string listKey, byte[] value);
+
         Task<int> ListTailPushAsync(string listKey, params byte[][] values);
+
+        Task<int> ListTailPushIfExistsAsync(string listKey, byte[] value);
 
         Task<byte[]> ListPopAsync(string listKey);
 

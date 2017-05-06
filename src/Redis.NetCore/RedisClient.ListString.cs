@@ -16,20 +16,30 @@ namespace Redis.NetCore
             return ListPushAsync(listKey, values.Select(value => value.ToBytes()).ToArray());
         }
 
+        public Task<int> ListPushStringIfExistsAsync(string listKey, string value)
+        {
+            return ListPushIfExistsAsync(listKey, value.ToBytes());
+        }
+
         public Task<int> ListTailPushStringAsync(string listKey, params string[] values)
         {
             return ListTailPushAsync(listKey, values.Select(value => value.ToBytes()).ToArray());
         }
 
+        public Task<int> ListTailPushStringIfExistsAsync(string listKey, string value)
+        {
+            return ListTailPushIfExistsAsync(listKey, value.ToBytes());
+        }
+
         public async Task<string> ListPopStringAsync(string listKey)
         {
-            var bytes = await ListPopAsync(listKey);
+            var bytes = await ListPopAsync(listKey).ConfigureAwait(false);
             return ConvertBytesToString(bytes);
         }
 
         public async Task<string> ListTailPopStringAsync(string listKey)
         {
-            var bytes = await ListTailPopAsync(listKey);
+            var bytes = await ListTailPopAsync(listKey).ConfigureAwait(false);
             return ConvertBytesToString(bytes);
         }
     }
