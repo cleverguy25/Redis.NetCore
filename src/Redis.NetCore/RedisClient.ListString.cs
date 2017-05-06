@@ -40,9 +40,16 @@ namespace Redis.NetCore
 
         public async Task<Tuple<string, string>> ListBlockingPopStringAsync(int timeoutSeconds, params string[] listKeys)
         {
+            CheckListKeys(listKeys);
+
             var timeoutString = new[] { timeoutSeconds.ToString(CultureInfo.InvariantCulture) };
             var request = ComposeRequest(RedisCommands.BlockingListPop, listKeys.Union(timeoutString));
             var bytes = await SendMultipleCommandAsync(request).ConfigureAwait(false);
+            if (bytes.Length == 0)
+            {
+                return null;
+            }
+
             var foundListKey = ConvertBytesToString(bytes[0]);
             var value = ConvertBytesToString(bytes[1]);
             return Tuple.Create(foundListKey, value);
@@ -56,9 +63,16 @@ namespace Redis.NetCore
 
         public async Task<Tuple<string, string>> ListBlockingTailPopStringAsync(int timeoutSeconds, params string[] listKeys)
         {
+            CheckListKeys(listKeys);
+
             var timeoutString = new[] { timeoutSeconds.ToString(CultureInfo.InvariantCulture) };
             var request = ComposeRequest(RedisCommands.BlockingListTailPop, listKeys.Union(timeoutString));
             var bytes = await SendMultipleCommandAsync(request).ConfigureAwait(false);
+            if (bytes.Length == 0)
+            {
+                return null;
+            }
+
             var foundListKey = ConvertBytesToString(bytes[0]);
             var value = ConvertBytesToString(bytes[1]);
             return Tuple.Create(foundListKey, value);

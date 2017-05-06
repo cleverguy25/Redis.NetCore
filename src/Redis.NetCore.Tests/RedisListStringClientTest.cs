@@ -111,6 +111,21 @@ namespace Redis.NetCore.Tests
         }
 
         [Fact]
+        public async Task ListBlockingPopStringNilAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string listKey = nameof(ListBlockingPopStringNilAsync);
+                const string list1 = listKey + "1";
+                const string list2 = listKey + "2";
+                await client.DeleteKeyAsync(list1, list2);
+                var item = await client.ListBlockingPopStringAsync(2, list1, list2);
+
+                Assert.Null(item);
+            }
+        }
+
+        [Fact]
         public async Task ListBlockingTailPopStringAsync()
         {
             using (var client = TestClient.CreateClient())
@@ -124,6 +139,21 @@ namespace Redis.NetCore.Tests
 
                 Assert.Equal(list1, item.Item1);
                 Assert.Equal("Foo!", item.Item2);
+            }
+        }
+
+        [Fact]
+        public async Task ListBlockingTailPopStringNilAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string listKey = nameof(ListBlockingTailPopStringNilAsync);
+                const string list1 = listKey + "1";
+                const string list2 = listKey + "2";
+                await client.DeleteKeyAsync(list1, list2);
+                var item = await client.ListBlockingTailPopStringAsync(2, list1, list2);
+
+                Assert.Null(item);
             }
         }
     }
