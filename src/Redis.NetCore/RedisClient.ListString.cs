@@ -43,7 +43,7 @@ namespace Redis.NetCore
             CheckListKeys(listKeys);
 
             var timeoutString = new[] { timeoutSeconds.ToString(CultureInfo.InvariantCulture) };
-            var request = ComposeRequest(RedisCommands.BlockingListPop, listKeys.Union(timeoutString));
+            var request = ComposeRequest(RedisCommands.ListBlockingPop, listKeys.Union(timeoutString));
             var bytes = await SendMultipleCommandAsync(request).ConfigureAwait(false);
             if (bytes.Length == 0)
             {
@@ -66,7 +66,7 @@ namespace Redis.NetCore
             CheckListKeys(listKeys);
 
             var timeoutString = new[] { timeoutSeconds.ToString(CultureInfo.InvariantCulture) };
-            var request = ComposeRequest(RedisCommands.BlockingListTailPop, listKeys.Union(timeoutString));
+            var request = ComposeRequest(RedisCommands.ListBlockingTailPop, listKeys.Union(timeoutString));
             var bytes = await SendMultipleCommandAsync(request).ConfigureAwait(false);
             if (bytes.Length == 0)
             {

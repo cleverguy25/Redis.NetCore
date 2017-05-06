@@ -157,5 +157,24 @@ namespace Redis.NetCore.Tests
                 Assert.Null(item);
             }
         }
+
+        [Fact]
+        public async Task ListTailPopAndPushAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string listKey = nameof(ListTailPopAndPushAsync);
+                const string list1 = listKey + "1";
+                const string list2 = listKey + "2";
+                await client.DeleteKeyAsync(list1, list2);
+                await client.ListPushAsync(list1, "Foo!".ToBytes(), "Bar!".ToBytes());
+
+                var item = await client.ListTailPopAndPushAsync(list1, list2);
+                Assert.Equal("Foo!", Encoding.UTF8.GetString(item));
+
+                item = await client.ListPopAsync(list2);
+                Assert.Equal("Foo!", Encoding.UTF8.GetString(item));
+            }
+        }
     }
 }

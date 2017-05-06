@@ -55,7 +55,7 @@ namespace Redis.NetCore
             CheckListKeys(listKeys);
 
             var timeoutString = new[] { timeoutSeconds.ToString(CultureInfo.InvariantCulture) };
-            var request = ComposeRequest(RedisCommands.BlockingListPop, listKeys.Union(timeoutString));
+            var request = ComposeRequest(RedisCommands.ListBlockingPop, listKeys.Union(timeoutString));
             var bytes = await SendMultipleCommandAsync(request).ConfigureAwait(false);
             if (bytes.Length == 0)
             {
@@ -78,7 +78,7 @@ namespace Redis.NetCore
             CheckListKeys(listKeys);
 
             var timeoutString = new[] { timeoutSeconds.ToString(CultureInfo.InvariantCulture) };
-            var request = ComposeRequest(RedisCommands.BlockingListTailPop, listKeys.Union(timeoutString));
+            var request = ComposeRequest(RedisCommands.ListBlockingTailPop, listKeys.Union(timeoutString));
             var bytes = await SendMultipleCommandAsync(request).ConfigureAwait(false);
             if (bytes.Length == 0)
             {
@@ -87,6 +87,14 @@ namespace Redis.NetCore
 
             var foundListKey = ConvertBytesToString(bytes[0]);
             return Tuple.Create(foundListKey, bytes[1]);
+        }
+
+        public Task<byte[]> ListTailPopAndPushAsync(string listKey1, string listKey2)
+        {
+            CheckListKey(listKey1);
+            CheckListKey(listKey2);
+
+            return SendCommandAsync(RedisCommands.ListTailPopAndPush, listKey1.ToBytes(), listKey2.ToBytes());
         }
 
         private static void CheckListKeys(string[] listKeys)
