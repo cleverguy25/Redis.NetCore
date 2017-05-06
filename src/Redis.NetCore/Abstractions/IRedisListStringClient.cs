@@ -17,6 +17,10 @@ namespace Redis.NetCore.Abstractions
 
         Task<string> ListPopStringAsync(string listKey);
 
+        Task<Tuple<string, string>> ListBlockingPopStringAsync(int timeoutSeconds, params string[] listKeys);
+
         Task<string> ListTailPopStringAsync(string listKey);
+
+        Task<Tuple<string, string>> ListBlockingTailPopStringAsync(int timeoutSeconds, params string[] listKeys);
     }
 }

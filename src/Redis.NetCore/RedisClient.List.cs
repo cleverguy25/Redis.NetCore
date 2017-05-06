@@ -1,6 +1,8 @@
 ﻿using Redis.NetCore.Abstractions;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Redis.NetCore.Constants;
@@ -40,9 +42,27 @@ namespace Redis.NetCore
             return SendCommandAsync(RedisCommands.ListPop, listKey.ToBytes());
         }
 
+        public async Task<Tuple<string, byte[]>> ListBlockingPopAsync(int timeoutSeconds, params string[] listKeys)
+        {
+            var timeoutString = new[] { timeoutSeconds.ToString(CultureInfo.InvariantCulture) };
+            var request = ComposeRequest(RedisCommands.BlockingListPop, listKeys.Union(timeoutString));
+            var bytes = await SendMultipleCommandAsync(request).ConfigureAwait(false);
+            var foundListKey = ConvertBytesToString(bytes[0]);
+            return Tuple.Create(foundListKey, bytes[1]);
+        }
+
         public Task<byte[]> ListTailPopAsync(string listKey)
         {
             return SendCommandAsync(RedisCommands.ListTailPop, listKey.ToBytes());
+        }
+
+        public async Task<Tuple<string, byte[]>> ListBlockingTailPopAsync(int timeoutSeconds, params string[] listKeys)
+        {
+            var timeoutString = new[] { timeoutSeconds.ToString(CultureInfo.InvariantCulture) };
+            var request = ComposeRequest(RedisCommands.BlockingListTailPop, listKeys.Union(timeoutString));
+            var bytes = await SendMultipleCommandAsync(request).ConfigureAwait(false);
+            var foundListKey = ConvertBytesToString(bytes[0]);
+            return Tuple.Create(foundListKey, bytes[1]);
         }
     }
 }
