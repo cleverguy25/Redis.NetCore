@@ -77,5 +77,11 @@ namespace Redis.NetCore
             var value = ConvertBytesToString(bytes[1]);
             return Tuple.Create(foundListKey, value);
         }
+
+        public async Task<string> ListTailPopAndPushStringAsync(string listKey1, string listKey2)
+        {
+            var bytes = await SendCommandAsync(RedisCommands.ListTailPopAndPush, listKey1.ToBytes(), listKey2.ToBytes());
+            return ConvertBytesToString(bytes);
+        }
     }
 }

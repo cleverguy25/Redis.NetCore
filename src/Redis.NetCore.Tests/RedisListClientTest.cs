@@ -176,5 +176,17 @@ namespace Redis.NetCore.Tests
                 Assert.Equal("Foo!", Encoding.UTF8.GetString(item));
             }
         }
+
+        [Fact]
+        public async Task ListTailPopAndPushNullAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string listKey = nameof(ListTailPopAndPushAsync);
+
+                var item = await client.ListTailPopAndPushAsync(listKey + "NotExists", listKey);
+                Assert.Null(item);
+            }
+        }
     }
 }
