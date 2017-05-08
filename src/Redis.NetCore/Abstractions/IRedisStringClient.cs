@@ -46,5 +46,7 @@ namespace Redis.NetCore.Abstractions
         Task<int> AppendStringAsync(string key, string data);
 
         Task<int> GetStringLengthAsync(string key);
+
+        Task ListSetStringAsync(string listKey, int index, string value);
     }
 }

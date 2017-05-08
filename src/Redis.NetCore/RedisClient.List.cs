@@ -160,6 +160,14 @@ namespace Redis.NetCore
             return ConvertBytesToInteger(bytes);
         }
 
+        public Task ListSetAsync(string listKey, int index, byte[] value)
+        {
+            CheckListKey(listKey);
+
+            var indexBytes = index.ToString(CultureInfo.InvariantCulture).ToBytes();
+            return SendCommandAsync(RedisCommands.ListSet, listKey.ToBytes(), indexBytes, value);
+        }
+
         private static void CheckListKeys(string[] listKeys)
         {
             if (listKeys == null)

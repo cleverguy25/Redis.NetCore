@@ -116,5 +116,10 @@ namespace Redis.NetCore
         {
             return ListRemoveAsync(listKey, count, value.ToBytes());
         }
+
+        public Task ListSetStringAsync(string listKey, int index, string value)
+        {
+            return ListSetAsync(listKey, index, value.ToBytes());
+        }
     }
 }
