@@ -80,7 +80,13 @@ namespace Redis.NetCore
 
         public async Task<string> ListTailPopAndPushStringAsync(string listKey1, string listKey2)
         {
-            var bytes = await SendCommandAsync(RedisCommands.ListTailPopAndPush, listKey1.ToBytes(), listKey2.ToBytes());
+            var bytes = await ListTailPopAndPushAsync(listKey1, listKey2);
+            return ConvertBytesToString(bytes);
+        }
+
+        public async Task<string> ListBlockingTailPopAndPushStringAsync(string listKey1, string listKey2, int timeoutSeconds)
+        {
+            var bytes = await ListBlockingTailPopAndPushAsync(listKey1, listKey2, timeoutSeconds);
             return ConvertBytesToString(bytes);
         }
     }
