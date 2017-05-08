@@ -32,5 +32,7 @@ namespace Redis.NetCore.Abstractions
         Task<int> ListInsertBeforeAsync(string listKey, byte[] pivot, byte[] value);
 
         Task<int> ListInsertAfterAsync(string listKey, byte[] pivot, byte[] value);
+
+        Task<int> ListLength(string listKey);
     }
 }
