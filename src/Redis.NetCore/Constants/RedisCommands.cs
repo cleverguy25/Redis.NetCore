@@ -87,6 +87,7 @@ namespace Redis.NetCore.Constants
         public static readonly byte[] After = "AFTER".ToBytes();
         public static readonly byte[] ListLength = "LLEN".ToBytes();
         public static readonly byte[] ListRange = "LRANGE".ToBytes();
+        public static readonly byte[] ListRemove = "LREM".ToBytes();
 
         public static readonly byte[] Increment = "INCR".ToBytes();
         public static readonly byte[] IncrementBy = "INCRBY".ToBytes();

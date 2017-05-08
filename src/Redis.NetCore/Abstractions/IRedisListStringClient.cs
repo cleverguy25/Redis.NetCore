@@ -34,5 +34,7 @@ namespace Redis.NetCore.Abstractions
         Task<int> ListInsertAfterStringAsync(string listKey, string pivot, string value);
 
         Task<string[]> ListRangeStringAsync(string listKey, int start, int end);
+
+        Task<int> ListRemoveStringAsync(string listKey, int count, string value);
     }
 }

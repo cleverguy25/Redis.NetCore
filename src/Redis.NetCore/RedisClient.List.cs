@@ -151,6 +151,15 @@ namespace Redis.NetCore
             return bytes;
         }
 
+        public async Task<int> ListRemoveAsync(string listKey, int count, byte[] value)
+        {
+            CheckListKey(listKey);
+
+            var countBytes = count.ToString(CultureInfo.InvariantCulture).ToBytes();
+            var bytes = await SendCommandAsync(RedisCommands.ListRemove, listKey.ToBytes(), countBytes, value).ConfigureAwait(false);
+            return ConvertBytesToInteger(bytes);
+        }
+
         private static void CheckListKeys(string[] listKeys)
         {
             if (listKeys == null)
