@@ -168,6 +168,15 @@ namespace Redis.NetCore
             return SendCommandAsync(RedisCommands.ListSet, listKey.ToBytes(), indexBytes, value);
         }
 
+        public Task ListTrimAsync(string listKey, int start, int end)
+        {
+            CheckListKey(listKey);
+
+            var startBytes = start.ToString(CultureInfo.InvariantCulture).ToBytes();
+            var endBytes = end.ToString(CultureInfo.InvariantCulture).ToBytes();
+            return SendCommandAsync(RedisCommands.ListTrim, listKey.ToBytes(), startBytes, endBytes);
+        }
+
         private static void CheckListKeys(string[] listKeys)
         {
             if (listKeys == null)

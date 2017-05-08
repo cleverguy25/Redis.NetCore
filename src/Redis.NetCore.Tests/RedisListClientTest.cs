@@ -308,5 +308,21 @@ namespace Redis.NetCore.Tests
                 Assert.Equal("Update", Encoding.UTF8.GetString(item));
             }
         }
+
+        [Fact]
+        public async Task ListTrimAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string listKey = nameof(ListSetAsync);
+                await client.DeleteKeyAsync(listKey);
+                await client.ListPushAsync(listKey, "1".ToBytes(), "2".ToBytes(), "3".ToBytes());
+
+                await client.ListTrimAsync(listKey, 0, 1);
+
+                var item = await client.ListIndexAsync(listKey, 0);
+                Assert.Equal("3", Encoding.UTF8.GetString(item));
+            }
+        }
     }
 }

@@ -40,5 +40,7 @@ namespace Redis.NetCore.Abstractions
         Task<int> ListRemoveAsync(string listKey, int count, byte[] value);
 
         Task ListSetAsync(string listKey, int index, byte[] value);
+
+        Task ListTrimAsync(string listKey, int start, int end);
     }
 }
