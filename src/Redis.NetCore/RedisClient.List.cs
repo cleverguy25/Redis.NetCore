@@ -118,7 +118,8 @@ namespace Redis.NetCore
         {
             CheckListKey(listKey);
 
-            var bytes = await SendCommandAsync(RedisCommands.ListInsert, listKey.ToBytes(), RedisCommands.Before, pivot, value);
+            var bytes = await SendCommandAsync(RedisCommands.ListInsert, listKey.ToBytes(), RedisCommands.Before, pivot, value)
+                .ConfigureAwait(false);
             return ConvertBytesToInteger(bytes);
         }
 
@@ -126,7 +127,7 @@ namespace Redis.NetCore
         {
             CheckListKey(listKey);
 
-            var bytes = await SendCommandAsync(RedisCommands.ListInsert, listKey.ToBytes(), RedisCommands.After, pivot, value);
+            var bytes = await SendCommandAsync(RedisCommands.ListInsert, listKey.ToBytes(), RedisCommands.After, pivot, value).ConfigureAwait(false);
             return ConvertBytesToInteger(bytes);
         }
 
@@ -134,8 +135,20 @@ namespace Redis.NetCore
         {
             CheckListKey(listKey);
 
-            var bytes = await SendCommandAsync(RedisCommands.ListLength, listKey.ToBytes());
+            var bytes = await SendCommandAsync(RedisCommands.ListLength, listKey.ToBytes()).ConfigureAwait(false);
             return ConvertBytesToInteger(bytes);
+        }
+
+        public async Task<byte[][]> ListRangeAsync(string listKey, int start, int end)
+        {
+            CheckListKey(listKey);
+
+            var startBytes = start.ToString(CultureInfo.InvariantCulture).ToBytes();
+            var endBytes = end.ToString(CultureInfo.InvariantCulture).ToBytes();
+            var messageBytes = new[] { listKey.ToBytes(), startBytes, endBytes };
+            var request = ComposeRequest(RedisCommands.ListRange, messageBytes);
+            var bytes = await SendMultipleCommandAsync(request).ConfigureAwait(false);
+            return bytes;
         }
 
         private static void CheckListKeys(string[] listKeys)

@@ -80,19 +80,19 @@ namespace Redis.NetCore
 
         public async Task<string> ListTailPopAndPushStringAsync(string listKey1, string listKey2)
         {
-            var bytes = await ListTailPopAndPushAsync(listKey1, listKey2);
+            var bytes = await ListTailPopAndPushAsync(listKey1, listKey2).ConfigureAwait(false);
             return ConvertBytesToString(bytes);
         }
 
         public async Task<string> ListBlockingTailPopAndPushStringAsync(string listKey1, string listKey2, int timeoutSeconds)
         {
-            var bytes = await ListBlockingTailPopAndPushAsync(listKey1, listKey2, timeoutSeconds);
+            var bytes = await ListBlockingTailPopAndPushAsync(listKey1, listKey2, timeoutSeconds).ConfigureAwait(false);
             return ConvertBytesToString(bytes);
         }
 
         public async Task<string> ListIndexStringAsync(string listKey, int index)
         {
-            var bytes = await ListIndexAsync(listKey, index);
+            var bytes = await ListIndexAsync(listKey, index).ConfigureAwait(false);
             return ConvertBytesToString(bytes);
         }
 
@@ -104,6 +104,12 @@ namespace Redis.NetCore
         public Task<int> ListInsertAfterStringAsync(string listKey, string pivot, string value)
         {
             return ListInsertAfterAsync(listKey, pivot.ToBytes(), value.ToBytes());
+        }
+
+        public async Task<string[]> ListRangeStringAsync(string listKey, int start, int end)
+        {
+            var bytes = await ListRangeAsync(listKey, start, end);
+            return bytes.Select(ConvertBytesToString).ToArray();
         }
     }
 }

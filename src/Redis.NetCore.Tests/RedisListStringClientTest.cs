@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
@@ -229,6 +230,22 @@ namespace Redis.NetCore.Tests
 
                 item = await client.ListIndexStringAsync(listKey, -3);
                 Assert.Equal("InsertBefore", item);
+            }
+        }
+
+        [Fact]
+        public async Task ListRangeStringAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string listKey = nameof(ListRangeStringAsync);
+                await client.DeleteKeyAsync(listKey);
+                await client.ListPushStringAsync(listKey, "1", "2", "3");
+
+                var items = await client.ListRangeStringAsync(listKey, 1, -1);
+                Assert.Equal(2, items.Length);
+                Assert.Equal("2", items[0]);
+                Assert.Equal("1", items[1]);
             }
         }
     }
