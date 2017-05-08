@@ -81,6 +81,7 @@ namespace Redis.NetCore.Constants
         public static readonly byte[] ListBlockingTailPop = "BRPOP".ToBytes();
         public static readonly byte[] ListTailPopAndPush = "RPOPLPUSH".ToBytes();
         public static readonly byte[] ListBlockingTailPopAndPush = "BRPOPLPUSH".ToBytes();
+        public static readonly byte[] ListIndex = "LINDEX".ToBytes();
 
         public static readonly byte[] Increment = "INCR".ToBytes();
         public static readonly byte[] IncrementBy = "INCRBY".ToBytes();

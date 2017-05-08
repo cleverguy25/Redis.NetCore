@@ -106,6 +106,14 @@ namespace Redis.NetCore
             return SendCommandAsync(RedisCommands.ListBlockingTailPopAndPush, listKey1.ToBytes(), listKey2.ToBytes(), timeoutBytes);
         }
 
+        public Task<byte[]> ListIndexAsync(string listKey, int index)
+        {
+            CheckListKey(listKey);
+
+            var indexBytes = index.ToString(CultureInfo.InvariantCulture).ToBytes();
+            return SendCommandAsync(RedisCommands.ListIndex, listKey.ToBytes(), indexBytes);
+        }
+
         private static void CheckListKeys(string[] listKeys)
         {
             if (listKeys == null)

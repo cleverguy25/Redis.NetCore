@@ -89,5 +89,11 @@ namespace Redis.NetCore
             var bytes = await ListBlockingTailPopAndPushAsync(listKey1, listKey2, timeoutSeconds);
             return ConvertBytesToString(bytes);
         }
+
+        public async Task<string> ListIndexStringAsync(string listKey, int index)
+        {
+            var bytes = await ListIndexAsync(listKey, index);
+            return ConvertBytesToString(bytes);
+        }
     }
 }

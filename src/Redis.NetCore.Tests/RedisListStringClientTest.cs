@@ -194,5 +194,23 @@ namespace Redis.NetCore.Tests
                 Assert.Equal("Foo!", item);
             }
         }
+
+        [Fact]
+        public async Task ListIndexStringAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string listKey = nameof(ListIndexStringAsync);
+                await client.DeleteKeyAsync(listKey);
+                var count = await client.ListPushAsync(listKey, "Foo!".ToBytes(), "Bar!".ToBytes());
+                Assert.Equal(2, count);
+
+                var item = await client.ListIndexStringAsync(listKey, -1);
+                Assert.Equal("Foo!", item);
+
+                item = await client.ListIndexStringAsync(listKey, 0);
+                Assert.Equal("Bar!", item);
+            }
+        }
     }
 }
