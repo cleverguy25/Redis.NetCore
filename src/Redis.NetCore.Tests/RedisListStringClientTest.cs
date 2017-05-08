@@ -212,5 +212,24 @@ namespace Redis.NetCore.Tests
                 Assert.Equal("Bar!", item);
             }
         }
+
+        [Fact]
+        public async Task ListInsertBeforeAndAfterStringAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string listKey = nameof(ListInsertBeforeAndAfterStringAsync);
+                await client.DeleteKeyAsync(listKey);
+                await client.ListPushStringAsync(listKey, "Foo!", "Bar!");
+                await client.ListInsertBeforeStringAsync(listKey, "Foo!", "InsertBefore");
+                await client.ListInsertAfterStringAsync(listKey, "InsertBefore", "InsertAfter");
+
+                var item = await client.ListIndexStringAsync(listKey, -2);
+                Assert.Equal("InsertAfter", item);
+
+                item = await client.ListIndexStringAsync(listKey, -3);
+                Assert.Equal("InsertBefore", item);
+            }
+        }
     }
 }

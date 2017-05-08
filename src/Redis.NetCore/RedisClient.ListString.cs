@@ -95,5 +95,15 @@ namespace Redis.NetCore
             var bytes = await ListIndexAsync(listKey, index);
             return ConvertBytesToString(bytes);
         }
+
+        public Task<int> ListInsertBeforeStringAsync(string listKey, string pivot, string value)
+        {
+            return ListInsertBeforeAsync(listKey, pivot.ToBytes(), value.ToBytes());
+        }
+
+        public Task<int> ListInsertAfterStringAsync(string listKey, string pivot, string value)
+        {
+            return ListInsertAfterAsync(listKey, pivot.ToBytes(), value.ToBytes());
+        }
     }
 }

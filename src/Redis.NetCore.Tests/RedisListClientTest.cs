@@ -225,5 +225,24 @@ namespace Redis.NetCore.Tests
                 Assert.Equal("Bar!", Encoding.UTF8.GetString(item));
             }
         }
+
+        [Fact]
+        public async Task ListInsertBeforeAndAfterAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string listKey = nameof(ListInsertBeforeAndAfterAsync);
+                await client.DeleteKeyAsync(listKey);
+                await client.ListPushAsync(listKey, "Foo!".ToBytes(), "Bar!".ToBytes());
+                await client.ListInsertBeforeAsync(listKey, "Foo!".ToBytes(), "InsertBefore".ToBytes());
+                await client.ListInsertAfterAsync(listKey, "InsertBefore".ToBytes(), "InsertAfter".ToBytes());
+
+                var item = await client.ListIndexAsync(listKey, -2);
+                Assert.Equal("InsertAfter", Encoding.UTF8.GetString(item));
+
+                item = await client.ListIndexAsync(listKey, -3);
+                Assert.Equal("InsertBefore", Encoding.UTF8.GetString(item));
+            }
+        }
     }
 }

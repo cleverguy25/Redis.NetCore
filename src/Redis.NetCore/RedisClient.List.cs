@@ -114,6 +114,18 @@ namespace Redis.NetCore
             return SendCommandAsync(RedisCommands.ListIndex, listKey.ToBytes(), indexBytes);
         }
 
+        public async Task<int> ListInsertBeforeAsync(string listKey, byte[] pivot, byte[] value)
+        {
+            var bytes = await SendCommandAsync(RedisCommands.ListInsert, listKey.ToBytes(), RedisCommands.Before, pivot, value);
+            return ConvertBytesToInteger(bytes);
+        }
+
+        public async Task<int> ListInsertAfterAsync(string listKey, byte[] pivot, byte[] value)
+        {
+            var bytes = await SendCommandAsync(RedisCommands.ListInsert, listKey.ToBytes(), RedisCommands.After, pivot, value);
+            return ConvertBytesToInteger(bytes);
+        }
+
         private static void CheckListKeys(string[] listKeys)
         {
             if (listKeys == null)
