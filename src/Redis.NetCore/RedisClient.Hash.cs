@@ -90,12 +90,7 @@ namespace Redis.NetCore
 
             var request = ComposeRequest(RedisCommands.HashGetAll, hashKey.ToBytes());
             var bytes = await SendMultipleCommandAsync(request);
-            var results = new Dictionary<string, byte[]>();
-            for (var i = 0; i < bytes.Length - 1; i += 2)
-            {
-                var key = Encoding.UTF8.GetString(bytes[i]);
-                results[key] = bytes[i + 1];
-            }
+            var results = HashScanCursor.ConvertFieldValueToDictionary(bytes);
 
             return results;
         }
@@ -174,6 +169,78 @@ namespace Redis.NetCore
             throw new RedisException($"Could not parse [{stringValue}] for Hash [{hashKey}] and field [{field}]");
         }
 
+        public async Task<HashScanCursor> HashScanAsync(string hashKey)
+        {
+            CheckKey(hashKey);
+
+            var bytes = await SendMultipleCommandAsync(RedisCommands.HashScan, hashKey.ToBytes(), ZeroBit).ConfigureAwait(false);
+            return ConvertToHashScanCursor(bytes);
+        }
+
+        public async Task<HashScanCursor> HashScanAsync(string hashKey, ScanCursor cursor)
+        {
+            CheckKey(hashKey);
+
+            var cursorPositionBytes = cursor.CursorPosition.ToString(CultureInfo.InvariantCulture).ToBytes();
+            var bytes = await SendMultipleCommandAsync(RedisCommands.HashScan, hashKey.ToBytes(), cursorPositionBytes).ConfigureAwait(false);
+            return ConvertToHashScanCursor(bytes);
+        }
+
+        public async Task<HashScanCursor> HashScanAsync(string hashKey, int count)
+        {
+            CheckKey(hashKey);
+
+            var countBytes = count.ToString(CultureInfo.InvariantCulture).ToBytes();
+            var bytes = await SendMultipleCommandAsync(RedisCommands.HashScan, hashKey.ToBytes(), ZeroBit, "COUNT".ToBytes(), countBytes).ConfigureAwait(false);
+            return ConvertToHashScanCursor(bytes);
+        }
+
+        public async Task<HashScanCursor> HashScanAsync(string hashKey, ScanCursor cursor, int count)
+        {
+            CheckKey(hashKey);
+
+            var countBytes = count.ToString(CultureInfo.InvariantCulture).ToBytes();
+            var cursorPositionBytes = cursor.CursorPosition.ToString(CultureInfo.InvariantCulture).ToBytes();
+            var bytes = await SendMultipleCommandAsync(RedisCommands.HashScan, hashKey.ToBytes(), cursorPositionBytes, "COUNT".ToBytes(), countBytes).ConfigureAwait(false);
+            return ConvertToHashScanCursor(bytes);
+        }
+
+        public async Task<HashScanCursor> HashScanAsync(string hashKey, string match)
+        {
+            CheckKey(hashKey);
+
+            var bytes = await SendMultipleCommandAsync(RedisCommands.HashScan, hashKey.ToBytes(), ZeroBit, "MATCH".ToBytes(), match.ToBytes()).ConfigureAwait(false);
+            return ConvertToHashScanCursor(bytes);
+        }
+
+        public async Task<HashScanCursor> HashScanAsync(string hashKey, ScanCursor cursor, string match)
+        {
+            CheckKey(hashKey);
+
+            var cursorPositionBytes = cursor.CursorPosition.ToString(CultureInfo.InvariantCulture).ToBytes();
+            var bytes = await SendMultipleCommandAsync(RedisCommands.HashScan, hashKey.ToBytes(), cursorPositionBytes, "MATCH".ToBytes(), match.ToBytes()).ConfigureAwait(false);
+            return ConvertToHashScanCursor(bytes);
+        }
+
+        public async Task<HashScanCursor> HashScanAsync(string hashKey, string match, int count)
+        {
+            CheckKey(hashKey);
+
+            var countBytes = count.ToString(CultureInfo.InvariantCulture).ToBytes();
+            var bytes = await SendMultipleCommandAsync(RedisCommands.HashScan, hashKey.ToBytes(), ZeroBit, "MATCH".ToBytes(), match.ToBytes(), "COUNT".ToBytes(), countBytes).ConfigureAwait(false);
+            return ConvertToHashScanCursor(bytes);
+        }
+
+        public async Task<HashScanCursor> HashScanAsync(string hashKey, ScanCursor cursor, string match, int count)
+        {
+            CheckKey(hashKey);
+
+            var countBytes = count.ToString(CultureInfo.InvariantCulture).ToBytes();
+            var cursorPositionBytes = cursor.CursorPosition.ToString(CultureInfo.InvariantCulture).ToBytes();
+            var bytes = await SendMultipleCommandAsync(RedisCommands.HashScan, hashKey.ToBytes(), cursorPositionBytes, "MATCH".ToBytes(), match.ToBytes(), "COUNT".ToBytes(), countBytes).ConfigureAwait(false);
+            return ConvertToHashScanCursor(bytes);
+        }
+
         private static void CheckHashKey(string hashKey)
         {
             if (string.IsNullOrEmpty(hashKey))
@@ -188,6 +255,12 @@ namespace Redis.NetCore
             {
                 throw new ArgumentNullException(nameof(field), "field cannot be null or empty");
             }
+        }
+
+        private static HashScanCursor ConvertToHashScanCursor(byte[][] bytes)
+        {
+            var cursorPosition = ConvertBytesToInteger(bytes[0]);
+            return new HashScanCursor(cursorPosition, bytes[1]);
         }
     }
 }

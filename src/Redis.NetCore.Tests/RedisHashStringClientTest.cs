@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
@@ -134,6 +135,102 @@ namespace Redis.NetCore.Tests
                 await client.HashSetFieldStringAsync(hashKey, field, expected);
                 var length = await client.HashGetFieldStringLengthAsync(hashKey, field);
                 Assert.Equal(4, length);
+            }
+        }
+
+        [Fact]
+        public async Task HashScanStringAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string hashKey = nameof(HashScanStringAsync);
+                var fields = TestClient.SetupTestHashFields();
+
+                await client.HashSetFieldsStringAsync(hashKey, fields);
+                var cursor = await client.HashScanAsync(hashKey);
+                var keys = cursor.GetFieldsString();
+                Assert.NotEqual(0, keys.Count);
+                CheckKeys(keys);
+
+                cursor = await client.HashScanAsync(hashKey, cursor);
+                keys = cursor.GetFieldsString();
+                Assert.NotEqual(0, keys.Count);
+                CheckKeys(keys);
+            }
+        }
+
+        [Fact]
+        public async Task HashScanWithCountStringAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string hashKey = nameof(HashScanWithCountStringAsync);
+                var fields = TestClient.SetupTestHashFields();
+
+                await client.HashSetFieldsStringAsync(hashKey, fields);
+                var cursor = await client.HashScanAsync(hashKey, 5);
+                var keys = cursor.GetFieldsString();
+                Assert.NotEqual(0, keys.Count);
+                CheckKeys(keys);
+
+                cursor = await client.HashScanAsync(hashKey, cursor, 5);
+                keys = cursor.GetFieldsString();
+                Assert.NotEqual(0, keys.Count);
+                CheckKeys(keys);
+            }
+        }
+
+        [Fact]
+        public async Task HashScanWithMatchStringAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string hashKey = nameof(HashScanWithMatchStringAsync);
+                var fields = TestClient.SetupTestHashFields();
+                await client.HashSetFieldsStringAsync(hashKey, fields);
+                fields = TestClient.SetupTestHashFields("matchField");
+                await client.HashSetFieldsStringAsync(hashKey, fields);
+                var cursor = await client.HashScanAsync(hashKey, "match*");
+                var keys = cursor.GetFieldsString();
+                Assert.NotEqual(0, keys.Count);
+                CheckKeys(keys);
+
+                cursor = await client.HashScanAsync(hashKey, cursor, "match*");
+                keys = cursor.GetFieldsString();
+                Assert.NotEqual(0, keys.Count);
+                CheckKeys(keys);
+            }
+        }
+
+        [Fact]
+        public async Task HashScanWithMatchAndCountStringAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string hashKey = nameof(HashScanWithMatchAndCountStringAsync);
+                var fields = TestClient.SetupTestHashFields();
+                await client.HashSetFieldsStringAsync(hashKey, fields);
+                fields = TestClient.SetupTestHashFields("matchField");
+                await client.HashSetFieldsStringAsync(hashKey, fields);
+                var cursor = await client.HashScanAsync(hashKey, "match*", 5);
+                var keys = cursor.GetFieldsString();
+                Assert.NotEqual(0, keys.Count);
+                CheckKeys(keys);
+
+                cursor = await client.HashScanAsync(hashKey, cursor, "match*", 5);
+                keys = cursor.GetFieldsString();
+                Assert.NotEqual(0, keys.Count);
+                CheckKeys(keys);
+            }
+        }
+
+        private static void CheckKeys(IDictionary<string, string> keys)
+        {
+            foreach (var pair in keys)
+            {
+                var keyLastChar = pair.Key[pair.Key.Length - 1];
+                var valueLastChar = pair.Value[pair.Value.Length - 1];
+                Assert.Equal(keyLastChar, valueLastChar);
             }
         }
     }

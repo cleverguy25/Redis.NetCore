@@ -36,5 +36,21 @@ namespace Redis.NetCore.Abstractions
         Task<int> HashIncrementAsync(string hashKey, string field, int amount);
 
         Task<float> HashIncrementAsync(string hashKey, string field, float amount);
+
+        Task<HashScanCursor> HashScanAsync(string hashKey);
+
+        Task<HashScanCursor> HashScanAsync(string hashKey, ScanCursor cursor);
+
+        Task<HashScanCursor> HashScanAsync(string hashKey, int count);
+
+        Task<HashScanCursor> HashScanAsync(string hashKey, ScanCursor cursor, int count);
+
+        Task<HashScanCursor> HashScanAsync(string hashKey, string match);
+
+        Task<HashScanCursor> HashScanAsync(string hashKey, ScanCursor cursor, string match);
+
+        Task<HashScanCursor> HashScanAsync(string hashKey, string match, int count);
+
+        Task<HashScanCursor> HashScanAsync(string hashKey, ScanCursor cursor, string match, int count);
     }
 }

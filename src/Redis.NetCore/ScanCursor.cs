@@ -4,6 +4,7 @@
 // </copyright>
 
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Redis.NetCore.Constants;
 
@@ -27,6 +28,11 @@ namespace Redis.NetCore
         public int CursorPosition { get; set; }
 
         public IEnumerable<string> GetKeys()
+        {
+            return GetRawKeys().Select(item => Encoding.UTF8.GetString(item));
+        }
+
+        protected IEnumerable<byte[]> GetRawKeys()
         {
             var firstChar = _keys[_currentPosition];
             _currentPosition++;
@@ -54,7 +60,7 @@ namespace Redis.NetCore
                 }
 
                 _currentPosition += 2;
-                yield return Encoding.UTF8.GetString(stringBytes);
+                yield return stringBytes;
             }
         }
 

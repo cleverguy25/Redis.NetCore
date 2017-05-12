@@ -58,5 +58,16 @@ namespace Redis.NetCore.Tests
                 Assert.Equal("Value" + keyPair.Key, keyPair.Value.Result);
             }
         }
+
+        public static Dictionary<string, string> SetupTestHashFields(string fieldName = "field", int count = 20)
+        {
+            var fields = new Dictionary<string, string>();
+            for (var i = 0; i < 20; i++)
+            {
+                fields[$"{fieldName}{i}"] = $"value{i}";
+            }
+
+            return fields;
+        }
     }
 }
