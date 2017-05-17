@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace Redis.NetCore.Abstractions
 {
@@ -10,5 +7,11 @@ namespace Redis.NetCore.Abstractions
         Task<int> SetAddStringAsync(string setKey, params string[] members);
 
         Task<bool> SetIsMemberStringAsync(string setKey, string member);
+
+        Task<string[]> SetDifferenceStringAsync(params string[] setKeys);
+
+        Task<string[]> SetIntersectionStringAsync(params string[] setKeys);
+
+        Task<string[]> SetUnionStringAsync(params string[] setKeys);
     }
 }

@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using Redis.NetCore.Abstractions;
 using Redis.NetCore.Constants;
@@ -22,7 +20,7 @@ namespace Redis.NetCore
         {
             CheckSetKey(setKey);
 
-            var bytes = await SendCommandAsync(RedisCommands.SetCardinality, setKey.ToBytes());
+            var bytes = await SendCommandAsync(RedisCommands.SetCardinality, setKey.ToBytes()).ConfigureAwait(false);
             return ConvertBytesToInteger(bytes);
         }
 
@@ -30,8 +28,56 @@ namespace Redis.NetCore
         {
             CheckSetKey(setKey);
 
-            var bytes = await SendCommandAsync(RedisCommands.SetIsMember, setKey.ToBytes(), member);
+            var bytes = await SendCommandAsync(RedisCommands.SetIsMember, setKey.ToBytes(), member).ConfigureAwait(false);
             return ConvertBytesToBool(bytes);
+        }
+
+        public Task<byte[][]> SetDifferenceAsync(params string[] setKeys)
+        {
+            if (setKeys == null)
+            {
+                return MultipleNullResultTask;
+            }
+
+            if (setKeys.Length == 0)
+            {
+                return MultipleEmptyResultTask;
+            }
+
+            var request = ComposeRequest(RedisCommands.SetDifference, setKeys);
+            return SendMultipleCommandAsync(request);
+        }
+
+        public Task<byte[][]> SetIntersectionAsync(params string[] setKeys)
+        {
+            if (setKeys == null)
+            {
+                return MultipleNullResultTask;
+            }
+
+            if (setKeys.Length == 0)
+            {
+                return MultipleEmptyResultTask;
+            }
+
+            var request = ComposeRequest(RedisCommands.SetIntersection, setKeys);
+            return SendMultipleCommandAsync(request);
+        }
+
+        public Task<byte[][]> SetUnionAsync(params string[] setKeys)
+        {
+            if (setKeys == null)
+            {
+                return MultipleNullResultTask;
+            }
+
+            if (setKeys.Length == 0)
+            {
+                return MultipleEmptyResultTask;
+            }
+
+            var request = ComposeRequest(RedisCommands.SetUnion, setKeys);
+            return SendMultipleCommandAsync(request);
         }
 
         private static void CheckSetKey(string setKey)
