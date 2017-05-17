@@ -98,6 +98,10 @@ namespace Redis.NetCore.Constants
         public static readonly byte[] SetDifference = "SDIFF".ToBytes();
         public static readonly byte[] SetIntersection = "SINTER".ToBytes();
         public static readonly byte[] SetUnion = "SUNION".ToBytes();
+        public static readonly byte[] SetDifferenceStore = "SDIFFSTORE".ToBytes();
+        public static readonly byte[] SetIntersectionStore = "SINTERSTORE".ToBytes();
+        public static readonly byte[] SetUnionStore = "SUNIONSTORE".ToBytes();
+        public static readonly byte[] SetMembers = "SMEMBERS".ToBytes();
 
         public static readonly byte[] Increment = "INCR".ToBytes();
         public static readonly byte[] IncrementBy = "INCRBY".ToBytes();

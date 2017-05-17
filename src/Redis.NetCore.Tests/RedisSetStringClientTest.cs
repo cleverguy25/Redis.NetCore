@@ -17,7 +17,7 @@ namespace Redis.NetCore.Tests
                 const string setKey = nameof(SetAddStringAsync);
                 await client.DeleteKeyAsync(setKey);
 
-                var count = await client.SetAddStringAsync(setKey, "Foo", "Bar");
+                var count = await client.SetAddMemberStringAsync(setKey, "Foo", "Bar");
                 Assert.Equal(2, count);
 
                 var isMember = await client.SetIsMemberStringAsync(setKey, "FooBar");
@@ -39,10 +39,10 @@ namespace Redis.NetCore.Tests
                 await client.DeleteKeyAsync(setKey1);
                 await client.DeleteKeyAsync(setKey2);
 
-                await client.SetAddStringAsync(setKey1, "Foo", "Bar", "FooBar");
-                await client.SetAddStringAsync(setKey2, "Bar");
+                await client.SetAddMemberStringAsync(setKey1, "Foo", "Bar", "FooBar");
+                await client.SetAddMemberStringAsync(setKey2, "Bar");
 
-                var values = await client.SetDifferenceStringAsync(setKey1, setKey2);
+                var values = await client.SetGetDifferenceMembersStringAsync(setKey1, setKey2);
                 Assert.Equal(2, values.Length);
                 Assert.Equal("Foo", values[0]);
                 Assert.Equal("FooBar", values[1]);
@@ -60,10 +60,10 @@ namespace Redis.NetCore.Tests
                 await client.DeleteKeyAsync(setKey1);
                 await client.DeleteKeyAsync(setKey2);
 
-                await client.SetAddStringAsync(setKey1, "Foo", "Bar");
-                await client.SetAddStringAsync(setKey2, "Bar", "2");
+                await client.SetAddMemberStringAsync(setKey1, "Foo", "Bar");
+                await client.SetAddMemberStringAsync(setKey2, "Bar", "2");
 
-                var values = await client.SetIntersectionStringAsync(setKey1, setKey2);
+                var values = await client.SetGetIntersectionMembersStringAsync(setKey1, setKey2);
                 Assert.Equal(1, values.Length);
                 Assert.Equal("Bar", values[0]);
             }
@@ -80,14 +80,30 @@ namespace Redis.NetCore.Tests
                 await client.DeleteKeyAsync(setKey1);
                 await client.DeleteKeyAsync(setKey2);
 
-                await client.SetAddStringAsync(setKey1, "Foo", "Bar");
-                await client.SetAddStringAsync(setKey2, "Bar", "FooBar");
+                await client.SetAddMemberStringAsync(setKey1, "Foo", "Bar");
+                await client.SetAddMemberStringAsync(setKey2, "Bar", "FooBar");
 
-                var values = await client.SetUnionStringAsync(setKey1, setKey2);
+                var values = await client.SetGetUnionMembersStringAsync(setKey1, setKey2);
                 Assert.Equal(3, values.Length);
                 Assert.Equal("Foo", values[0]);
                 Assert.Equal("Bar", values[1]);
                 Assert.Equal("FooBar", values[2]);
+            }
+        }
+
+        [Fact]
+        public async Task SetGetMembersStringAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string setKey = nameof(SetGetMembersStringAsync);
+                await client.DeleteKeyAsync(setKey);
+                await client.SetAddMemberStringAsync(setKey, "Foo", "Bar");
+
+                var values = await client.SetGetMembersStringAsync(setKey);
+                Assert.Equal(2, values.Length);
+                Assert.Equal("Foo", values[0]);
+                Assert.Equal("Bar", values[1]);
             }
         }
     }

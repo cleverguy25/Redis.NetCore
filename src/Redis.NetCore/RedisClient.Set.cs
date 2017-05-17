@@ -7,7 +7,7 @@ namespace Redis.NetCore
 {
     public partial class RedisClient : IRedisSetClient
     {
-        public async Task<int> SetAddAsync(string setKey, params byte[][] members)
+        public async Task<int> SetAddMemberAsync(string setKey, params byte[][] members)
         {
             CheckSetKey(setKey);
 
@@ -32,7 +32,7 @@ namespace Redis.NetCore
             return ConvertBytesToBool(bytes);
         }
 
-        public Task<byte[][]> SetDifferenceAsync(params string[] setKeys)
+        public Task<byte[][]> SetGetDifferenceMembersAsync(params string[] setKeys)
         {
             if (setKeys == null)
             {
@@ -48,7 +48,7 @@ namespace Redis.NetCore
             return SendMultipleCommandAsync(request);
         }
 
-        public Task<byte[][]> SetIntersectionAsync(params string[] setKeys)
+        public Task<byte[][]> SetGetIntersectionMembersAsync(params string[] setKeys)
         {
             if (setKeys == null)
             {
@@ -64,7 +64,7 @@ namespace Redis.NetCore
             return SendMultipleCommandAsync(request);
         }
 
-        public Task<byte[][]> SetUnionAsync(params string[] setKeys)
+        public Task<byte[][]> SetGetUnionMembersAsync(params string[] setKeys)
         {
             if (setKeys == null)
             {
@@ -77,6 +77,41 @@ namespace Redis.NetCore
             }
 
             var request = ComposeRequest(RedisCommands.SetUnion, setKeys);
+            return SendMultipleCommandAsync(request);
+        }
+
+        public async Task<int> SetStoreDifferenceMembersAsync(string storeKey, params string[] setKeys)
+        {
+            CheckSetKey(storeKey);
+
+            var request = ComposeRequest(RedisCommands.SetDifferenceStore, storeKey.ToBytes(), setKeys);
+            var bytes = await SendMultipleCommandAsync(request).ConfigureAwait(false);
+            return ConvertBytesToInteger(bytes[0]);
+        }
+
+        public async Task<int> SetStoreIntersectionMembersAsync(string storeKey, params string[] setKeys)
+        {
+            CheckSetKey(storeKey);
+
+            var request = ComposeRequest(RedisCommands.SetIntersectionStore, storeKey.ToBytes(), setKeys);
+            var bytes = await SendMultipleCommandAsync(request).ConfigureAwait(false);
+            return ConvertBytesToInteger(bytes[0]);
+        }
+
+        public async Task<int> SetStoreUnionMembersAsync(string storeKey, params string[] setKeys)
+        {
+            CheckSetKey(storeKey);
+
+            var request = ComposeRequest(RedisCommands.SetUnionStore, storeKey.ToBytes(), setKeys);
+            var bytes = await SendMultipleCommandAsync(request).ConfigureAwait(false);
+            return ConvertBytesToInteger(bytes[0]);
+        }
+
+        public Task<byte[][]> SetGetMembersAsync(string storeKey)
+        {
+            CheckSetKey(storeKey);
+
+            var request = ComposeRequest(RedisCommands.SetMembers, storeKey.ToBytes());
             return SendMultipleCommandAsync(request);
         }
 
