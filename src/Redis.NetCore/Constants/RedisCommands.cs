@@ -92,6 +92,10 @@ namespace Redis.NetCore.Constants
         public static readonly byte[] ListSet = "LSET".ToBytes();
         public static readonly byte[] ListTrim = "LTRIM".ToBytes();
 
+        public static readonly byte[] SetAdd = "SADD".ToBytes();
+        public static readonly byte[] SetCardinality = "SCARD".ToBytes();
+        public static readonly byte[] SetIsMember = "SISMEMBER".ToBytes();
+
         public static readonly byte[] Increment = "INCR".ToBytes();
         public static readonly byte[] IncrementBy = "INCRBY".ToBytes();
         public static readonly byte[] IncrementByFloat = "INCRBYFLOAT".ToBytes();
