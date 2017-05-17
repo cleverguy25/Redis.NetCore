@@ -8,11 +8,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Redis.NetCore.Abstractions;
 using Redis.NetCore.Constants;
 
 namespace Redis.NetCore
 {
-    public partial class RedisClient
+    public partial class RedisClient : IRedisStringClient
     {
         public Task SetStringAsync(string key, string data)
         {

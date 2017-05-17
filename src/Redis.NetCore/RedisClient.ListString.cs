@@ -1,16 +1,13 @@
 ﻿using Redis.NetCore.Abstractions;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Redis.NetCore;
 using Redis.NetCore.Constants;
 
 namespace Redis.NetCore
 {
-    public partial class RedisClient : IRedisStringClient
+    public partial class RedisClient : IRedisListStringClient
     {
         public Task<int> ListPushStringAsync(string listKey, params string[] values)
         {

@@ -3,17 +3,15 @@
 // Licensed under the APACHE 2.0 license. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Caching.Distributed;
+using Redis.NetCore.Abstractions;
 using Redis.NetCore.Constants;
 
 namespace Redis.NetCore
 {
-    public partial class RedisClient : IDistributedCache
+    public partial class RedisClient : IRedisHashStringClient
     {
         public Task<bool> HashSetFieldStringAsync(string hashKey, string field, string data)
         {

@@ -6,11 +6,12 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Threading.Tasks;
+using Redis.NetCore.Abstractions;
 using Redis.NetCore.Constants;
 
 namespace Redis.NetCore
 {
-    public partial class RedisClient
+    public partial class RedisClient : IRedisBitClient
     {
         private static readonly byte[] OneBit = "1".ToBytes();
         private static readonly byte[] ZeroBit = "0".ToBytes();

@@ -8,7 +8,7 @@ using Microsoft.Extensions.Caching.Distributed;
 
 namespace Redis.NetCore
 {
-    public partial class RedisClient
+    public partial class RedisClient : IDistributedCache
     {
         public byte[] Get(string key)
         {

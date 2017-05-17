@@ -9,12 +9,12 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Caching.Distributed;
+using Redis.NetCore.Abstractions;
 using Redis.NetCore.Constants;
 
 namespace Redis.NetCore
 {
-    public partial class RedisClient : IDistributedCache
+    public partial class RedisClient : IRedisHashClient
     {
         public async Task<bool> HashSetFieldAsync(string hashKey, string field, byte[] data)
         {

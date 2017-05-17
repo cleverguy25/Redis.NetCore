@@ -7,12 +7,12 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Caching.Distributed;
+using Redis.NetCore.Abstractions;
 using Redis.NetCore.Constants;
 
 namespace Redis.NetCore
 {
-    public partial class RedisClient : IDistributedCache
+    public partial class RedisClient : IRedisClient
     {
         private static readonly Task<byte[][]> MultipleEmptyResultTask = Task.FromResult(new byte[0][]);
         private static readonly Task<byte[][]> MultipleNullResultTask = Task.FromResult(null as byte[][]);

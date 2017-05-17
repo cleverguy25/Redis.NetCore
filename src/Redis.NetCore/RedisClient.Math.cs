@@ -6,11 +6,12 @@
 using System.Globalization;
 using System.Text;
 using System.Threading.Tasks;
+using Redis.NetCore.Abstractions;
 using Redis.NetCore.Constants;
 
 namespace Redis.NetCore
 {
-    public partial class RedisClient
+    public partial class RedisClient : IRedisMathClient
     {
         public async Task<int> IncrementAsync(string key)
         {

@@ -3,11 +3,9 @@
 // Licensed under the APACHE 2.0 license. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Redis.NetCore.Constants;
 
 namespace Redis.NetCore
 {
