@@ -115,6 +115,12 @@ namespace Redis.NetCore
             return SendMultipleCommandAsync(request);
         }
 
+        public async Task<bool> SetMoveMemberAsync(string sourceSet, string destinationSet, byte[] member)
+        {
+            var bytes = await SendCommandAsync(RedisCommands.SetMove, sourceSet.ToBytes(), destinationSet.ToBytes(), member);
+            return ConvertBytesToBool(bytes);
+        }
+
         private static void CheckSetKey(string setKey)
         {
             if (string.IsNullOrEmpty(setKey))

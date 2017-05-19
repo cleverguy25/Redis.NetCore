@@ -39,5 +39,10 @@ namespace Redis.NetCore
             var bytes = await SetGetMembersAsync(storeKey);
             return bytes.Select(ConvertBytesToString).ToArray();
         }
+
+        public Task<bool> SetMoveMemberStringAsync(string sourceSet, string destinationSet, string member)
+        {
+            return SetMoveMemberAsync(sourceSet, destinationSet, member.ToBytes());
+        }
     }
 }

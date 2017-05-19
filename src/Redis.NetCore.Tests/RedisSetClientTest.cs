@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
@@ -103,10 +104,11 @@ namespace Redis.NetCore.Tests
                 await client.SetAddMemberAsync(setKey2, "Bar".ToBytes(), "FooBar".ToBytes());
 
                 var bytes = await client.SetGetUnionMembersAsync(setKey1, setKey2);
+                var sortedValues = bytes.OrderBy(item => Encoding.UTF8.GetString(item)).ToArray();
                 Assert.Equal(3, bytes.Length);
-                Assert.Equal("Foo".ToBytes(), bytes[0]);
-                Assert.Equal("Bar".ToBytes(), bytes[1]);
-                Assert.Equal("FooBar".ToBytes(), bytes[2]);
+                Assert.Equal("Bar".ToBytes(), sortedValues[0]);
+                Assert.Equal("Foo".ToBytes(), sortedValues[1]);
+                Assert.Equal("FooBar".ToBytes(), sortedValues[2]);
             }
         }
 
@@ -180,10 +182,34 @@ namespace Redis.NetCore.Tests
                 Assert.Equal(3, count);
 
                 var bytes = await client.SetGetMembersAsync(storeKey);
+                var sortedValues = bytes.OrderBy(item => Encoding.UTF8.GetString(item)).ToArray();
                 Assert.Equal(3, bytes.Length);
-                Assert.Equal("Foo".ToBytes(), bytes[0]);
-                Assert.Equal("Bar".ToBytes(), bytes[1]);
-                Assert.Equal("FooBar".ToBytes(), bytes[2]);
+                Assert.Equal("Bar".ToBytes(), sortedValues[0]);
+                Assert.Equal("Foo".ToBytes(), sortedValues[1]);
+                Assert.Equal("FooBar".ToBytes(), sortedValues[2]);
+            }
+        }
+
+        [Fact]
+        public async Task SetMoveAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string setKey = nameof(SetMoveAsync);
+                const string sourceKey = setKey + "Source";
+                const string destKey = setKey + "Destination";
+                await client.DeleteKeyAsync(setKey);
+
+                await client.SetAddMemberAsync(sourceKey, "Foo".ToBytes(), "Bar".ToBytes());
+
+                var moved = await client.SetMoveMemberAsync(sourceKey, destKey, "Foo".ToBytes());
+                Assert.True(moved);
+
+                var isMember = await client.SetIsMemberAsync(destKey, "Foo".ToBytes());
+                Assert.True(isMember);
+
+                isMember = await client.SetIsMemberAsync(sourceKey, "Foo".ToBytes());
+                Assert.False(isMember);
             }
         }
     }

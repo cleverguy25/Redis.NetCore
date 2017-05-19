@@ -23,5 +23,7 @@ namespace Redis.NetCore.Abstractions
         Task<int> SetStoreUnionMembersAsync(string storeKey, params string[] setKeys);
 
         Task<byte[][]> SetGetMembersAsync(string storeKey);
+
+        Task<bool> SetMoveMemberAsync(string sourceSet, string destinationSet, byte[] member);
     }
 }

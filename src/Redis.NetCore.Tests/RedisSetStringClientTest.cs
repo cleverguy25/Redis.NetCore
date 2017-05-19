@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
@@ -84,10 +85,11 @@ namespace Redis.NetCore.Tests
                 await client.SetAddMemberStringAsync(setKey2, "Bar", "FooBar");
 
                 var values = await client.SetGetUnionMembersStringAsync(setKey1, setKey2);
+                var sortedValues = values.OrderBy(item => item).ToArray();
                 Assert.Equal(3, values.Length);
-                Assert.Equal("Foo", values[0]);
-                Assert.Equal("Bar", values[1]);
-                Assert.Equal("FooBar", values[2]);
+                Assert.Equal("Bar", sortedValues[0]);
+                Assert.Equal("Foo", sortedValues[1]);
+                Assert.Equal("FooBar", sortedValues[2]);
             }
         }
 
@@ -101,9 +103,33 @@ namespace Redis.NetCore.Tests
                 await client.SetAddMemberStringAsync(setKey, "Foo", "Bar");
 
                 var values = await client.SetGetMembersStringAsync(setKey);
+                var sortedValues = values.OrderBy(item => item).ToArray();
                 Assert.Equal(2, values.Length);
-                Assert.Equal("Foo", values[0]);
-                Assert.Equal("Bar", values[1]);
+                Assert.Equal("Bar", sortedValues[0]);
+                Assert.Equal("Foo", sortedValues[1]);
+            }
+        }
+
+        [Fact]
+        public async Task SetMoveStringAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string setKey = nameof(SetMoveStringAsync);
+                const string sourceKey = setKey + "Source";
+                const string destKey = setKey + "Destination";
+                await client.DeleteKeyAsync(setKey);
+
+                await client.SetAddMemberStringAsync(sourceKey, "Foo", "Bar");
+
+                var moved = await client.SetMoveMemberStringAsync(sourceKey, destKey, "Foo");
+                Assert.True(moved);
+
+                var isMember = await client.SetIsMemberStringAsync(destKey, "Foo");
+                Assert.True(isMember);
+
+                isMember = await client.SetIsMemberStringAsync(sourceKey, "Foo");
+                Assert.False(isMember);
             }
         }
     }
