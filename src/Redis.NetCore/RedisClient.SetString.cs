@@ -56,5 +56,10 @@ namespace Redis.NetCore
             var bytes = await SetGetRandomMemberAsync(storeKey, count);
             return bytes.Select(ConvertBytesToString).ToArray();
         }
+
+        public Task<int> SetRemoveMembersStringAsync(string storeKey, params string[] members)
+        {
+            return SetRemoveMembersAsync(storeKey, members.Select(item => item.ToBytes()).ToArray());
+        }
     }
 }

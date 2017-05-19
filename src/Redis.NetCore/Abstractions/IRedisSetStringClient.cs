@@ -21,5 +21,7 @@ namespace Redis.NetCore.Abstractions
         Task<string> SetPopMemberStringAsync(string storeKey);
 
         Task<string[]> SetGetRandomMemberStringAsync(string storeKey, int count = 1);
+
+        Task<int> SetRemoveMembersStringAsync(string storeKey, params string[] members);
     }
 }

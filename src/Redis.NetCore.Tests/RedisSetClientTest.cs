@@ -247,5 +247,23 @@ namespace Redis.NetCore.Tests
                 Assert.True(isMember);
             }
         }
+
+        [Fact]
+        public async Task SetRemoveMembersAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string setKey = nameof(SetRemoveMembersAsync);
+                await client.DeleteKeyAsync(setKey);
+
+                await client.SetAddMemberAsync(setKey, "Foo".ToBytes(), "Bar".ToBytes(), "FooBar".ToBytes());
+
+                var count = await client.SetRemoveMembersAsync(setKey, "Bar".ToBytes(), "Foo".ToBytes(), "Test".ToBytes());
+                Assert.Equal(2, count);
+
+                var members = await client.SetGetMembersAsync(setKey);
+                Assert.Equal("FooBar".ToBytes(), members[0]);
+            }
+        }
     }
 }

@@ -140,6 +140,15 @@ namespace Redis.NetCore
             return SendMultipleCommandAsync(RedisCommands.SetRandomMember, storeKey.ToBytes(), countBytes);
         }
 
+        public async Task<int> SetRemoveMembersAsync(string storeKey, params byte[][] members)
+        {
+            CheckSetKey(storeKey);
+
+            var request = ComposeRequest(RedisCommands.SetRemove, storeKey.ToBytes(), members);
+            var bytes = await SendMultipleCommandAsync(request).ConfigureAwait(false);
+            return ConvertBytesToInteger(bytes[0]);
+        }
+
         private static void CheckSetKey(string setKey)
         {
             if (string.IsNullOrEmpty(setKey))
