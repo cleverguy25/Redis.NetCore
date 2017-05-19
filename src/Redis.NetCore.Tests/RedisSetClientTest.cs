@@ -198,7 +198,8 @@ namespace Redis.NetCore.Tests
                 const string setKey = nameof(SetMoveAsync);
                 const string sourceKey = setKey + "Source";
                 const string destKey = setKey + "Destination";
-                await client.DeleteKeyAsync(setKey);
+                await client.DeleteKeyAsync(sourceKey);
+                await client.DeleteKeyAsync(destKey);
 
                 await client.SetAddMemberAsync(sourceKey, "Foo".ToBytes(), "Bar".ToBytes());
 
@@ -210,6 +211,40 @@ namespace Redis.NetCore.Tests
 
                 isMember = await client.SetIsMemberAsync(sourceKey, "Foo".ToBytes());
                 Assert.False(isMember);
+            }
+        }
+
+        [Fact]
+        public async Task SetPopAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string setKey = nameof(SetPopAsync);
+                await client.DeleteKeyAsync(setKey);
+
+                await client.SetAddMemberAsync(setKey, "Foo".ToBytes(), "Bar".ToBytes());
+
+                var bytes = await client.SetPopMemberAsync(setKey);
+
+                var isMember = await client.SetIsMemberAsync(setKey, bytes);
+                Assert.False(isMember);
+            }
+        }
+
+        [Fact]
+        public async Task SetGetRandomMemberAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string setKey = nameof(SetGetRandomMemberAsync);
+                await client.DeleteKeyAsync(setKey);
+
+                await client.SetAddMemberAsync(setKey, "Foo".ToBytes(), "Bar".ToBytes());
+
+                var bytes = await client.SetGetRandomMemberAsync(setKey, 2);
+
+                var isMember = await client.SetIsMemberAsync(setKey, bytes[0]);
+                Assert.True(isMember);
             }
         }
     }

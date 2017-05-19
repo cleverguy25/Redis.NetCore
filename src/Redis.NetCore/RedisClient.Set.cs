@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Threading.Tasks;
 using Redis.NetCore.Abstractions;
 using Redis.NetCore.Constants;
@@ -117,8 +118,26 @@ namespace Redis.NetCore
 
         public async Task<bool> SetMoveMemberAsync(string sourceSet, string destinationSet, byte[] member)
         {
-            var bytes = await SendCommandAsync(RedisCommands.SetMove, sourceSet.ToBytes(), destinationSet.ToBytes(), member);
+            CheckSetKey(sourceSet);
+            CheckSetKey(destinationSet);
+
+            var bytes = await SendCommandAsync(RedisCommands.SetMove, sourceSet.ToBytes(), destinationSet.ToBytes(), member).ConfigureAwait(false);
             return ConvertBytesToBool(bytes);
+        }
+
+        public Task<byte[]> SetPopMemberAsync(string storeKey)
+        {
+            CheckSetKey(storeKey);
+
+            return SendCommandAsync(RedisCommands.SetPop, storeKey.ToBytes());
+        }
+
+        public Task<byte[][]> SetGetRandomMemberAsync(string storeKey, int count = 1)
+        {
+            CheckSetKey(storeKey);
+
+            var countBytes = count.ToString(CultureInfo.InvariantCulture).ToBytes();
+            return SendMultipleCommandAsync(RedisCommands.SetRandomMember, storeKey.ToBytes(), countBytes);
         }
 
         private static void CheckSetKey(string setKey)

@@ -103,6 +103,8 @@ namespace Redis.NetCore.Constants
         public static readonly byte[] SetUnionStore = "SUNIONSTORE".ToBytes();
         public static readonly byte[] SetMembers = "SMEMBERS".ToBytes();
         public static readonly byte[] SetMove = "SMOVE".ToBytes();
+        public static readonly byte[] SetPop = "SPOP".ToBytes();
+        public static readonly byte[] SetRandomMember = "SRANDMEMBER".ToBytes();
 
         public static readonly byte[] Increment = "INCR".ToBytes();
         public static readonly byte[] IncrementBy = "INCRBY".ToBytes();

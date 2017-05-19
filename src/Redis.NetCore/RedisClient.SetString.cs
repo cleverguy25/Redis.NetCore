@@ -36,13 +36,25 @@ namespace Redis.NetCore
 
         public async Task<string[]> SetGetMembersStringAsync(string storeKey)
         {
-            var bytes = await SetGetMembersAsync(storeKey);
+            var bytes = await SetGetMembersAsync(storeKey).ConfigureAwait(false);
             return bytes.Select(ConvertBytesToString).ToArray();
         }
 
         public Task<bool> SetMoveMemberStringAsync(string sourceSet, string destinationSet, string member)
         {
             return SetMoveMemberAsync(sourceSet, destinationSet, member.ToBytes());
+        }
+
+        public async Task<string> SetPopMemberStringAsync(string storeKey)
+        {
+            var bytes = await SetPopMemberAsync(storeKey);
+            return ConvertBytesToString(bytes);
+        }
+
+        public async Task<string[]> SetGetRandomMemberStringAsync(string storeKey, int count = 1)
+        {
+            var bytes = await SetGetRandomMemberAsync(storeKey, count);
+            return bytes.Select(ConvertBytesToString).ToArray();
         }
     }
 }
