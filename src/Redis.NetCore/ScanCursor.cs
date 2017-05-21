@@ -14,6 +14,7 @@ namespace Redis.NetCore
     {
         private readonly byte[] _keys;
         private int _currentPosition = 0;
+        private byte[][] _values;
 
         public ScanCursor()
         {
@@ -27,12 +28,17 @@ namespace Redis.NetCore
 
         public int CursorPosition { get; set; }
 
-        public IEnumerable<string> GetKeys()
+        public IEnumerable<string> GetStringValues()
         {
-            return GetRawKeys().Select(item => Encoding.UTF8.GetString(item));
+            return GetValues().Select(item => Encoding.UTF8.GetString(item));
         }
 
-        protected IEnumerable<byte[]> GetRawKeys()
+        public IEnumerable<byte[]> GetValues()
+        {
+            return _values ?? (_values = EnumerateValues().ToArray());
+        }
+
+        public IEnumerable<byte[]> EnumerateValues()
         {
             var firstChar = _keys[_currentPosition];
             _currentPosition++;

@@ -46,13 +46,13 @@ namespace Redis.NetCore
 
         public IDictionary<string, byte[]> GetFields()
         {
-            var bytes = GetRawKeys().ToArray();
+            var bytes = GetValues().ToArray();
             return ConvertFieldValueToDictionary(bytes);
         }
 
         public IDictionary<string, string> GetFieldsString()
         {
-            var bytes = GetRawKeys().ToArray();
+            var bytes = GetValues().ToArray();
             return ConvertFieldValueToStringDictionary(bytes);
         }
     }

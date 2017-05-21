@@ -31,5 +31,21 @@ namespace Redis.NetCore.Abstractions
         Task<byte[][]> SetGetRandomMemberAsync(string storeKey, int count = 1);
 
         Task<int> SetRemoveMembersAsync(string storeKey, params byte[][] members);
+
+        Task<ScanCursor> SetScanAsync(string setKey);
+
+        Task<ScanCursor> SetScanAsync(string setKey, ScanCursor cursor);
+
+        Task<ScanCursor> SetScanAsync(string setKey, int count);
+
+        Task<ScanCursor> SetScanAsync(string setKey, ScanCursor cursor, int count);
+
+        Task<ScanCursor> SetScanAsync(string setKey, string match);
+
+        Task<ScanCursor> SetScanAsync(string setKey, ScanCursor cursor, string match);
+
+        Task<ScanCursor> SetScanAsync(string setKey, string match, int count);
+
+        Task<ScanCursor> SetScanAsync(string setKey, ScanCursor cursor, string match, int count);
     }
 }

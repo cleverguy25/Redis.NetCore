@@ -178,11 +178,11 @@ namespace Redis.NetCore.Tests
                 const string key = nameof(ScanAsync);
                 await TestClient.SetGetAsync(client, key, expected);
                 var cursor = await client.ScanAsync();
-                var keys = cursor.GetKeys().ToArray();
+                var keys = cursor.GetStringValues().ToArray();
                 Assert.NotEqual(0, keys.Length);
 
                 cursor = await client.ScanAsync(cursor);
-                keys = cursor.GetKeys().ToArray();
+                keys = cursor.GetStringValues().ToArray();
                 Assert.NotEqual(0, keys.Length);
             }
         }
@@ -197,11 +197,11 @@ namespace Redis.NetCore.Tests
                 await AddKeys(10, client, key, expected);
 
                 var cursor = await client.ScanAsync(5);
-                var keys = cursor.GetKeys().ToArray();
+                var keys = cursor.GetStringValues().ToArray();
                 Assert.Equal(5, keys.Length);
 
                 cursor = await client.ScanAsync(cursor, 5);
-                keys = cursor.GetKeys().ToArray();
+                keys = cursor.GetStringValues().ToArray();
                 Assert.True(keys.Length > 5);
             }
         }
@@ -217,11 +217,11 @@ namespace Redis.NetCore.Tests
 
                 const string match = key + "*";
                 var cursor = await client.ScanAsync(match);
-                var keys = cursor.GetKeys().ToArray();
+                var keys = cursor.GetStringValues().ToArray();
                 CheckKeys(keys, key);
 
                 cursor = await client.ScanAsync(cursor, match);
-                keys = cursor.GetKeys().ToArray();
+                keys = cursor.GetStringValues().ToArray();
                 CheckKeys(keys, key);
             }
         }
@@ -237,13 +237,13 @@ namespace Redis.NetCore.Tests
 
                 const string match = key + "*";
                 var cursor = await client.ScanAsync(match, 5);
-                var keys = cursor.GetKeys().ToArray();
+                var keys = cursor.GetStringValues().ToArray();
                 CheckKeys(keys, key);
 
                 for (var i = 0; i < 15; i++)
                 {
                     cursor = await client.ScanAsync(cursor, match, 5);
-                    keys = cursor.GetKeys().ToArray();
+                    keys = cursor.GetStringValues().ToArray();
                     CheckKeys(keys, key);
                 }
             }

@@ -265,5 +265,101 @@ namespace Redis.NetCore.Tests
                 Assert.Equal("FooBar".ToBytes(), members[0]);
             }
         }
+
+        [Fact]
+        public async Task SetScanAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string setKey = nameof(SetScanAsync);
+                await client.DeleteKeyAsync(setKey);
+                var members = TestClient.SetupTestSetMembers();
+
+                await client.SetAddMemberStringAsync(setKey, members);
+                var cursor = await client.SetScanAsync(setKey);
+                var values = cursor.GetStringValues();
+                Assert.NotEqual(0, values.Count());
+
+                cursor = await client.SetScanAsync(setKey, cursor);
+                values = cursor.GetStringValues();
+                Assert.NotEqual(0, values.Count());
+            }
+        }
+
+        [Fact]
+        public async Task SetScanWithCountAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string setKey = nameof(SetScanWithCountAsync);
+                await client.DeleteKeyAsync(setKey);
+                var members = TestClient.SetupTestSetMembers();
+
+                await client.SetAddMemberStringAsync(setKey, members);
+                var cursor = await client.SetScanAsync(setKey, 5);
+                var values = cursor.GetStringValues();
+                Assert.NotEqual(0, values.Count());
+
+                cursor = await client.SetScanAsync(setKey, cursor, 5);
+                values = cursor.GetStringValues();
+                Assert.NotEqual(0, values.Count());
+            }
+        }
+
+        [Fact]
+        public async Task SetScanWithMatchAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string setKey = nameof(SetScanWithMatchAsync);
+                await client.DeleteKeyAsync(setKey);
+                var members = TestClient.SetupTestSetMembers();
+                await client.SetAddMemberStringAsync(setKey, members);
+                members = TestClient.SetupTestSetMembers("match");
+                await client.SetAddMemberStringAsync(setKey, members);
+
+                var cursor = await client.SetScanAsync(setKey, "match*");
+                var values = cursor.GetStringValues().ToArray();
+                Assert.NotEqual(0, values.Length);
+                CheckValues(values, "match");
+
+                cursor = await client.SetScanAsync(setKey, cursor, "match*");
+                values = cursor.GetStringValues().ToArray();
+                Assert.NotEqual(0, values.Length);
+                CheckValues(values, "match");
+            }
+        }
+
+        [Fact]
+        public async Task SetScanWithMatchAndCountAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string setKey = nameof(SetScanWithMatchAndCountAsync);
+                await client.DeleteKeyAsync(setKey);
+                var members = TestClient.SetupTestSetMembers();
+                await client.SetAddMemberStringAsync(setKey, members);
+                members = TestClient.SetupTestSetMembers("match");
+                await client.SetAddMemberStringAsync(setKey, members);
+
+                var cursor = await client.SetScanAsync(setKey, "match*", 5);
+                var values = cursor.GetStringValues().ToArray();
+                Assert.NotEqual(0, values.Length);
+                CheckValues(values, "match");
+
+                cursor = await client.SetScanAsync(setKey, cursor, "match*", 5);
+                values = cursor.GetStringValues().ToArray();
+                Assert.NotEqual(0, values.Length);
+                CheckValues(values, "match");
+            }
+        }
+
+        private static void CheckValues(IEnumerable<string> values, string prefix = "")
+        {
+            foreach (var value in values)
+            {
+                Assert.Contains(prefix, value);
+            }
+        }
     }
 }

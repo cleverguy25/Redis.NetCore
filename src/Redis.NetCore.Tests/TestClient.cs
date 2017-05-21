@@ -5,6 +5,7 @@
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Castle.Components.DictionaryAdapter;
 using Redis.NetCore.Abstractions;
 using Redis.NetCore.Configuration;
 using Xunit;
@@ -68,6 +69,17 @@ namespace Redis.NetCore.Tests
             }
 
             return fields;
+        }
+
+        public static string[] SetupTestSetMembers(string memberPrefix = "", int count = 20)
+        {
+            var members = new EditableList<string>();
+            for (var i = 0; i < 20; i++)
+            {
+                members.Add($"{memberPrefix}{i}");
+            }
+
+            return members.ToArray();
         }
     }
 }

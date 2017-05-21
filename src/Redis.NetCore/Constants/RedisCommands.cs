@@ -106,6 +106,7 @@ namespace Redis.NetCore.Constants
         public static readonly byte[] SetPop = "SPOP".ToBytes();
         public static readonly byte[] SetRandomMember = "SRANDMEMBER".ToBytes();
         public static readonly byte[] SetRemove = "SREM".ToBytes();
+        public static readonly byte[] SetScan = "SSCAN".ToBytes();
 
         public static readonly byte[] Increment = "INCR".ToBytes();
         public static readonly byte[] IncrementBy = "INCRBY".ToBytes();
