@@ -16,15 +16,15 @@ namespace Redis.NetCore
     {
         private static byte[][] ComposeRequest(byte[] commandName, IEnumerable<string> values)
         {
-            return ComposeRequest(commandName, values.Select(value => value.ToBytes()).ToList());
+            return ComposeRequest(commandName, values.Select(value => value.ToBytes()).ToArray());
         }
 
-        private static byte[][] ComposeRequest(byte[] commandName, IReadOnlyList<byte[]> values)
+        private static byte[][] ComposeRequest(byte[] commandName, params byte[][] values)
         {
-            var request = new byte[values.Count + 1][];
+            var request = new byte[values.Length + 1][];
             request[0] = commandName;
 
-            for (var i = 0; i < values.Count; i++)
+            for (var i = 0; i < values.Length; i++)
             {
                 request[i + 1] = values[i];
             }
@@ -34,7 +34,7 @@ namespace Redis.NetCore
 
         private static byte[][] ComposeRequest(byte[] commandName, byte[] extra, IEnumerable<string> values)
         {
-            return ComposeRequest(commandName, extra, values.Select(value => value.ToBytes()).ToList());
+            return ComposeRequest(commandName, extra, values.Select(value => value.ToBytes()).ToArray());
         }
 
         private static byte[][] ComposeRequest(byte[] commandName, byte[] extra)
@@ -46,15 +46,30 @@ namespace Redis.NetCore
             return request;
         }
 
-        private static byte[][] ComposeRequest(byte[] commandName, byte[] extra, IReadOnlyList<byte[]> values)
+        private static byte[][] ComposeRequest(byte[] commandName, byte[] extra, params byte[][] values)
         {
-            var request = new byte[values.Count + 2][];
+            var request = new byte[values.Length + 2][];
             request[0] = commandName;
             request[1] = extra;
 
-            for (var i = 0; i < values.Count; i++)
+            for (var i = 0; i < values.Length; i++)
             {
                 request[i + 2] = values[i];
+            }
+
+            return request;
+        }
+
+        private static byte[][] ComposeRequest(byte[] commandName, byte[] extra, byte[] extra2, params byte[][] values)
+        {
+            var request = new byte[values.Length + 3][];
+            request[0] = commandName;
+            request[1] = extra;
+            request[2] = extra2;
+
+            for (var i = 0; i < values.Length; i++)
+            {
+                request[i + 3] = values[i];
             }
 
             return request;

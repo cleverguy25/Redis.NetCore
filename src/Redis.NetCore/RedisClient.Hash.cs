@@ -36,7 +36,7 @@ namespace Redis.NetCore
                 data.Add(keyValue.Value);
             }
 
-            var request = ComposeRequest(RedisCommands.HashMultipleSet, data);
+            var request = ComposeRequest(RedisCommands.HashMultipleSet, data.ToArray());
             return SendMultipleCommandAsync(request);
         }
 

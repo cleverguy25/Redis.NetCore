@@ -35,7 +35,7 @@ namespace Redis.NetCore
                 data.Add(keyValue.Value);
             }
 
-            var request = ComposeRequest(RedisCommands.MultipleSet, data);
+            var request = ComposeRequest(RedisCommands.MultipleSet, data.ToArray());
             return SendMultipleCommandAsync(request);
         }
 
@@ -48,7 +48,7 @@ namespace Redis.NetCore
                 data.Add(keyValue.Value);
             }
 
-            var request = ComposeRequest(RedisCommands.MultipleSetNotExists, data);
+            var request = ComposeRequest(RedisCommands.MultipleSetNotExists, data.ToArray());
             var bytes = await SendMultipleCommandAsync(request).ConfigureAwait(false);
             return bytes[0][0] == '1';
         }
