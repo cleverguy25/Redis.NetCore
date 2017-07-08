@@ -64,8 +64,10 @@ namespace Redis.NetCore.Tests
 
                 var bytes = await client.SetGetDifferenceMembersAsync(setKey1, setKey2);
                 Assert.Equal(2, bytes.Length);
-                Assert.Equal("Foo".ToBytes(), bytes[0]);
-                Assert.Equal("FooBar".ToBytes(), bytes[1]);
+                var values = bytes.Select(item => Encoding.UTF8.GetString(item)).ToArray();
+                Array.Sort(values);
+                Assert.Equal("Foo", values[0]);
+                Assert.Equal("FooBar", values[1]);
             }
         }
 
@@ -132,8 +134,10 @@ namespace Redis.NetCore.Tests
                 Assert.Equal(2, count);
 
                 var bytes = await client.SetGetMembersAsync(storeKey);
-                Assert.Equal("Foo".ToBytes(), bytes[0]);
-                Assert.Equal("FooBar".ToBytes(), bytes[1]);
+                var values = bytes.Select(item => Encoding.UTF8.GetString(item)).ToArray();
+                Array.Sort(values);
+                Assert.Equal("Foo", values[0]);
+                Assert.Equal("FooBar", values[1]);
             }
         }
 

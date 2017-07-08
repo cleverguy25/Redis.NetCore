@@ -44,6 +44,7 @@ namespace Redis.NetCore.Tests
                 await client.SetAddMemberStringAsync(setKey2, "Bar");
 
                 var values = await client.SetGetDifferenceMembersStringAsync(setKey1, setKey2);
+                Array.Sort(values);
                 Assert.Equal(2, values.Length);
                 Assert.Equal("Foo", values[0]);
                 Assert.Equal("FooBar", values[1]);

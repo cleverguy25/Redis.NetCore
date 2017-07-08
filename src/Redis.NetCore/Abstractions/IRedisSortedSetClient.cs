@@ -20,5 +20,17 @@ namespace Redis.NetCore.Abstractions
         Task<int> SortedSetCardinalityAsync(string setKey);
 
         Task<int?> SortedSetGetScoreAsync(string setKey, byte[] member);
+
+        Task<int> SortedSetGetCountAsync(string setKey, string min, string max);
+
+        Task<int> SortedSetIncrementByAsync(string setKey, byte[] member, int increment);
+
+        Task<int> SortedSetStoreIntersectionMembersAsync(string storeKey, string[] sets, RedisAggregate aggregate = RedisAggregate.Sum);
+
+        Task<int> SortedSetStoreIntersectionMembersAsync(string storeKey, (string set, int weight)[] sets, RedisAggregate aggregate = RedisAggregate.Sum);
+
+        Task<int> SortedSetStoreUnionMembersAsync(string storeKey, string[] sets, RedisAggregate aggregate = RedisAggregate.Sum);
+
+        Task<int> SortedSetStoreUnionMembersAsync(string storeKey, (string set, int weight)[] sets, RedisAggregate aggregate = RedisAggregate.Sum);
     }
 }

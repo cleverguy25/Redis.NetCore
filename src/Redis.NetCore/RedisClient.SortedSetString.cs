@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Redis.NetCore;
 using Redis.NetCore.Abstractions;
+using Redis.NetCore.Constants;
 
 namespace Redis.NetCore
 {
@@ -35,6 +37,11 @@ namespace Redis.NetCore
         public Task<int?> SortedSetGetScoreStringAsync(string setKey, string member)
         {
             return SortedSetGetScoreAsync(setKey, member.ToBytes());
+        }
+
+        public Task<int> SortedSetIncrementByStringAsync(string setKey, string member, int increment)
+        {
+            return SortedSetIncrementByAsync(setKey, member.ToBytes(), increment);
         }
     }
 }

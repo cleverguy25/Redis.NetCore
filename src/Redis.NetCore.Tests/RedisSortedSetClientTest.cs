@@ -105,5 +105,334 @@ namespace Redis.NetCore.Tests
                 Assert.Equal(2, count);
             }
         }
+
+        [Fact]
+        public async Task SortedSetCountAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string setKey = nameof(SortedSetCountAsync);
+                await client.DeleteKeyAsync(setKey);
+
+                await client.SortedSetAddMembersAsync(setKey, ("Foo".ToBytes(), 3), ("Bar".ToBytes(), 6), ("FooBar".ToBytes(), 8));
+
+                var count = await client.SortedSetGetCountAsync(setKey, "3", "6");
+                Assert.Equal(2, count);
+
+                count = await client.SortedSetGetCountAsync(setKey, "(3", "6");
+                Assert.Equal(1, count);
+
+                count = await client.SortedSetGetCountAsync(setKey, "3", "(6");
+                Assert.Equal(1, count);
+
+                count = await client.SortedSetGetCountAsync(setKey, "-inf", "+inf");
+                Assert.Equal(3, count);
+            }
+        }
+
+        [Fact]
+        public async Task SortedSetIncrementByAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string setKey = nameof(SortedSetIncrementByAsync);
+                await client.DeleteKeyAsync(setKey);
+
+                await client.SortedSetAddMembersAsync(setKey, ("Foo".ToBytes(), 5), ("Bar".ToBytes(), 6));
+
+                var value = await client.SortedSetIncrementByAsync(setKey, "Foo".ToBytes(), 3);
+                Assert.Equal(8, value);
+
+                var score = await client.SortedSetGetScoreAsync(setKey, "Foo".ToBytes());
+                Assert.Equal(8, score);
+            }
+        }
+
+        [Fact]
+        public async Task SortedSetStoreIntersectionMembersAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string setKey = nameof(SortedSetStoreIntersectionMembersAsync);
+                const string setKey1 = setKey + "1";
+                const string setKey2 = setKey + "2";
+                const string storeKey = setKey + "3";
+                await client.DeleteKeyAsync(setKey1);
+                await client.DeleteKeyAsync(setKey2);
+                await client.DeleteKeyAsync(storeKey);
+
+                await client.SortedSetAddMembersAsync(setKey1, ("one".ToBytes(), 1), ("two".ToBytes(), 2));
+                await client.SortedSetAddMembersAsync(setKey2, ("one".ToBytes(), 1), ("two".ToBytes(), 2), ("three".ToBytes(), 3));
+
+                var count = await client.SortedSetStoreIntersectionMembersAsync(storeKey, new[] { setKey1, setKey2 });
+                Assert.Equal(2, count);
+
+                var score = await client.SortedSetGetScoreAsync(storeKey, "one".ToBytes());
+                Assert.Equal(2, score);
+
+                score = await client.SortedSetGetScoreAsync(storeKey, "two".ToBytes());
+                Assert.Equal(4, score);
+            }
+        }
+
+        [Fact]
+        public async Task SortedSetStoreIntersectionMembersWithAggregateAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string setKey = nameof(SortedSetStoreIntersectionMembersWithAggregateAsync);
+                const string setKey1 = setKey + "1";
+                const string setKey2 = setKey + "2";
+                const string storeKey = setKey + "3";
+                await client.DeleteKeyAsync(setKey1);
+                await client.DeleteKeyAsync(setKey2);
+                await client.DeleteKeyAsync(storeKey);
+
+                await client.SortedSetAddMembersAsync(setKey1, ("one".ToBytes(), 1), ("two".ToBytes(), 2));
+                await client.SortedSetAddMembersAsync(setKey2, ("one".ToBytes(), 2), ("two".ToBytes(), 3), ("three".ToBytes(), 4));
+
+                var count = await client.SortedSetStoreIntersectionMembersAsync(storeKey, new[] { setKey1, setKey2 }, RedisAggregate.Min);
+                Assert.Equal(2, count);
+
+                var score = await client.SortedSetGetScoreAsync(storeKey, "one".ToBytes());
+                Assert.Equal(1, score);
+
+                score = await client.SortedSetGetScoreAsync(storeKey, "two".ToBytes());
+                Assert.Equal(2, score);
+
+                await client.DeleteKeyAsync(storeKey);
+
+                count = await client.SortedSetStoreIntersectionMembersAsync(storeKey, new[] { setKey1, setKey2 }, RedisAggregate.Max);
+                Assert.Equal(2, count);
+
+                score = await client.SortedSetGetScoreAsync(storeKey, "one".ToBytes());
+                Assert.Equal(2, score);
+
+                score = await client.SortedSetGetScoreAsync(storeKey, "two".ToBytes());
+                Assert.Equal(3, score);
+            }
+        }
+
+        [Fact]
+        public async Task SortedSetStoreIntersectionMembersWithAggregateAndWeightsAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string setKey = nameof(SortedSetStoreIntersectionMembersWithAggregateAndWeightsAsync);
+                const string setKey1 = setKey + "1";
+                const string setKey2 = setKey + "2";
+                const string storeKey = setKey + "3";
+                await client.DeleteKeyAsync(setKey1);
+                await client.DeleteKeyAsync(setKey2);
+                await client.DeleteKeyAsync(storeKey);
+
+                await client.SortedSetAddMembersAsync(setKey1, ("one".ToBytes(), 1), ("two".ToBytes(), 2));
+                await client.SortedSetAddMembersAsync(setKey2, ("one".ToBytes(), 2), ("two".ToBytes(), 3), ("three".ToBytes(), 4));
+
+                var count = await client.SortedSetStoreIntersectionMembersAsync(storeKey, new[] { (setKey1, 2), (setKey2, 3) }, RedisAggregate.Min);
+                Assert.Equal(2, count);
+
+                var score = await client.SortedSetGetScoreAsync(storeKey, "one".ToBytes());
+                Assert.Equal(2, score);
+
+                score = await client.SortedSetGetScoreAsync(storeKey, "two".ToBytes());
+                Assert.Equal(4, score);
+
+                await client.DeleteKeyAsync(storeKey);
+
+                count = await client.SortedSetStoreIntersectionMembersAsync(storeKey, new[] { (setKey1, 2), (setKey2, 3) }, RedisAggregate.Max);
+                Assert.Equal(2, count);
+
+                score = await client.SortedSetGetScoreAsync(storeKey, "one".ToBytes());
+                Assert.Equal(6, score);
+
+                score = await client.SortedSetGetScoreAsync(storeKey, "two".ToBytes());
+                Assert.Equal(9, score);
+            }
+        }
+
+        [Fact]
+        public async Task SortedSetStoreIntersectionMembersWeightsAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string setKey = nameof(SortedSetStoreIntersectionMembersWeightsAsync);
+                const string setKey1 = setKey + "1";
+                const string setKey2 = setKey + "2";
+                const string storeKey = setKey + "3";
+                await client.DeleteKeyAsync(setKey1);
+                await client.DeleteKeyAsync(setKey2);
+                await client.DeleteKeyAsync(storeKey);
+
+                await client.SortedSetAddMembersAsync(setKey1, ("one".ToBytes(), 1), ("two".ToBytes(), 2));
+                await client.SortedSetAddMembersAsync(setKey2, ("one".ToBytes(), 1), ("two".ToBytes(), 2), ("three".ToBytes(), 3));
+
+                var count = await client.SortedSetStoreIntersectionMembersAsync(storeKey, new[] { (setKey1, 2), (setKey2, 3) });
+                Assert.Equal(2, count);
+
+                var score = await client.SortedSetGetScoreAsync(storeKey, "one".ToBytes());
+                Assert.Equal(5, score);
+
+                score = await client.SortedSetGetScoreAsync(storeKey, "two".ToBytes());
+                Assert.Equal(10, score);
+            }
+        }
+
+        [Fact]
+        public async Task SortedSetStoreUnionMembersAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string setKey = nameof(SortedSetStoreUnionMembersAsync);
+                const string setKey1 = setKey + "1";
+                const string setKey2 = setKey + "2";
+                const string storeKey = setKey + "3";
+                await client.DeleteKeyAsync(setKey1);
+                await client.DeleteKeyAsync(setKey2);
+                await client.DeleteKeyAsync(storeKey);
+
+                await client.SortedSetAddMembersAsync(setKey1, ("one".ToBytes(), 1), ("two".ToBytes(), 2));
+                await client.SortedSetAddMembersAsync(setKey2, ("one".ToBytes(), 1), ("two".ToBytes(), 2), ("three".ToBytes(), 3));
+
+                var count = await client.SortedSetStoreUnionMembersAsync(storeKey, new[] { setKey1, setKey2 });
+                Assert.Equal(3, count);
+
+                var score = await client.SortedSetGetScoreAsync(storeKey, "one".ToBytes());
+                Assert.Equal(2, score);
+
+                score = await client.SortedSetGetScoreAsync(storeKey, "two".ToBytes());
+                Assert.Equal(4, score);
+
+                score = await client.SortedSetGetScoreAsync(storeKey, "three".ToBytes());
+                Assert.Equal(3, score);
+            }
+        }
+
+        [Fact]
+        public async Task SortedSetStoreUnionMembersWithAggregateAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string setKey = nameof(SortedSetStoreUnionMembersWithAggregateAsync);
+                const string setKey1 = setKey + "1";
+                const string setKey2 = setKey + "2";
+                const string storeKey = setKey + "3";
+                await client.DeleteKeyAsync(setKey1);
+                await client.DeleteKeyAsync(setKey2);
+                await client.DeleteKeyAsync(storeKey);
+
+                await client.SortedSetAddMembersAsync(setKey1, ("one".ToBytes(), 1), ("two".ToBytes(), 2));
+                await client.SortedSetAddMembersAsync(setKey2, ("one".ToBytes(), 2), ("two".ToBytes(), 3), ("three".ToBytes(), 4));
+
+                var count = await client.SortedSetStoreUnionMembersAsync(storeKey, new[] { setKey1, setKey2 }, RedisAggregate.Min);
+                Assert.Equal(3, count);
+
+                var score = await client.SortedSetGetScoreAsync(storeKey, "one".ToBytes());
+                Assert.Equal(1, score);
+
+                score = await client.SortedSetGetScoreAsync(storeKey, "two".ToBytes());
+                Assert.Equal(2, score);
+
+                score = await client.SortedSetGetScoreAsync(storeKey, "three".ToBytes());
+                Assert.Equal(4, score);
+
+                await client.DeleteKeyAsync(storeKey);
+
+                count = await client.SortedSetStoreUnionMembersAsync(storeKey, new[] { setKey1, setKey2 }, RedisAggregate.Max);
+                Assert.Equal(3, count);
+
+                score = await client.SortedSetGetScoreAsync(storeKey, "one".ToBytes());
+                Assert.Equal(2, score);
+
+                score = await client.SortedSetGetScoreAsync(storeKey, "two".ToBytes());
+                Assert.Equal(3, score);
+
+                score = await client.SortedSetGetScoreAsync(storeKey, "three".ToBytes());
+                Assert.Equal(4, score);
+            }
+        }
+
+        [Fact]
+        public async Task SortedSetStoreUnionMembersWithAggregateAndWeightsAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string setKey = nameof(SortedSetStoreUnionMembersWithAggregateAndWeightsAsync);
+                const string setKey1 = setKey + "1";
+                const string setKey2 = setKey + "2";
+                const string storeKey = setKey + "3";
+                await client.DeleteKeyAsync(setKey1);
+                await client.DeleteKeyAsync(setKey2);
+                await client.DeleteKeyAsync(storeKey);
+
+                await client.SortedSetAddMembersAsync(setKey1, ("one".ToBytes(), 1), ("two".ToBytes(), 2));
+                await client.SortedSetAddMembersAsync(setKey2, ("one".ToBytes(), 2), ("two".ToBytes(), 3), ("three".ToBytes(), 4));
+
+                var count = await client.SortedSetStoreUnionMembersAsync(storeKey, new[] { (setKey1, 2), (setKey2, 3) }, RedisAggregate.Min);
+                Assert.Equal(3, count);
+
+                var score = await client.SortedSetGetScoreAsync(storeKey, "one".ToBytes());
+                Assert.Equal(2, score);
+
+                score = await client.SortedSetGetScoreAsync(storeKey, "two".ToBytes());
+                Assert.Equal(4, score);
+
+                score = await client.SortedSetGetScoreAsync(storeKey, "three".ToBytes());
+                Assert.Equal(12, score);
+
+                await client.DeleteKeyAsync(storeKey);
+
+                count = await client.SortedSetStoreUnionMembersAsync(storeKey, new[] { (setKey1, 2), (setKey2, 3) }, RedisAggregate.Max);
+                Assert.Equal(3, count);
+
+                score = await client.SortedSetGetScoreAsync(storeKey, "one".ToBytes());
+                Assert.Equal(6, score);
+
+                score = await client.SortedSetGetScoreAsync(storeKey, "two".ToBytes());
+                Assert.Equal(9, score);
+
+                score = await client.SortedSetGetScoreAsync(storeKey, "three".ToBytes());
+                Assert.Equal(12, score);
+            }
+        }
+
+        [Fact]
+        public async Task SortedSetStoreUnionMembersWeightsAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string setKey = nameof(SortedSetStoreUnionMembersWeightsAsync);
+                const string setKey1 = setKey + "1";
+                const string setKey2 = setKey + "2";
+                const string storeKey = setKey + "3";
+                await client.DeleteKeyAsync(setKey1);
+                await client.DeleteKeyAsync(setKey2);
+                await client.DeleteKeyAsync(storeKey);
+
+                await client.SortedSetAddMembersAsync(setKey1, ("one".ToBytes(), 1), ("two".ToBytes(), 2));
+                await client.SortedSetAddMembersAsync(setKey2, ("one".ToBytes(), 1), ("two".ToBytes(), 2), ("three".ToBytes(), 3));
+
+                var count = await client.SortedSetStoreUnionMembersAsync(storeKey, new[] { (setKey1, 2), (setKey2, 3) });
+                Assert.Equal(3, count);
+
+                var score = await client.SortedSetGetScoreAsync(storeKey, "one".ToBytes());
+                Assert.Equal(5, score);
+
+                score = await client.SortedSetGetScoreAsync(storeKey, "two".ToBytes());
+                Assert.Equal(10, score);
+
+                score = await client.SortedSetGetScoreAsync(storeKey, "three".ToBytes());
+                Assert.Equal(9, score);
+            }
+        }
+
+        private static void CheckSortedSetTuples((byte[] member, int weight)[] expected, (byte[] member, int weight)[] items)
+        {
+            for (var i = 0; i < expected.Length; i++)
+            {
+                Assert.Equal(expected[i].member, items[i].member);
+                Assert.Equal(expected[i].weight, items[i].weight);
+            }
+        }
     }
 }

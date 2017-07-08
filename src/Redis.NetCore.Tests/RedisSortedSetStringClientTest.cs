@@ -90,5 +90,23 @@ namespace Redis.NetCore.Tests
                 Assert.Null(score);
             }
         }
+
+        [Fact]
+        public async Task SortedSetIncrementByStringAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string setKey = nameof(SortedSetIncrementByStringAsync);
+                await client.DeleteKeyAsync(setKey);
+
+                await client.SortedSetAddMembersStringAsync(setKey, ("Foo", 5), ("Bar", 6));
+
+                var value = await client.SortedSetIncrementByStringAsync(setKey, "Foo", 3);
+                Assert.Equal(8, value);
+
+                var score = await client.SortedSetGetScoreStringAsync(setKey, "Foo");
+                Assert.Equal(8, score);
+            }
+        }
     }
 }
