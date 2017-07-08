@@ -298,12 +298,12 @@ namespace Redis.NetCore.Pipeline
                 {
                     var value = await ReadArrayAsync().ConfigureAwait(false);
                     var collapseBytes = new List<byte> { RedisProtocolContants.Array };
-                    collapseBytes.AddRange(value.Length.ToString(CultureInfo.InvariantCulture).ToBytes());
+                    collapseBytes.AddRange(value.Length.ToBytes());
                     collapseBytes.AddRange(RedisProtocolContants.LineEnding);
                     foreach (var byteArray in value)
                     {
                         collapseBytes.Add(RedisProtocolContants.BulkString);
-                        collapseBytes.AddRange(byteArray.Length.ToString(CultureInfo.InvariantCulture).ToBytes());
+                        collapseBytes.AddRange(byteArray.Length.ToBytes());
                         collapseBytes.AddRange(RedisProtocolContants.LineEnding);
                         collapseBytes.AddRange(byteArray);
                         collapseBytes.AddRange(RedisProtocolContants.LineEnding);

@@ -148,7 +148,7 @@ namespace Redis.NetCore
             CheckKey(hashKey);
             CheckField(field);
 
-            var amountBytes = amount.ToString(CultureInfo.InvariantCulture).ToBytes();
+            var amountBytes = amount.ToBytes();
             var bytes = await SendCommandAsync(RedisCommands.HashIncrementBy, hashKey.ToBytes(), field.ToBytes(), amountBytes).ConfigureAwait(false);
             return ConvertBytesToInteger(bytes);
         }
@@ -158,7 +158,7 @@ namespace Redis.NetCore
             CheckKey(hashKey);
             CheckField(field);
 
-            var amountBytes = amount.ToString(CultureInfo.InvariantCulture).ToBytes();
+            var amountBytes = amount.ToBytes();
             var bytes = await SendCommandAsync(RedisCommands.HashIncrementByFloat, hashKey.ToBytes(), field.ToBytes(), amountBytes).ConfigureAwait(false);
             var stringValue = Encoding.UTF8.GetString(bytes);
             if (float.TryParse(stringValue, out float value))
@@ -181,7 +181,7 @@ namespace Redis.NetCore
         {
             CheckKey(hashKey);
 
-            var cursorPositionBytes = cursor.CursorPosition.ToString(CultureInfo.InvariantCulture).ToBytes();
+            var cursorPositionBytes = cursor.CursorPosition.ToBytes();
             var bytes = await SendMultipleCommandAsync(RedisCommands.HashScan, hashKey.ToBytes(), cursorPositionBytes).ConfigureAwait(false);
             return ConvertToHashScanCursor(bytes);
         }
@@ -190,7 +190,7 @@ namespace Redis.NetCore
         {
             CheckKey(hashKey);
 
-            var countBytes = count.ToString(CultureInfo.InvariantCulture).ToBytes();
+            var countBytes = count.ToBytes();
             var bytes = await SendMultipleCommandAsync(RedisCommands.HashScan, hashKey.ToBytes(), ZeroBit, "COUNT".ToBytes(), countBytes).ConfigureAwait(false);
             return ConvertToHashScanCursor(bytes);
         }
@@ -199,8 +199,8 @@ namespace Redis.NetCore
         {
             CheckKey(hashKey);
 
-            var countBytes = count.ToString(CultureInfo.InvariantCulture).ToBytes();
-            var cursorPositionBytes = cursor.CursorPosition.ToString(CultureInfo.InvariantCulture).ToBytes();
+            var countBytes = count.ToBytes();
+            var cursorPositionBytes = cursor.CursorPosition.ToBytes();
             var bytes = await SendMultipleCommandAsync(RedisCommands.HashScan, hashKey.ToBytes(), cursorPositionBytes, "COUNT".ToBytes(), countBytes).ConfigureAwait(false);
             return ConvertToHashScanCursor(bytes);
         }
@@ -217,7 +217,7 @@ namespace Redis.NetCore
         {
             CheckKey(hashKey);
 
-            var cursorPositionBytes = cursor.CursorPosition.ToString(CultureInfo.InvariantCulture).ToBytes();
+            var cursorPositionBytes = cursor.CursorPosition.ToBytes();
             var bytes = await SendMultipleCommandAsync(RedisCommands.HashScan, hashKey.ToBytes(), cursorPositionBytes, "MATCH".ToBytes(), match.ToBytes()).ConfigureAwait(false);
             return ConvertToHashScanCursor(bytes);
         }
@@ -226,7 +226,7 @@ namespace Redis.NetCore
         {
             CheckKey(hashKey);
 
-            var countBytes = count.ToString(CultureInfo.InvariantCulture).ToBytes();
+            var countBytes = count.ToBytes();
             var bytes = await SendMultipleCommandAsync(RedisCommands.HashScan, hashKey.ToBytes(), ZeroBit, "MATCH".ToBytes(), match.ToBytes(), "COUNT".ToBytes(), countBytes).ConfigureAwait(false);
             return ConvertToHashScanCursor(bytes);
         }
@@ -235,8 +235,8 @@ namespace Redis.NetCore
         {
             CheckKey(hashKey);
 
-            var countBytes = count.ToString(CultureInfo.InvariantCulture).ToBytes();
-            var cursorPositionBytes = cursor.CursorPosition.ToString(CultureInfo.InvariantCulture).ToBytes();
+            var countBytes = count.ToBytes();
+            var cursorPositionBytes = cursor.CursorPosition.ToBytes();
             var bytes = await SendMultipleCommandAsync(RedisCommands.HashScan, hashKey.ToBytes(), cursorPositionBytes, "MATCH".ToBytes(), match.ToBytes(), "COUNT".ToBytes(), countBytes).ConfigureAwait(false);
             return ConvertToHashScanCursor(bytes);
         }

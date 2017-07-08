@@ -20,8 +20,8 @@ namespace Redis.NetCore
         {
             CheckKey(key);
 
-            var beginBytes = begin.ToString(CultureInfo.InvariantCulture).ToBytes();
-            var endBytes = end.ToString(CultureInfo.InvariantCulture).ToBytes();
+            var beginBytes = begin.ToBytes();
+            var endBytes = end.ToBytes();
             var bytes = await SendCommandAsync(RedisCommands.BitCount, key.ToBytes(), beginBytes, endBytes).ConfigureAwait(false);
             return ConvertBytesToInteger(bytes);
         }
@@ -31,8 +31,8 @@ namespace Redis.NetCore
             CheckKey(key);
 
             var bitBytes = bit ? OneBit : ZeroBit;
-            var beginBytes = begin.ToString(CultureInfo.InvariantCulture).ToBytes();
-            var endBytes = end.ToString(CultureInfo.InvariantCulture).ToBytes();
+            var beginBytes = begin.ToBytes();
+            var endBytes = end.ToBytes();
             var bytes =
                 await SendCommandAsync(RedisCommands.BitPosition, key.ToBytes(), bitBytes, beginBytes, endBytes).ConfigureAwait(false);
             return ConvertBytesToInteger(bytes);
@@ -43,7 +43,7 @@ namespace Redis.NetCore
             CheckKey(key);
 
             var bitBytes = bit ? OneBit : ZeroBit;
-            var indexBytes = index.ToString(CultureInfo.InvariantCulture).ToBytes();
+            var indexBytes = index.ToBytes();
             var bytes = await SendCommandAsync(RedisCommands.SetBit, key.ToBytes(), indexBytes, bitBytes).ConfigureAwait(false);
             return ConvertBytesToBool(bytes);
         }
@@ -52,7 +52,7 @@ namespace Redis.NetCore
         {
             CheckKey(key);
 
-            var indexBytes = index.ToString(CultureInfo.InvariantCulture).ToBytes();
+            var indexBytes = index.ToBytes();
             var bytes = await SendCommandAsync(RedisCommands.GetBit, key.ToBytes(), indexBytes).ConfigureAwait(false);
             return ConvertBytesToBool(bytes);
         }

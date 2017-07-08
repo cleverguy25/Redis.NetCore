@@ -58,7 +58,7 @@ namespace Redis.NetCore
             CheckKey(key);
 
             var milliseconds = (long)expiration.TotalMilliseconds;
-            var expirationBytes = milliseconds.ToString(CultureInfo.InvariantCulture).ToBytes();
+            var expirationBytes = milliseconds.ToBytes();
             return SendCommandAsync(RedisCommands.Set, key.ToBytes(), data, RedisCommands.PrecisionExpiration, expirationBytes);
         }
 
@@ -66,7 +66,7 @@ namespace Redis.NetCore
         {
             CheckKey(key);
 
-            var expirationBytes = seconds.ToString(CultureInfo.InvariantCulture).ToBytes();
+            var expirationBytes = seconds.ToBytes();
             return SendCommandAsync(RedisCommands.Set, key.ToBytes(), data, RedisCommands.Expiration, expirationBytes);
         }
 
@@ -83,7 +83,7 @@ namespace Redis.NetCore
             CheckKey(key);
 
             var milliseconds = (long)expiration.TotalMilliseconds;
-            var expirationBytes = milliseconds.ToString(CultureInfo.InvariantCulture).ToBytes();
+            var expirationBytes = milliseconds.ToBytes();
             var bytes = await SendCommandAsync(RedisCommands.Set, key.ToBytes(), data, RedisCommands.SetExists, RedisCommands.PrecisionExpiration, expirationBytes).ConfigureAwait(false);
             return bytes != null;
         }
@@ -92,7 +92,7 @@ namespace Redis.NetCore
         {
             CheckKey(key);
 
-            var expirationBytes = seconds.ToString(CultureInfo.InvariantCulture).ToBytes();
+            var expirationBytes = seconds.ToBytes();
             var bytes = await SendCommandAsync(RedisCommands.Set, key.ToBytes(), data, RedisCommands.SetExists, RedisCommands.Expiration, expirationBytes).ConfigureAwait(false);
             return bytes != null;
         }
@@ -110,7 +110,7 @@ namespace Redis.NetCore
             CheckKey(key);
 
             var milliseconds = (long)expiration.TotalMilliseconds;
-            var expirationBytes = milliseconds.ToString(CultureInfo.InvariantCulture).ToBytes();
+            var expirationBytes = milliseconds.ToBytes();
             var bytes = await SendCommandAsync(RedisCommands.Set, key.ToBytes(), data, RedisCommands.SetNotExists, RedisCommands.PrecisionExpiration, expirationBytes).ConfigureAwait(false);
             return bytes != null;
         }
@@ -119,7 +119,7 @@ namespace Redis.NetCore
         {
             CheckKey(key);
 
-            var expirationBytes = seconds.ToString(CultureInfo.InvariantCulture).ToBytes();
+            var expirationBytes = seconds.ToBytes();
             var bytes = await SendCommandAsync(RedisCommands.Set, key.ToBytes(), data, RedisCommands.SetNotExists, RedisCommands.Expiration, expirationBytes).ConfigureAwait(false);
             return bytes != null;
         }
@@ -128,7 +128,7 @@ namespace Redis.NetCore
         {
             CheckKey(key);
 
-            var offsetBytes = offset.ToString(CultureInfo.InvariantCulture).ToBytes();
+            var offsetBytes = offset.ToBytes();
             var bytes = await SendCommandAsync(RedisCommands.SetRange, key.ToBytes(), offsetBytes, data).ConfigureAwait(false);
             return ConvertBytesToInteger(bytes);
         }
@@ -168,8 +168,8 @@ namespace Redis.NetCore
         {
             CheckKey(key);
 
-            var beginBytes = begin.ToString(CultureInfo.InvariantCulture).ToBytes();
-            var endBytes = end.ToString(CultureInfo.InvariantCulture).ToBytes();
+            var beginBytes = begin.ToBytes();
+            var endBytes = end.ToBytes();
             return SendCommandAsync(RedisCommands.GetRange, key.ToBytes(), beginBytes, endBytes);
         }
 

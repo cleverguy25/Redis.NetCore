@@ -13,6 +13,11 @@ namespace Redis.NetCore
 {
     public static class DataExtensions
     {
+        public static byte[][] ToBytes(this IEnumerable<string> values)
+        {
+            return values.Select(value => value.ToBytes()).ToArray();
+        }
+
         public static byte[] ToBytes(this string value)
         {
             return Encoding.UTF8.GetBytes(value);
@@ -24,6 +29,16 @@ namespace Redis.NetCore
         }
 
         public static byte[] ToBytes(this int value)
+        {
+            return ToBytes(value.ToString(CultureInfo.InvariantCulture));
+        }
+
+        public static byte[] ToBytes(this long value)
+        {
+            return ToBytes(value.ToString(CultureInfo.InvariantCulture));
+        }
+
+        public static byte[] ToBytes(this float value)
         {
             return ToBytes(value.ToString(CultureInfo.InvariantCulture));
         }

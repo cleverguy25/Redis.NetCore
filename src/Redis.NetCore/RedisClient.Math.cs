@@ -25,7 +25,7 @@ namespace Redis.NetCore
         {
             CheckKey(key);
 
-            var amountBytes = amount.ToString(CultureInfo.InvariantCulture).ToBytes();
+            var amountBytes = amount.ToBytes();
             var bytes = await SendCommandAsync(RedisCommands.IncrementBy, key.ToBytes(), amountBytes).ConfigureAwait(false);
             return ConvertBytesToInteger(bytes);
         }
@@ -42,7 +42,7 @@ namespace Redis.NetCore
         {
             CheckKey(key);
 
-            var amountBytes = amount.ToString(CultureInfo.InvariantCulture).ToBytes();
+            var amountBytes = amount.ToBytes();
             var bytes = await SendCommandAsync(RedisCommands.DecrementBy, key.ToBytes(), amountBytes).ConfigureAwait(false);
             return ConvertBytesToInteger(bytes);
         }
@@ -51,7 +51,7 @@ namespace Redis.NetCore
         {
             CheckKey(key);
 
-            var amountBytes = amount.ToString(CultureInfo.InvariantCulture).ToBytes();
+            var amountBytes = amount.ToBytes();
             var bytes = await SendCommandAsync(RedisCommands.IncrementByFloat, key.ToBytes(), amountBytes).ConfigureAwait(false);
             var stringValue = Encoding.UTF8.GetString(bytes);
             if (float.TryParse(stringValue, out float value))

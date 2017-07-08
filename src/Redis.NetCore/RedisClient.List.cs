@@ -102,7 +102,7 @@ namespace Redis.NetCore
             CheckListKey(listKey1);
             CheckListKey(listKey2);
 
-            var timeoutBytes = timeoutSeconds.ToString(CultureInfo.InvariantCulture).ToBytes();
+            var timeoutBytes = timeoutSeconds.ToBytes();
             return SendCommandAsync(RedisCommands.ListBlockingTailPopAndPush, listKey1.ToBytes(), listKey2.ToBytes(), timeoutBytes);
         }
 
@@ -110,7 +110,7 @@ namespace Redis.NetCore
         {
             CheckListKey(listKey);
 
-            var indexBytes = index.ToString(CultureInfo.InvariantCulture).ToBytes();
+            var indexBytes = index.ToBytes();
             return SendCommandAsync(RedisCommands.ListIndex, listKey.ToBytes(), indexBytes);
         }
 
@@ -143,8 +143,8 @@ namespace Redis.NetCore
         {
             CheckListKey(listKey);
 
-            var startBytes = start.ToString(CultureInfo.InvariantCulture).ToBytes();
-            var endBytes = end.ToString(CultureInfo.InvariantCulture).ToBytes();
+            var startBytes = start.ToBytes();
+            var endBytes = end.ToBytes();
             var messageBytes = new[] { listKey.ToBytes(), startBytes, endBytes };
             var request = ComposeRequest(RedisCommands.ListRange, messageBytes);
             var bytes = await SendMultipleCommandAsync(request).ConfigureAwait(false);
@@ -155,7 +155,7 @@ namespace Redis.NetCore
         {
             CheckListKey(listKey);
 
-            var countBytes = count.ToString(CultureInfo.InvariantCulture).ToBytes();
+            var countBytes = count.ToBytes();
             var bytes = await SendCommandAsync(RedisCommands.ListRemove, listKey.ToBytes(), countBytes, value).ConfigureAwait(false);
             return ConvertBytesToInteger(bytes);
         }
@@ -164,7 +164,7 @@ namespace Redis.NetCore
         {
             CheckListKey(listKey);
 
-            var indexBytes = index.ToString(CultureInfo.InvariantCulture).ToBytes();
+            var indexBytes = index.ToBytes();
             return SendCommandAsync(RedisCommands.ListSet, listKey.ToBytes(), indexBytes, value);
         }
 
@@ -172,8 +172,8 @@ namespace Redis.NetCore
         {
             CheckListKey(listKey);
 
-            var startBytes = start.ToString(CultureInfo.InvariantCulture).ToBytes();
-            var endBytes = end.ToString(CultureInfo.InvariantCulture).ToBytes();
+            var startBytes = start.ToBytes();
+            var endBytes = end.ToBytes();
             return SendCommandAsync(RedisCommands.ListTrim, listKey.ToBytes(), startBytes, endBytes);
         }
 

@@ -16,7 +16,7 @@ namespace Redis.NetCore
     {
         private static byte[][] ComposeRequest(byte[] commandName, IEnumerable<string> values)
         {
-            return ComposeRequest(commandName, values.Select(value => value.ToBytes()).ToArray());
+            return ComposeRequest(commandName, values.ToBytes());
         }
 
         private static byte[][] ComposeRequest(byte[] commandName, params byte[][] values)
@@ -24,17 +24,19 @@ namespace Redis.NetCore
             var request = new byte[values.Length + 1][];
             request[0] = commandName;
 
-            for (var i = 0; i < values.Length; i++)
-            {
-                request[i + 1] = values[i];
-            }
+            CopyBytesToRequest(values, request, 1);
 
             return request;
         }
 
         private static byte[][] ComposeRequest(byte[] commandName, byte[] extra, IEnumerable<string> values)
         {
-            return ComposeRequest(commandName, extra, values.Select(value => value.ToBytes()).ToArray());
+            return ComposeRequest(commandName, extra, values.ToBytes());
+        }
+
+        private static byte[][] ComposeRequest(byte[] commandName, byte[] extra, byte[] extra2, IEnumerable<string> values)
+        {
+            return ComposeRequest(commandName, extra, extra2, values.ToBytes());
         }
 
         private static byte[][] ComposeRequest(byte[] commandName, byte[] extra)
@@ -52,10 +54,7 @@ namespace Redis.NetCore
             request[0] = commandName;
             request[1] = extra;
 
-            for (var i = 0; i < values.Length; i++)
-            {
-                request[i + 2] = values[i];
-            }
+            CopyBytesToRequest(values, request, 2);
 
             return request;
         }
@@ -67,12 +66,19 @@ namespace Redis.NetCore
             request[1] = extra;
             request[2] = extra2;
 
-            for (var i = 0; i < values.Length; i++)
-            {
-                request[i + 3] = values[i];
-            }
+            CopyBytesToRequest(values, request, 3);
 
             return request;
+        }
+
+        private static int CopyBytesToRequest(IReadOnlyList<byte[]> values, IList<byte[]> request, int offset)
+        {
+            for (var i = 0; i < values.Count; i++)
+            {
+                request[i + offset] = values[i];
+            }
+
+            return values.Count + offset;
         }
 
         private static int ConvertBytesToInteger(IEnumerable<byte> bytes)

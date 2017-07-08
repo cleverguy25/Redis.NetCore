@@ -105,7 +105,7 @@ namespace Redis.NetCore
             CheckKey(key);
 
             var milliseconds = (long)expiration.TotalMilliseconds;
-            var expirationBytes = milliseconds.ToString(CultureInfo.InvariantCulture).ToBytes();
+            var expirationBytes = milliseconds.ToBytes();
             var bytes = await SendCommandAsync(RedisCommands.PrecisionExpire, key.ToBytes(), expirationBytes).ConfigureAwait(false);
             return ConvertBytesToBool(bytes);
         }
@@ -114,7 +114,7 @@ namespace Redis.NetCore
         {
             CheckKey(key);
 
-            var expirationBytes = seconds.ToString(CultureInfo.InvariantCulture).ToBytes();
+            var expirationBytes = seconds.ToBytes();
             var bytes = await SendCommandAsync(RedisCommands.Expire, key.ToBytes(), expirationBytes).ConfigureAwait(false);
             return ConvertBytesToBool(bytes);
         }
@@ -126,7 +126,7 @@ namespace Redis.NetCore
             var epoch = new DateTime(1970, 1, 1);
             var timeSpan = dateTime - epoch;
             var milliseconds = (long)timeSpan.TotalMilliseconds;
-            var expirationBytes = milliseconds.ToString(CultureInfo.InvariantCulture).ToBytes();
+            var expirationBytes = milliseconds.ToBytes();
             var bytes = await SendCommandAsync(RedisCommands.PrecisionExpireAt, key.ToBytes(), expirationBytes).ConfigureAwait(false);
             return ConvertBytesToBool(bytes);
         }
@@ -185,22 +185,22 @@ namespace Redis.NetCore
 
         public async Task<ScanCursor> ScanAsync(ScanCursor cursor)
         {
-            var cursorPositionBytes = cursor.CursorPosition.ToString(CultureInfo.InvariantCulture).ToBytes();
+            var cursorPositionBytes = cursor.CursorPosition.ToBytes();
             var bytes = await SendMultipleCommandAsync(RedisCommands.Scan, cursorPositionBytes).ConfigureAwait(false);
             return ConvertToScanCursor(bytes);
         }
 
         public async Task<ScanCursor> ScanAsync(int count)
         {
-            var countBytes = count.ToString(CultureInfo.InvariantCulture).ToBytes();
+            var countBytes = count.ToBytes();
             var bytes = await SendMultipleCommandAsync(RedisCommands.Scan, ZeroBit, "COUNT".ToBytes(), countBytes).ConfigureAwait(false);
             return ConvertToScanCursor(bytes);
         }
 
         public async Task<ScanCursor> ScanAsync(ScanCursor cursor, int count)
         {
-            var countBytes = count.ToString(CultureInfo.InvariantCulture).ToBytes();
-            var cursorPositionBytes = cursor.CursorPosition.ToString(CultureInfo.InvariantCulture).ToBytes();
+            var countBytes = count.ToBytes();
+            var cursorPositionBytes = cursor.CursorPosition.ToBytes();
             var bytes = await SendMultipleCommandAsync(RedisCommands.Scan, cursorPositionBytes, "COUNT".ToBytes(), countBytes).ConfigureAwait(false);
             return ConvertToScanCursor(bytes);
         }
@@ -213,22 +213,22 @@ namespace Redis.NetCore
 
         public async Task<ScanCursor> ScanAsync(ScanCursor cursor, string match)
         {
-            var cursorPositionBytes = cursor.CursorPosition.ToString(CultureInfo.InvariantCulture).ToBytes();
+            var cursorPositionBytes = cursor.CursorPosition.ToBytes();
             var bytes = await SendMultipleCommandAsync(RedisCommands.Scan, cursorPositionBytes, "MATCH".ToBytes(), match.ToBytes()).ConfigureAwait(false);
             return ConvertToScanCursor(bytes);
         }
 
         public async Task<ScanCursor> ScanAsync(string match, int count)
         {
-            var countBytes = count.ToString(CultureInfo.InvariantCulture).ToBytes();
+            var countBytes = count.ToBytes();
             var bytes = await SendMultipleCommandAsync(RedisCommands.Scan, ZeroBit, "MATCH".ToBytes(), match.ToBytes(), "COUNT".ToBytes(), countBytes).ConfigureAwait(false);
             return ConvertToScanCursor(bytes);
         }
 
         public async Task<ScanCursor> ScanAsync(ScanCursor cursor, string match, int count)
         {
-            var countBytes = count.ToString(CultureInfo.InvariantCulture).ToBytes();
-            var cursorPositionBytes = cursor.CursorPosition.ToString(CultureInfo.InvariantCulture).ToBytes();
+            var countBytes = count.ToBytes();
+            var cursorPositionBytes = cursor.CursorPosition.ToBytes();
             var bytes = await SendMultipleCommandAsync(RedisCommands.Scan, cursorPositionBytes, "MATCH".ToBytes(), match.ToBytes(), "COUNT".ToBytes(), countBytes).ConfigureAwait(false);
             return ConvertToScanCursor(bytes);
         }
