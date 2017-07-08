@@ -4,7 +4,7 @@
     <Description>Async only library for accessing Redis from DotNet Core</Description>
     <Copyright>Copyright (c) PayScale</Copyright>
     <AssemblyTitle>Redis Client for .Net Core</AssemblyTitle>
-    <VersionPrefix>0.8-beta</VersionPrefix>
+    <VersionPrefix>0.8.2-beta</VersionPrefix>
     <Authors>PayScale;cleve.littlefield</Authors>
     <TargetFrameworks>netstandard1.6;net462</TargetFrameworks>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
