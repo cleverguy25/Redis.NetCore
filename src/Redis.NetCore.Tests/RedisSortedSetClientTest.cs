@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,6 +10,7 @@ using Xunit;
 namespace Redis.NetCore.Tests
 {
     [SuppressMessage("StyleCop", "SA1008", Justification = "StyleCop doesn't understand C#7 tuple return types yet.")]
+    [SuppressMessage("StyleCop", "SA1009", Justification = "StyleCop doesn't understand C#7 tuple return types yet.")]
     [Trait("Category", "Integration")]
     public class RedisSortedSetClientTest
     {
@@ -681,6 +683,92 @@ namespace Redis.NetCore.Tests
 
                 var items = await client.SortedSetGetRangeAsync(setKey, 0, -1);
                 Assert.Equal(new[] { "FooBar".ToBytes() }, items);
+            }
+        }
+
+        [Fact]
+        public async Task SortedSetScanAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string setKey = nameof(SortedSetScanAsync);
+                var data = TestClient.SetupTestSetItems();
+                await client.SortedSetAddMembersAsync(setKey, data.ToArray());
+
+                var cursor = await client.SortedSetScanAsync(setKey);
+                var items = cursor.GetMembers();
+                CheckItems(items);
+
+                cursor = await client.SortedSetScanAsync(setKey, cursor);
+                items = cursor.GetMembers();
+                CheckItems(items);
+            }
+        }
+
+        [Fact]
+        public async Task SortedSetScanWithCountAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string setKey = nameof(SortedSetScanWithCountAsync);
+                var data = TestClient.SetupTestSetItems();
+                await client.SortedSetAddMembersAsync(setKey, data.ToArray());
+
+                var cursor = await client.SortedSetScanAsync(setKey, 5);
+                var items = cursor.GetMembers();
+                CheckItems(items);
+
+                cursor = await client.SortedSetScanAsync(setKey, cursor, 5);
+                items = cursor.GetMembers();
+                CheckItems(items);
+            }
+        }
+
+        [Fact]
+        public async Task SortedSetScanWithMatchAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string setKey = nameof(SortedSetScanWithMatchAsync);
+                var data = TestClient.SetupTestSetItems();
+                await client.SortedSetAddMembersAsync(setKey, data.ToArray());
+
+                var cursor = await client.SortedSetScanAsync(setKey, "match*");
+                var items = cursor.GetMembers();
+                CheckItems(items);
+
+                cursor = await client.SortedSetScanAsync(setKey, cursor, "match*");
+                items = cursor.GetMembers();
+                CheckItems(items);
+            }
+        }
+
+        [Fact]
+        public async Task SortedSetScanWithMatchAndCountAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string setKey = nameof(SortedSetScanWithMatchAndCountAsync);
+                var data = TestClient.SetupTestSetItems();
+                await client.SortedSetAddMembersAsync(setKey, data.ToArray());
+
+                var cursor = await client.SortedSetScanAsync(setKey, "match*", 5);
+                var items = cursor.GetMembers();
+                CheckItems(items);
+
+                cursor = await client.SortedSetScanAsync(setKey, cursor, "match*", 5);
+                items = cursor.GetMembers();
+                CheckItems(items);
+            }
+        }
+
+        private static void CheckItems(IEnumerable<(byte[] Member, int Weight)> items)
+        {
+            foreach (var item in items)
+            {
+                var lastChar = item.Member.Last();
+                var weight = item.Weight.ToString(CultureInfo.InvariantCulture).Last();
+                Assert.Equal(weight, (char)lastChar);
             }
         }
     }

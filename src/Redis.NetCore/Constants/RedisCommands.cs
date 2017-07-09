@@ -129,6 +129,7 @@ namespace Redis.NetCore.Constants
         public static readonly byte[] SortedSetRemoveRangeByLex = "ZREMRANGEBYLEX".ToBytes();
         public static readonly byte[] SortedSetRemoveRangeByRank = "ZREMRANGEBYRANK".ToBytes();
         public static readonly byte[] SortedSetRemoveRangeByScore = "ZREMRANGEBYSCORE".ToBytes();
+        public static readonly byte[] SortedSetScan = "ZSCAN".ToBytes();
         public static readonly byte[] Weight = "WEIGHTS".ToBytes();
         public static readonly byte[] WithScores = "WITHSCORES".ToBytes();
         public static readonly byte[] Limit = "LIMIT".ToBytes();

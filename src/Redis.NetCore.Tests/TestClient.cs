@@ -4,6 +4,8 @@
 // </copyright>
 
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Threading.Tasks;
 using Castle.Components.DictionaryAdapter;
 using Redis.NetCore.Abstractions;
@@ -12,6 +14,7 @@ using Xunit;
 
 namespace Redis.NetCore.Tests
 {
+    [SuppressMessage("StyleCop", "SA1009", Justification = "StyleCop doesn't understand C#7 tuple return types yet.")]
     public static class TestClient
     {
         public static IRedisClient CreateClient()
@@ -69,6 +72,14 @@ namespace Redis.NetCore.Tests
             }
 
             return fields;
+        }
+
+        public static IEnumerable<(byte[] member, int score)> SetupTestSetItems(string prefix = "match", int count = 20)
+        {
+            for (var i = 0; i < 20; i++)
+            {
+                yield return ($"{prefix}{i}".ToBytes(), i);
+            }
         }
 
         public static string[] SetupTestSetMembers(string memberPrefix = "", int count = 20)

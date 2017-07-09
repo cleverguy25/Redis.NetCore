@@ -76,5 +76,21 @@ namespace Redis.NetCore.Abstractions
         Task<int> SortedSetRemoveRangeByRankAsync(string setKey, int start, int end);
 
         Task<int> SortedSetRemoveRangeByScoreAsync(string setKey, string min, string max);
+
+        Task<SortedSetScanCursor> SortedSetScanAsync(string setKey);
+
+        Task<SortedSetScanCursor> SortedSetScanAsync(string setKey, ScanCursor cursor);
+
+        Task<SortedSetScanCursor> SortedSetScanAsync(string setKey, int count);
+
+        Task<SortedSetScanCursor> SortedSetScanAsync(string setKey, ScanCursor cursor, int count);
+
+        Task<SortedSetScanCursor> SortedSetScanAsync(string setKey, string match);
+
+        Task<SortedSetScanCursor> SortedSetScanAsync(string setKey, ScanCursor cursor, string match);
+
+        Task<SortedSetScanCursor> SortedSetScanAsync(string setKey, string match, int count);
+
+        Task<SortedSetScanCursor> SortedSetScanAsync(string setKey, ScanCursor cursor, string match, int count);
     }
 }
