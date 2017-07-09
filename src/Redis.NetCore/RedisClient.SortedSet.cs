@@ -66,6 +66,22 @@ namespace Redis.NetCore
             return bytes == null ? (int?)null : ConvertBytesToInteger(bytes);
         }
 
+        public async Task<int?> SortedSetGetRankAsync(string setKey, byte[] member)
+        {
+            CheckSetKey(setKey);
+
+            var bytes = await SendCommandAsync(RedisCommands.SortedSetRank, setKey.ToBytes(), member).ConfigureAwait(false);
+            return bytes == null ? (int?)null : ConvertBytesToInteger(bytes);
+        }
+
+        public async Task<int?> SortedSetGetReverseRankAsync(string setKey, byte[] member)
+        {
+            CheckSetKey(setKey);
+
+            var bytes = await SendCommandAsync(RedisCommands.SortedSetReverseRank, setKey.ToBytes(), member).ConfigureAwait(false);
+            return bytes == null ? (int?)null : ConvertBytesToInteger(bytes);
+        }
+
         public async Task<int> SortedSetCardinalityAsync(string setKey)
         {
             CheckSetKey(setKey);

@@ -39,6 +39,16 @@ namespace Redis.NetCore
             return SortedSetGetScoreAsync(setKey, member.ToBytes());
         }
 
+        public Task<int?> SortedSetGetRankStringAsync(string setKey, string member)
+        {
+            return SortedSetGetRankAsync(setKey, member.ToBytes());
+        }
+
+        public Task<int?> SortedSetGetReverseRankStringAsync(string setKey, string member)
+        {
+            return SortedSetGetReverseRankAsync(setKey, member.ToBytes());
+        }
+
         public Task<int> SortedSetIncrementByStringAsync(string setKey, string member, int increment)
         {
             return SortedSetIncrementByAsync(setKey, member.ToBytes(), increment);

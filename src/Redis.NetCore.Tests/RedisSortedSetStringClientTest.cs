@@ -336,5 +336,35 @@ namespace Redis.NetCore.Tests
                 Assert.Equal(1, items[0].Weight);
             }
         }
+
+        [Fact]
+        public async Task SortedSetGetRankStringAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string setKey = nameof(SortedSetGetRankStringAsync);
+                await client.DeleteKeyAsync(setKey);
+
+                await client.SortedSetAddMembersStringAsync(setKey, ("Foo", 3), ("Bar", 6), ("FooBar", 8));
+
+                var rank = await client.SortedSetGetRankStringAsync(setKey, "Bar");
+                Assert.Equal(1, rank);
+            }
+        }
+
+        [Fact]
+        public async Task SortedSetGetReverseRankStringAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string setKey = nameof(SortedSetGetReverseRankStringAsync);
+                await client.DeleteKeyAsync(setKey);
+
+                await client.SortedSetAddMembersStringAsync(setKey, ("Foo", 3), ("Bar", 6), ("FooBar", 8));
+
+                var rank = await client.SortedSetGetReverseRankStringAsync(setKey, "FooBar");
+                Assert.Equal(0, rank);
+            }
+        }
     }
 }

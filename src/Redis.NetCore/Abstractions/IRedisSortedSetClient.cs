@@ -21,6 +21,10 @@ namespace Redis.NetCore.Abstractions
 
         Task<int?> SortedSetGetScoreAsync(string setKey, byte[] member);
 
+        Task<int?> SortedSetGetRankAsync(string setKey, byte[] member);
+
+        Task<int?> SortedSetGetReverseRankAsync(string setKey, byte[] member);
+
         Task<int> SortedSetGetCountAsync(string setKey, string min, string max);
 
         Task<int> SortedSetIncrementByAsync(string setKey, byte[] member, int increment);

@@ -131,6 +131,36 @@ namespace Redis.NetCore.Tests
         }
 
         [Fact]
+        public async Task SortedSetGetRankAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string setKey = nameof(SortedSetGetRankAsync);
+                await client.DeleteKeyAsync(setKey);
+
+                await client.SortedSetAddMembersAsync(setKey, ("Foo".ToBytes(), 3), ("Bar".ToBytes(), 6), ("FooBar".ToBytes(), 8));
+
+                var rank = await client.SortedSetGetRankAsync(setKey, "Bar".ToBytes());
+                Assert.Equal(1, rank);
+            }
+        }
+
+        [Fact]
+        public async Task SortedSetGetReverseRankAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string setKey = nameof(SortedSetGetReverseRankAsync);
+                await client.DeleteKeyAsync(setKey);
+
+                await client.SortedSetAddMembersAsync(setKey, ("Foo".ToBytes(), 3), ("Bar".ToBytes(), 6), ("FooBar".ToBytes(), 8));
+
+                var rank = await client.SortedSetGetReverseRankAsync(setKey, "FooBar".ToBytes());
+                Assert.Equal(0, rank);
+            }
+        }
+
+        [Fact]
         public async Task SortedSetIncrementByAsync()
         {
             using (var client = TestClient.CreateClient())

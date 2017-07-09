@@ -112,6 +112,8 @@ namespace Redis.NetCore.Constants
         public static readonly byte[] SortedSetAdd = "ZADD".ToBytes();
         public static readonly byte[] SortedSetCardinality = "ZCARD".ToBytes();
         public static readonly byte[] SortedSetScore = "ZSCORE".ToBytes();
+        public static readonly byte[] SortedSetRank = "ZRANK".ToBytes();
+        public static readonly byte[] SortedSetReverseRank = "ZREVRANK".ToBytes();
         public static readonly byte[] SortedSetCount = "ZCOUNT".ToBytes();
         public static readonly byte[] SortedSetLexCount = "ZLEXCOUNT".ToBytes();
         public static readonly byte[] SortedSetIncrementBy = "ZINCRBY".ToBytes();
