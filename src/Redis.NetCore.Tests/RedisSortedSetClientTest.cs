@@ -629,5 +629,59 @@ namespace Redis.NetCore.Tests
                 Assert.Equal(1, items[0].Weight);
             }
         }
+
+        [Fact]
+        public async Task SortedSetRemoveMembersAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string setKey = nameof(SortedSetRemoveMembersAsync);
+                await client.DeleteKeyAsync(setKey);
+
+                await client.SortedSetAddMembersAsync(setKey, ("Foo".ToBytes(), 5), ("Bar".ToBytes(), 6), ("FooBar".ToBytes(), 8));
+
+                var count = await client.SortedSetRemoveMembersAsync(setKey, "Foo".ToBytes(), "FooBar".ToBytes());
+                Assert.Equal(2, count);
+
+                var items = await client.SortedSetGetRangeAsync(setKey, 0, -1);
+                Assert.Equal(new[] { "Bar".ToBytes() }, items);
+            }
+        }
+
+        [Fact]
+        public async Task SortedSetRemoveRangeByScoreAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string setKey = nameof(SortedSetRemoveRangeByScoreAsync);
+                await client.DeleteKeyAsync(setKey);
+
+                await client.SortedSetAddMembersAsync(setKey, ("Foo".ToBytes(), 5), ("Bar".ToBytes(), 6), ("FooBar".ToBytes(), 8));
+
+                var count = await client.SortedSetRemoveRangeByScoreAsync(setKey, "6", "+inf");
+                Assert.Equal(2, count);
+
+                var items = await client.SortedSetGetRangeAsync(setKey, 0, -1);
+                Assert.Equal(new[] { "Foo".ToBytes() }, items);
+            }
+        }
+
+        [Fact]
+        public async Task SortedSetRemoveRangeByRankAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string setKey = nameof(SortedSetRemoveRangeByRankAsync);
+                await client.DeleteKeyAsync(setKey);
+
+                await client.SortedSetAddMembersAsync(setKey, ("Foo".ToBytes(), 5), ("Bar".ToBytes(), 6), ("FooBar".ToBytes(), 8));
+
+                var count = await client.SortedSetRemoveRangeByRankAsync(setKey, 0, 1);
+                Assert.Equal(2, count);
+
+                var items = await client.SortedSetGetRangeAsync(setKey, 0, -1);
+                Assert.Equal(new[] { "FooBar".ToBytes() }, items);
+            }
+        }
     }
 }

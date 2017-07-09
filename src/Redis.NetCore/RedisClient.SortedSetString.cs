@@ -169,5 +169,19 @@ namespace Redis.NetCore
             var tuples = await SortedSetGetReverseRangeByScoreWithScoresAsync(setKey, min, max, offset, count).ConfigureAwait(false);
             return tuples.Select(item => (ConvertBytesToString(item.Member), item.Weight)).ToArray();
         }
+
+        public Task<int> SortedSetRemoveMembersStringAsync(string setKey, params string[] members)
+        {
+            return SortedSetRemoveMembersAsync(setKey, members.ToBytes());
+        }
+
+        public async Task<int> SortedSetRemoveRangeByLexAsync(string setKey, string min, string max)
+        {
+            CheckSetKey(setKey);
+
+            var request = ComposeRequest(RedisCommands.SortedSetRemoveRangeByLex, setKey.ToBytes(), min.ToBytes(), max.ToBytes());
+            var bytes = await SendCommandAsync(request).ConfigureAwait(false);
+            return ConvertBytesToInteger(bytes);
+        }
     }
 }

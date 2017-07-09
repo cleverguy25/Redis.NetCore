@@ -70,5 +70,11 @@ namespace Redis.NetCore.Abstractions
             string max,
             int offset,
             int count);
+
+        Task<int> SortedSetRemoveMembersAsync(string setKey, params byte[][] members);
+
+        Task<int> SortedSetRemoveRangeByRankAsync(string setKey, int start, int end);
+
+        Task<int> SortedSetRemoveRangeByScoreAsync(string setKey, string min, string max);
     }
 }

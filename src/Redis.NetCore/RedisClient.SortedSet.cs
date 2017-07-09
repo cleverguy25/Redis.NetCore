@@ -229,6 +229,33 @@ namespace Redis.NetCore
             return ConvertToSortedSetTuple(bytes);
         }
 
+        public async Task<int> SortedSetRemoveMembersAsync(string setKey, params byte[][] members)
+        {
+            CheckSetKey(setKey);
+
+            var request = ComposeRequest(RedisCommands.SortedSetRemove, setKey.ToBytes(), members);
+            var bytes = await SendCommandAsync(request).ConfigureAwait(false);
+            return ConvertBytesToInteger(bytes);
+        }
+
+        public async Task<int> SortedSetRemoveRangeByRankAsync(string setKey, int start, int end)
+        {
+            CheckSetKey(setKey);
+
+            var request = ComposeRequest(RedisCommands.SortedSetRemoveRangeByRank, setKey.ToBytes(), start.ToBytes(), end.ToBytes());
+            var bytes = await SendCommandAsync(request).ConfigureAwait(false);
+            return ConvertBytesToInteger(bytes);
+        }
+
+        public async Task<int> SortedSetRemoveRangeByScoreAsync(string setKey, string min, string max)
+        {
+            CheckSetKey(setKey);
+
+            var request = ComposeRequest(RedisCommands.SortedSetRemoveRangeByScore, setKey.ToBytes(), min.ToBytes(), max.ToBytes());
+            var bytes = await SendCommandAsync(request).ConfigureAwait(false);
+            return ConvertBytesToInteger(bytes);
+        }
+
         private static (byte[] Member, int Weight)[] ConvertToSortedSetTuple(IReadOnlyList<byte[]> bytes)
         {
             var results = new List<(byte[] member, int weight)>();

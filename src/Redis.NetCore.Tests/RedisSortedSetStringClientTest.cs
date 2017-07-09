@@ -366,5 +366,41 @@ namespace Redis.NetCore.Tests
                 Assert.Equal(0, rank);
             }
         }
+
+        [Fact]
+        public async Task SortedSetRemoveMembersStringAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string setKey = nameof(SortedSetRemoveMembersStringAsync);
+                await client.DeleteKeyAsync(setKey);
+
+                await client.SortedSetAddMembersStringAsync(setKey, ("Foo", 5), ("Bar", 6), ("FooBar", 8));
+
+                var count = await client.SortedSetRemoveMembersStringAsync(setKey, "Foo", "FooBar");
+                Assert.Equal(2, count);
+
+                var items = await client.SortedSetGetRangeStringAsync(setKey, 0, -1);
+                Assert.Equal(new[] { "Bar" }, items);
+            }
+        }
+
+        [Fact]
+        public async Task SortedSetRemoveRangeByLexAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string setKey = nameof(SortedSetRemoveRangeByLexAsync);
+                await client.DeleteKeyAsync(setKey);
+
+                await client.SortedSetAddMembersAsync(setKey, ("Foo".ToBytes(), 0), ("Bar".ToBytes(), 0), ("FooBar".ToBytes(), 0));
+
+                var count = await client.SortedSetRemoveRangeByLexAsync(setKey, "[Foo", "+");
+                Assert.Equal(2, count);
+
+                var items = await client.SortedSetGetRangeAsync(setKey, 0, -1);
+                Assert.Equal(new[] { "Bar".ToBytes() }, items);
+            }
+        }
     }
 }
