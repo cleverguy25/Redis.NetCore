@@ -32,5 +32,39 @@ namespace Redis.NetCore.Abstractions
         Task<int> SortedSetStoreUnionMembersAsync(string storeKey, string[] sets, RedisAggregate aggregate = RedisAggregate.Sum);
 
         Task<int> SortedSetStoreUnionMembersAsync(string storeKey, (string set, int weight)[] sets, RedisAggregate aggregate = RedisAggregate.Sum);
+
+        Task<byte[][]> SortedSetGetRangeAsync(string setKey, int start, int end);
+
+        Task<(byte[] Member, int Weight)[]> SortedSetGetRangeWithScoresAsync(string setKey, int start, int end);
+
+        Task<byte[][]> SortedSetGetReverseRangeAsync(string setKey, int start, int end);
+
+        Task<(byte[] Member, int Weight)[]> SortedSetGetReverseRangeWithScoresAsync(string setKey, int start, int end);
+
+        Task<byte[][]> SortedSetGetRangeByScoreAsync(string setKey, string min, string max);
+
+        Task<byte[][]> SortedSetGetRangeByScoreAsync(string setKey, string min, string max, int offset, int count);
+
+        Task<(byte[] Member, int Weight)[]> SortedSetGetRangeByScoreWithScoresAsync(string setKey, string min, string max);
+
+        Task<(byte[] Member, int Weight)[]> SortedSetGetRangeByScoreWithScoresAsync(
+            string setKey,
+            string min,
+            string max,
+            int offset,
+            int count);
+
+        Task<byte[][]> SortedSetGetReverseRangeByScoreAsync(string setKey, string min, string max);
+
+        Task<byte[][]> SortedSetGetReverseRangeByScoreAsync(string setKey, string min, string max, int offset, int count);
+
+        Task<(byte[] Member, int Weight)[]> SortedSetGetReverseRangeByScoreWithScoresAsync(string setKey, string min, string max);
+
+        Task<(byte[] Member, int Weight)[]> SortedSetGetReverseRangeByScoreWithScoresAsync(
+            string setKey,
+            string min,
+            string max,
+            int offset,
+            int count);
     }
 }

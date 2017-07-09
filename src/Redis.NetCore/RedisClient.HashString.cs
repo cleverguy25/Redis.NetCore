@@ -47,7 +47,7 @@ namespace Redis.NetCore
         public async Task<string[]> HashGetFieldsStringAsync(string hashKey, params string[] fields)
         {
             var bytes = await HashGetFieldsAsync(hashKey, fields).ConfigureAwait(false);
-            return bytes.Select(ConvertBytesToString).ToArray();
+            return ConvertByteArrayToStringArray(bytes);
         }
 
         public async Task<IDictionary<string, string>> HashGetAllFieldsStringAsync(string hashKey)
@@ -59,7 +59,7 @@ namespace Redis.NetCore
         public async Task<string[]> HashGetValuesStringAsync(string hashKey)
         {
             var bytes = await HashGetValuesAsync(hashKey).ConfigureAwait(false);
-            return bytes.Select(ConvertBytesToString).ToArray();
+            return ConvertByteArrayToStringArray(bytes);
         }
 
         public async Task<int> HashGetFieldStringLengthAsync(string hashKey, string field)

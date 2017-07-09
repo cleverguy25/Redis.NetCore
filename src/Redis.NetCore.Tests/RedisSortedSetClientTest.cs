@@ -426,12 +426,177 @@ namespace Redis.NetCore.Tests
             }
         }
 
-        private static void CheckSortedSetTuples((byte[] member, int weight)[] expected, (byte[] member, int weight)[] items)
+        [Fact]
+        public async Task SortedSetGetRangeAsync()
         {
-            for (var i = 0; i < expected.Length; i++)
+            using (var client = TestClient.CreateClient())
             {
-                Assert.Equal(expected[i].member, items[i].member);
-                Assert.Equal(expected[i].weight, items[i].weight);
+                const string setKey = nameof(SortedSetGetRangeAsync);
+                await client.DeleteKeyAsync(setKey);
+
+                await client.SortedSetAddMembersAsync(setKey, ("one".ToBytes(), 1), ("two".ToBytes(), 2), ("three".ToBytes(), 3));
+
+                var items = await client.SortedSetGetRangeAsync(setKey, 1, -1);
+                Assert.Equal(2, items.Length);
+
+                Assert.Equal("two".ToBytes(), items[0]);
+                Assert.Equal("three".ToBytes(), items[1]);
+            }
+        }
+
+        [Fact]
+        public async Task SortedSetGetRangeWithScoresAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string setKey = nameof(SortedSetGetRangeWithScoresAsync);
+                await client.DeleteKeyAsync(setKey);
+
+                await client.SortedSetAddMembersAsync(setKey, ("one".ToBytes(), 1), ("two".ToBytes(), 2), ("three".ToBytes(), 3));
+
+                var items = await client.SortedSetGetRangeWithScoresAsync(setKey, 1, -1);
+                Assert.Equal(2, items.Length);
+
+                Assert.Equal("two".ToBytes(), items[0].Member);
+                Assert.Equal(2, items[0].Weight);
+                Assert.Equal("three".ToBytes(), items[1].Member);
+                Assert.Equal(3, items[1].Weight);
+            }
+        }
+
+        [Fact]
+        public async Task SortedSetGetReverseRangeAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string setKey = nameof(SortedSetGetReverseRangeAsync);
+                await client.DeleteKeyAsync(setKey);
+
+                await client.SortedSetAddMembersAsync(setKey, ("one".ToBytes(), 1), ("two".ToBytes(), 2), ("three".ToBytes(), 3));
+
+                var items = await client.SortedSetGetReverseRangeAsync(setKey, 1, -1);
+                Assert.Equal(2, items.Length);
+
+                Assert.Equal("two".ToBytes(), items[0]);
+                Assert.Equal("one".ToBytes(), items[1]);
+            }
+        }
+
+        [Fact]
+        public async Task SortedSetGetReverseRangeWithScoresAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string setKey = nameof(SortedSetGetReverseRangeWithScoresAsync);
+                await client.DeleteKeyAsync(setKey);
+
+                await client.SortedSetAddMembersAsync(setKey, ("one".ToBytes(), 1), ("two".ToBytes(), 2), ("three".ToBytes(), 3));
+
+                var items = await client.SortedSetGetReverseRangeWithScoresAsync(setKey, 1, -1);
+                Assert.Equal(2, items.Length);
+
+                Assert.Equal("two".ToBytes(), items[0].Member);
+                Assert.Equal(2, items[0].Weight);
+                Assert.Equal("one".ToBytes(), items[1].Member);
+                Assert.Equal(1, items[1].Weight);
+            }
+        }
+
+        [Fact]
+        public async Task SortedSetGetRangeByScoreAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string setKey = nameof(SortedSetGetRangeByScoreAsync);
+                await client.DeleteKeyAsync(setKey);
+
+                await client.SortedSetAddMembersAsync(setKey, ("one".ToBytes(), 1), ("two".ToBytes(), 2), ("three".ToBytes(), 3));
+
+                var items = await client.SortedSetGetRangeByScoreAsync(setKey, "2", "+inf");
+                Assert.Equal(2, items.Length);
+
+                Assert.Equal("two".ToBytes(), items[0]);
+                Assert.Equal("three".ToBytes(), items[1]);
+
+                items = await client.SortedSetGetRangeByScoreAsync(setKey, "-inf", "+inf", 1, 1);
+                Assert.Equal(1, items.Length);
+
+                Assert.Equal("two".ToBytes(), items[0]);
+            }
+        }
+
+        [Fact]
+        public async Task SortedSetGetRangeByScoreWithScoresAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string setKey = nameof(SortedSetGetRangeByScoreWithScoresAsync);
+                await client.DeleteKeyAsync(setKey);
+
+                await client.SortedSetAddMembersAsync(setKey, ("one".ToBytes(), 1), ("two".ToBytes(), 2), ("three".ToBytes(), 3));
+
+                var items = await client.SortedSetGetRangeByScoreWithScoresAsync(setKey, "2", "+inf");
+                Assert.Equal(2, items.Length);
+
+                Assert.Equal("two".ToBytes(), items[0].Member);
+                Assert.Equal(2, items[0].Weight);
+                Assert.Equal("three".ToBytes(), items[1].Member);
+                Assert.Equal(3, items[1].Weight);
+
+                items = await client.SortedSetGetRangeByScoreWithScoresAsync(setKey, "-inf", "+inf", 1, 1);
+                Assert.Equal(1, items.Length);
+
+                Assert.Equal("two".ToBytes(), items[0].Member);
+                Assert.Equal(2, items[0].Weight);
+            }
+        }
+
+        [Fact]
+        public async Task SortedSetGetReverseRangeByScoreAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string setKey = nameof(SortedSetGetReverseRangeByScoreAsync);
+                await client.DeleteKeyAsync(setKey);
+
+                await client.SortedSetAddMembersAsync(setKey, ("one".ToBytes(), 1), ("two".ToBytes(), 2), ("three".ToBytes(), 3));
+
+                var items = await client.SortedSetGetReverseRangeByScoreAsync(setKey, "+inf", "2");
+                Assert.Equal(2, items.Length);
+
+                Assert.Equal("three".ToBytes(), items[0]);
+                Assert.Equal("two".ToBytes(), items[1]);
+
+                items = await client.SortedSetGetReverseRangeByScoreAsync(setKey, "+inf", "-inf", 2, 1);
+                Assert.Equal(1, items.Length);
+
+                Assert.Equal("one".ToBytes(), items[0]);
+            }
+        }
+
+        [Fact]
+        public async Task SortedSetGetReverseRangeByScoreWithScoresAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string setKey = nameof(SortedSetGetReverseRangeByScoreWithScoresAsync);
+                await client.DeleteKeyAsync(setKey);
+
+                await client.SortedSetAddMembersAsync(setKey, ("one".ToBytes(), 1), ("two".ToBytes(), 2), ("three".ToBytes(), 3));
+
+                var items = await client.SortedSetGetReverseRangeByScoreWithScoresAsync(setKey, "+inf", "2");
+                Assert.Equal(2, items.Length);
+
+                Assert.Equal("three".ToBytes(), items[0].Member);
+                Assert.Equal(3, items[0].Weight);
+                Assert.Equal("two".ToBytes(), items[1].Member);
+                Assert.Equal(2, items[1].Weight);
+
+                items = await client.SortedSetGetReverseRangeByScoreWithScoresAsync(setKey, "+inf", "-inf", 2, 1);
+                Assert.Equal(1, items.Length);
+
+                Assert.Equal("one".ToBytes(), items[0].Member);
+                Assert.Equal(1, items[0].Weight);
             }
         }
     }

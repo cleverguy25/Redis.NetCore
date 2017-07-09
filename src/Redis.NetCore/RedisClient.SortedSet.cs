@@ -111,18 +111,120 @@ namespace Redis.NetCore
             return SortedSetStoreCommandAsync(storeKey, sets, aggregate, RedisCommands.SortedSetUnionStore);
         }
 
-        ////private static (byte[] member, int weight)[] ConvertToSortedSetTuple(IReadOnlyList<byte[]> bytes)
-        ////{
-        ////    var results = new List<(byte[] member, int weight)>();
-        ////    for (var i = 0; i < bytes.Count; i += 2)
-        ////    {
-        ////        var member = bytes[i];
-        ////        var weight = ConvertBytesToInteger(bytes[i + 1]);
-        ////        results.Add((member, weight));
-        ////    }
+        public Task<byte[][]> SortedSetGetRangeAsync(string setKey, int start, int end)
+        {
+            CheckSetKey(setKey);
 
-        ////    return results.ToArray();
-        ////}
+            var request = ComposeRequest(RedisCommands.SortedSetRange, setKey.ToBytes(), start.ToBytes(), end.ToBytes());
+            return SendMultipleCommandAsync(request);
+        }
+
+        public async Task<(byte[] Member, int Weight)[]> SortedSetGetRangeWithScoresAsync(string setKey, int start, int end)
+        {
+            CheckSetKey(setKey);
+
+            var request = ComposeRequest(RedisCommands.SortedSetRange, setKey.ToBytes(), start.ToBytes(), end.ToBytes(), RedisCommands.WithScores);
+            var bytes = await SendMultipleCommandAsync(request);
+            return ConvertToSortedSetTuple(bytes);
+        }
+
+        public Task<byte[][]> SortedSetGetReverseRangeAsync(string setKey, int start, int end)
+        {
+            CheckSetKey(setKey);
+
+            var request = ComposeRequest(RedisCommands.SortedSetReverseRange, setKey.ToBytes(), start.ToBytes(), end.ToBytes());
+            return SendMultipleCommandAsync(request);
+        }
+
+        public async Task<(byte[] Member, int Weight)[]> SortedSetGetReverseRangeWithScoresAsync(string setKey, int start, int end)
+        {
+            CheckSetKey(setKey);
+
+            var request = ComposeRequest(RedisCommands.SortedSetReverseRange, setKey.ToBytes(), start.ToBytes(), end.ToBytes(), RedisCommands.WithScores);
+            var bytes = await SendMultipleCommandAsync(request);
+            return ConvertToSortedSetTuple(bytes);
+        }
+
+        public Task<byte[][]> SortedSetGetRangeByScoreAsync(string setKey, string min, string max)
+        {
+            CheckSetKey(setKey);
+
+            var request = ComposeRequest(RedisCommands.SortedSetRangeByScore, setKey.ToBytes(), min.ToBytes(), max.ToBytes());
+            return SendMultipleCommandAsync(request);
+        }
+
+        public Task<byte[][]> SortedSetGetRangeByScoreAsync(string setKey, string min, string max, int offset, int count)
+        {
+            CheckSetKey(setKey);
+
+            var request = ComposeRequest(RedisCommands.SortedSetRangeByScore, setKey.ToBytes(), min.ToBytes(), max.ToBytes(), RedisCommands.Limit, offset.ToBytes(), count.ToBytes());
+            return SendMultipleCommandAsync(request);
+        }
+
+        public async Task<(byte[] Member, int Weight)[]> SortedSetGetRangeByScoreWithScoresAsync(string setKey, string min, string max)
+        {
+            CheckSetKey(setKey);
+
+            var request = ComposeRequest(RedisCommands.SortedSetRangeByScore, setKey.ToBytes(), min.ToBytes(), max.ToBytes(), RedisCommands.WithScores);
+            var bytes = await SendMultipleCommandAsync(request);
+            return ConvertToSortedSetTuple(bytes);
+        }
+
+        public async Task<(byte[] Member, int Weight)[]> SortedSetGetRangeByScoreWithScoresAsync(string setKey, string min, string max, int offset, int count)
+        {
+            CheckSetKey(setKey);
+
+            var request = ComposeRequest(RedisCommands.SortedSetRangeByScore, setKey.ToBytes(), min.ToBytes(), max.ToBytes(), RedisCommands.WithScores, RedisCommands.Limit, offset.ToBytes(), count.ToBytes());
+            var bytes = await SendMultipleCommandAsync(request);
+            return ConvertToSortedSetTuple(bytes);
+        }
+
+        public Task<byte[][]> SortedSetGetReverseRangeByScoreAsync(string setKey, string min, string max)
+        {
+            CheckSetKey(setKey);
+
+            var request = ComposeRequest(RedisCommands.SortedSetReverseRangeByScore, setKey.ToBytes(), min.ToBytes(), max.ToBytes());
+            return SendMultipleCommandAsync(request);
+        }
+
+        public Task<byte[][]> SortedSetGetReverseRangeByScoreAsync(string setKey, string min, string max, int offset, int count)
+        {
+            CheckSetKey(setKey);
+
+            var request = ComposeRequest(RedisCommands.SortedSetReverseRangeByScore, setKey.ToBytes(), min.ToBytes(), max.ToBytes(), RedisCommands.Limit, offset.ToBytes(), count.ToBytes());
+            return SendMultipleCommandAsync(request);
+        }
+
+        public async Task<(byte[] Member, int Weight)[]> SortedSetGetReverseRangeByScoreWithScoresAsync(string setKey, string min, string max)
+        {
+            CheckSetKey(setKey);
+
+            var request = ComposeRequest(RedisCommands.SortedSetReverseRangeByScore, setKey.ToBytes(), min.ToBytes(), max.ToBytes(), RedisCommands.WithScores);
+            var bytes = await SendMultipleCommandAsync(request);
+            return ConvertToSortedSetTuple(bytes);
+        }
+
+        public async Task<(byte[] Member, int Weight)[]> SortedSetGetReverseRangeByScoreWithScoresAsync(string setKey, string min, string max, int offset, int count)
+        {
+            CheckSetKey(setKey);
+
+            var request = ComposeRequest(RedisCommands.SortedSetReverseRangeByScore, setKey.ToBytes(), min.ToBytes(), max.ToBytes(), RedisCommands.WithScores, RedisCommands.Limit, offset.ToBytes(), count.ToBytes());
+            var bytes = await SendMultipleCommandAsync(request);
+            return ConvertToSortedSetTuple(bytes);
+        }
+
+        private static (byte[] Member, int Weight)[] ConvertToSortedSetTuple(IReadOnlyList<byte[]> bytes)
+        {
+            var results = new List<(byte[] member, int weight)>();
+            for (var i = 0; i < bytes.Count; i += 2)
+            {
+                var member = bytes[i];
+                var weight = ConvertBytesToInteger(bytes[i + 1]);
+                results.Add((member, weight));
+            }
+
+            return results.ToArray();
+        }
 
         private static byte[][] ConvertTupleItemsToByteArray(IReadOnlyList<(byte[] member, int weight)> items)
         {

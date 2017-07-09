@@ -96,6 +96,11 @@ namespace Redis.NetCore
             return bytes[0] == '1';
         }
 
+        private static string[] ConvertByteArrayToStringArray(IEnumerable<byte[]> bytes)
+        {
+            return bytes.Select(ConvertBytesToString).ToArray();
+        }
+
         private static string ConvertBytesToString(byte[] bytes)
         {
             return bytes == null ? null : Encoding.UTF8.GetString(bytes);

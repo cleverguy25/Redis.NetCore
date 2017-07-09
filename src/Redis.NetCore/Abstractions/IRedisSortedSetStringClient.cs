@@ -20,5 +20,49 @@ namespace Redis.NetCore.Abstractions
         Task<int?> SortedSetGetScoreStringAsync(string setKey, string member);
 
         Task<int> SortedSetIncrementByStringAsync(string setKey, string member, int increment);
+
+        Task<string[]> SortedSetGetRangeStringAsync(string setKey, int start, int end);
+
+        Task<(string Member, int Weight)[]> SortedSetGetRangeWithScoresStringAsync(string setKey, int start, int end);
+
+        Task<string[]> SortedSetGetReverseRangeStringAsync(string setKey, int start, int end);
+
+        Task<(string Member, int Weight)[]> SortedSetGetReverseRangeWithScoresStringAsync(string setKey, int start, int end);
+
+        Task<int> SortedSetGetLexCountAsync(string setKey, string min, string max);
+
+        Task<string[]> SortedSetGetLexRangeAsync(string setKey, string min, string max);
+
+        Task<string[]> SortedSetGetLexRangeAsync(string setKey, string min, string max, int offset, int count);
+
+        Task<string[]> SortedSetGetReverseLexRangeAsync(string setKey, string min, string max);
+
+        Task<string[]> SortedSetGetReverseLexRangeAsync(string setKey, string min, string max, int offset, int count);
+
+        Task<string[]> SortedSetGetRangeByScoreStringAsync(string setKey, string min, string max);
+
+        Task<string[]> SortedSetGetRangeByScoreStringAsync(string setKey, string min, string max, int offset, int count);
+
+        Task<(string Member, int Weight)[]> SortedSetGetRangeByScoreWithScoresStringAsync(string setKey, string min, string max);
+
+        Task<(string Member, int Weight)[]> SortedSetGetRangeByScoreWithScoresStringAsync(
+            string setKey,
+            string min,
+            string max,
+            int offset,
+            int count);
+
+        Task<string[]> SortedSetGetReverseRangeByScoreStringAsync(string setKey, string min, string max);
+
+        Task<string[]> SortedSetGetReverseRangeByScoreStringAsync(string setKey, string min, string max, int offset, int count);
+
+        Task<(string Member, int Weight)[]> SortedSetGetReverseRangeByScoreWithScoresStringAsync(string setKey, string min, string max);
+
+        Task<(string Member, int Weight)[]> SortedSetGetReverseRangeByScoreWithScoresStringAsync(
+            string setKey,
+            string min,
+            string max,
+            int offset,
+            int count);
     }
 }

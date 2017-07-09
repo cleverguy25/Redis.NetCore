@@ -113,10 +113,19 @@ namespace Redis.NetCore.Constants
         public static readonly byte[] SortedSetCardinality = "ZCARD".ToBytes();
         public static readonly byte[] SortedSetScore = "ZSCORE".ToBytes();
         public static readonly byte[] SortedSetCount = "ZCOUNT".ToBytes();
+        public static readonly byte[] SortedSetLexCount = "ZLEXCOUNT".ToBytes();
         public static readonly byte[] SortedSetIncrementBy = "ZINCRBY".ToBytes();
         public static readonly byte[] SortedSetIntersectionStore = "ZINTERSTORE".ToBytes();
         public static readonly byte[] SortedSetUnionStore = "ZUNIONSTORE".ToBytes();
+        public static readonly byte[] SortedSetRange = "ZRANGE".ToBytes();
+        public static readonly byte[] SortedSetRangeByLex = "ZRANGEBYLEX".ToBytes();
+        public static readonly byte[] SortedSetRangeByScore = "ZRANGEBYSCORE".ToBytes();
+        public static readonly byte[] SortedSetReverseRange = "ZREVRANGE".ToBytes();
+        public static readonly byte[] SortedSetReverseRangeByLex = "ZREVRANGEBYLEX".ToBytes();
+        public static readonly byte[] SortedSetReverseRangeByScore = "ZREVRANGEBYSCORE".ToBytes();
         public static readonly byte[] Weight = "WEIGHTS".ToBytes();
+        public static readonly byte[] WithScores = "WITHSCORES".ToBytes();
+        public static readonly byte[] Limit = "LIMIT".ToBytes();
 
         public static readonly byte[] Aggregate = "AGGREGATE".ToBytes();
         public static readonly byte[] AggregateSum = "SUM".ToBytes();

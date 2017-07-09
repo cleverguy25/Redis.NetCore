@@ -101,7 +101,7 @@ namespace Redis.NetCore
 
             var request = ComposeRequest(RedisCommands.HashKeys, hashKey.ToBytes());
             var bytes = await SendMultipleCommandAsync(request).ConfigureAwait(false);
-            return bytes.Select(ConvertBytesToString).ToArray();
+            return ConvertByteArrayToStringArray(bytes);
         }
 
         public Task<byte[][]> HashGetValuesAsync(string hashKey)

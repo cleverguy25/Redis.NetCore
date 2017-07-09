@@ -106,7 +106,7 @@ namespace Redis.NetCore
         public async Task<string[]> ListRangeStringAsync(string listKey, int start, int end)
         {
             var bytes = await ListRangeAsync(listKey, start, end);
-            return bytes.Select(ConvertBytesToString).ToArray();
+            return ConvertByteArrayToStringArray(bytes);
         }
 
         public Task<int> ListRemoveStringAsync(string listKey, int count, string value)
