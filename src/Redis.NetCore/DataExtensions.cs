@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using Redis.NetCore.Constants;
 
 namespace Redis.NetCore
 {
@@ -46,6 +47,26 @@ namespace Redis.NetCore
         public static byte[] CollapseArray(this IEnumerable<byte[]> value)
         {
             return value?.SelectMany(item => item)?.ToArray();
+        }
+
+        public static int ConvertBytesToInteger(this IEnumerable<byte> bytes)
+        {
+            return bytes.Aggregate(0, (current, currentByte) => (current * 10) + currentByte - RedisProtocolContants.Zero);
+        }
+
+        public static bool ConvertBytesToBool(this IReadOnlyList<byte> bytes)
+        {
+            return bytes[0] == '1';
+        }
+
+        public static string[] ConvertByteArrayToStringArray(this IEnumerable<byte[]> bytes)
+        {
+            return bytes.Select(ConvertBytesToString).ToArray();
+        }
+
+        public static string ConvertBytesToString(this byte[] bytes)
+        {
+            return bytes == null ? null : Encoding.UTF8.GetString(bytes);
         }
     }
 }

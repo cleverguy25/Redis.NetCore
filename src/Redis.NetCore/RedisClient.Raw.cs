@@ -130,7 +130,7 @@ namespace Redis.NetCore
 
             var offsetBytes = offset.ToBytes();
             var bytes = await SendCommandAsync(RedisCommands.SetRange, key.ToBytes(), offsetBytes, data).ConfigureAwait(false);
-            return ConvertBytesToInteger(bytes);
+            return bytes.ConvertBytesToInteger();
         }
 
         public Task<byte[][]> GetAsync(params string[] keys)

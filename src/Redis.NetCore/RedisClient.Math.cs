@@ -18,7 +18,7 @@ namespace Redis.NetCore
             CheckKey(key);
 
             var bytes = await SendCommandAsync(RedisCommands.Increment, key.ToBytes()).ConfigureAwait(false);
-            return ConvertBytesToInteger(bytes);
+            return bytes.ConvertBytesToInteger();
         }
 
         public async Task<int> IncrementAsync(string key, int amount)
@@ -27,7 +27,7 @@ namespace Redis.NetCore
 
             var amountBytes = amount.ToBytes();
             var bytes = await SendCommandAsync(RedisCommands.IncrementBy, key.ToBytes(), amountBytes).ConfigureAwait(false);
-            return ConvertBytesToInteger(bytes);
+            return bytes.ConvertBytesToInteger();
         }
 
         public async Task<int> DecrementAsync(string key)
@@ -35,7 +35,7 @@ namespace Redis.NetCore
             CheckKey(key);
 
             var bytes = await SendCommandAsync(RedisCommands.Decrement, key.ToBytes()).ConfigureAwait(false);
-            return ConvertBytesToInteger(bytes);
+            return bytes.ConvertBytesToInteger();
         }
 
         public async Task<int> DecrementAsync(string key, int amount)
@@ -44,7 +44,7 @@ namespace Redis.NetCore
 
             var amountBytes = amount.ToBytes();
             var bytes = await SendCommandAsync(RedisCommands.DecrementBy, key.ToBytes(), amountBytes).ConfigureAwait(false);
-            return ConvertBytesToInteger(bytes);
+            return bytes.ConvertBytesToInteger();
         }
 
         public async Task<float> IncrementAsync(string key, float amount)

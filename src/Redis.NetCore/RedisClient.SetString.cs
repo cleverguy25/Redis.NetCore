@@ -19,25 +19,25 @@ namespace Redis.NetCore
         public async Task<string[]> SetGetDifferenceMembersStringAsync(params string[] setKeys)
         {
             var bytes = await SetGetDifferenceMembersAsync(setKeys).ConfigureAwait(false);
-            return ConvertByteArrayToStringArray(bytes);
+            return bytes.ConvertByteArrayToStringArray();
         }
 
         public async Task<string[]> SetGetIntersectionMembersStringAsync(params string[] setKeys)
         {
             var bytes = await SetGetIntersectionMembersAsync(setKeys).ConfigureAwait(false);
-            return ConvertByteArrayToStringArray(bytes);
+            return bytes.ConvertByteArrayToStringArray();
         }
 
         public async Task<string[]> SetGetUnionMembersStringAsync(params string[] setKeys)
         {
             var bytes = await SetGetUnionMembersAsync(setKeys).ConfigureAwait(false);
-            return ConvertByteArrayToStringArray(bytes);
+            return bytes.ConvertByteArrayToStringArray();
         }
 
         public async Task<string[]> SetGetMembersStringAsync(string storeKey)
         {
             var bytes = await SetGetMembersAsync(storeKey).ConfigureAwait(false);
-            return ConvertByteArrayToStringArray(bytes);
+            return bytes.ConvertByteArrayToStringArray();
         }
 
         public Task<bool> SetMoveMemberStringAsync(string sourceSet, string destinationSet, string member)
@@ -48,13 +48,13 @@ namespace Redis.NetCore
         public async Task<string> SetPopMemberStringAsync(string storeKey)
         {
             var bytes = await SetPopMemberAsync(storeKey);
-            return ConvertBytesToString(bytes);
+            return bytes.ConvertBytesToString();
         }
 
         public async Task<string[]> SetGetRandomMemberStringAsync(string storeKey, int count = 1)
         {
             var bytes = await SetGetRandomMemberAsync(storeKey, count);
-            return ConvertByteArrayToStringArray(bytes);
+            return bytes.ConvertByteArrayToStringArray();
         }
 
         public Task<int> SetRemoveMembersStringAsync(string storeKey, params string[] members)

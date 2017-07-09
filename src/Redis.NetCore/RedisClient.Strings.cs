@@ -95,13 +95,13 @@ namespace Redis.NetCore
         public async Task<string> GetStringAsync(string key)
         {
             var bytes = await GetAsync(key).ConfigureAwait(false);
-            return ConvertBytesToString(bytes);
+            return bytes.ConvertBytesToString();
         }
 
         public async Task<string[]> GetStringsAsync(params string[] keys)
         {
             var response = await GetAsync(keys).ConfigureAwait(false);
-            return response.Select(ConvertBytesToString).ToArray();
+            return response.ConvertByteArrayToStringArray();
         }
 
         public async Task<string> GetStringRangeAsync(string key, int begin, int end = -1)
@@ -115,7 +115,7 @@ namespace Redis.NetCore
             CheckKey(key);
 
             var bytes = await SendCommandAsync(RedisCommands.Append, key.ToBytes(), data.ToBytes()).ConfigureAwait(false);
-            return ConvertBytesToInteger(bytes);
+            return bytes.ConvertBytesToInteger();
         }
 
         public async Task<int> GetStringLengthAsync(string key)
@@ -123,13 +123,13 @@ namespace Redis.NetCore
             CheckKey(key);
 
             var bytes = await SendCommandAsync(RedisCommands.StringLength, key.ToBytes()).ConfigureAwait(false);
-            return ConvertBytesToInteger(bytes);
+            return bytes.ConvertBytesToInteger();
         }
 
         public async Task<string> GetSetStringAsync(string key, string data)
         {
             var bytes = await GetSetAsync(key, data.ToBytes()).ConfigureAwait(false);
-            return ConvertBytesToString(bytes);
+            return bytes.ConvertBytesToString();
         }
     }
 }

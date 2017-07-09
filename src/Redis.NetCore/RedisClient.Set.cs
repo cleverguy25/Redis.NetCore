@@ -14,7 +14,7 @@ namespace Redis.NetCore
 
             var request = ComposeRequest(RedisCommands.SetAdd, setKey.ToBytes(), members);
             var bytes = await SendMultipleCommandAsync(request).ConfigureAwait(false);
-            return ConvertBytesToInteger(bytes[0]);
+            return bytes[0].ConvertBytesToInteger();
         }
 
         public async Task<int> SetCardinalityAsync(string setKey)
@@ -22,7 +22,7 @@ namespace Redis.NetCore
             CheckSetKey(setKey);
 
             var bytes = await SendCommandAsync(RedisCommands.SetCardinality, setKey.ToBytes()).ConfigureAwait(false);
-            return ConvertBytesToInteger(bytes);
+            return bytes.ConvertBytesToInteger();
         }
 
         public async Task<bool> SetIsMemberAsync(string setKey, byte[] member)
@@ -30,7 +30,7 @@ namespace Redis.NetCore
             CheckSetKey(setKey);
 
             var bytes = await SendCommandAsync(RedisCommands.SetIsMember, setKey.ToBytes(), member).ConfigureAwait(false);
-            return ConvertBytesToBool(bytes);
+            return bytes.ConvertBytesToBool();
         }
 
         public Task<byte[][]> SetGetDifferenceMembersAsync(params string[] setKeys)
@@ -87,7 +87,7 @@ namespace Redis.NetCore
 
             var request = ComposeRequest(RedisCommands.SetDifferenceStore, storeKey.ToBytes(), setKeys);
             var bytes = await SendMultipleCommandAsync(request).ConfigureAwait(false);
-            return ConvertBytesToInteger(bytes[0]);
+            return bytes[0].ConvertBytesToInteger();
         }
 
         public async Task<int> SetStoreIntersectionMembersAsync(string storeKey, params string[] setKeys)
@@ -96,7 +96,7 @@ namespace Redis.NetCore
 
             var request = ComposeRequest(RedisCommands.SetIntersectionStore, storeKey.ToBytes(), setKeys);
             var bytes = await SendMultipleCommandAsync(request).ConfigureAwait(false);
-            return ConvertBytesToInteger(bytes[0]);
+            return bytes[0].ConvertBytesToInteger();
         }
 
         public async Task<int> SetStoreUnionMembersAsync(string storeKey, params string[] setKeys)
@@ -105,7 +105,7 @@ namespace Redis.NetCore
 
             var request = ComposeRequest(RedisCommands.SetUnionStore, storeKey.ToBytes(), setKeys);
             var bytes = await SendMultipleCommandAsync(request).ConfigureAwait(false);
-            return ConvertBytesToInteger(bytes[0]);
+            return bytes[0].ConvertBytesToInteger();
         }
 
         public Task<byte[][]> SetGetMembersAsync(string storeKey)
@@ -122,7 +122,7 @@ namespace Redis.NetCore
             CheckSetKey(destinationSet);
 
             var bytes = await SendCommandAsync(RedisCommands.SetMove, sourceSet.ToBytes(), destinationSet.ToBytes(), member).ConfigureAwait(false);
-            return ConvertBytesToBool(bytes);
+            return bytes.ConvertBytesToBool();
         }
 
         public Task<byte[]> SetPopMemberAsync(string storeKey)
@@ -146,7 +146,7 @@ namespace Redis.NetCore
 
             var request = ComposeRequest(RedisCommands.SetRemove, storeKey.ToBytes(), members);
             var bytes = await SendMultipleCommandAsync(request).ConfigureAwait(false);
-            return ConvertBytesToInteger(bytes[0]);
+            return bytes[0].ConvertBytesToInteger();
         }
 
         public async Task<ScanCursor> SetScanAsync(string setKey)

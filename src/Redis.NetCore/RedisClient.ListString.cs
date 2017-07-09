@@ -32,7 +32,7 @@ namespace Redis.NetCore
         public async Task<string> ListPopStringAsync(string listKey)
         {
             var bytes = await ListPopAsync(listKey).ConfigureAwait(false);
-            return ConvertBytesToString(bytes);
+            return bytes.ConvertBytesToString();
         }
 
         public async Task<Tuple<string, string>> ListBlockingPopStringAsync(int timeoutSeconds, params string[] listKeys)
@@ -47,15 +47,15 @@ namespace Redis.NetCore
                 return null;
             }
 
-            var foundListKey = ConvertBytesToString(bytes[0]);
-            var value = ConvertBytesToString(bytes[1]);
+            var foundListKey = bytes[0].ConvertBytesToString();
+            var value = bytes[1].ConvertBytesToString();
             return Tuple.Create(foundListKey, value);
         }
 
         public async Task<string> ListTailPopStringAsync(string listKey)
         {
             var bytes = await ListTailPopAsync(listKey).ConfigureAwait(false);
-            return ConvertBytesToString(bytes);
+            return bytes.ConvertBytesToString();
         }
 
         public async Task<Tuple<string, string>> ListBlockingTailPopStringAsync(int timeoutSeconds, params string[] listKeys)
@@ -70,27 +70,27 @@ namespace Redis.NetCore
                 return null;
             }
 
-            var foundListKey = ConvertBytesToString(bytes[0]);
-            var value = ConvertBytesToString(bytes[1]);
+            var foundListKey = bytes[0].ConvertBytesToString();
+            var value = bytes[1].ConvertBytesToString();
             return Tuple.Create(foundListKey, value);
         }
 
         public async Task<string> ListTailPopAndPushStringAsync(string listKey1, string listKey2)
         {
             var bytes = await ListTailPopAndPushAsync(listKey1, listKey2).ConfigureAwait(false);
-            return ConvertBytesToString(bytes);
+            return bytes.ConvertBytesToString();
         }
 
         public async Task<string> ListBlockingTailPopAndPushStringAsync(string listKey1, string listKey2, int timeoutSeconds)
         {
             var bytes = await ListBlockingTailPopAndPushAsync(listKey1, listKey2, timeoutSeconds).ConfigureAwait(false);
-            return ConvertBytesToString(bytes);
+            return bytes.ConvertBytesToString();
         }
 
         public async Task<string> ListIndexStringAsync(string listKey, int index)
         {
             var bytes = await ListIndexAsync(listKey, index).ConfigureAwait(false);
-            return ConvertBytesToString(bytes);
+            return bytes.ConvertBytesToString();
         }
 
         public Task<int> ListInsertBeforeStringAsync(string listKey, string pivot, string value)
@@ -106,7 +106,7 @@ namespace Redis.NetCore
         public async Task<string[]> ListRangeStringAsync(string listKey, int start, int end)
         {
             var bytes = await ListRangeAsync(listKey, start, end);
-            return ConvertByteArrayToStringArray(bytes);
+            return bytes.ConvertByteArrayToStringArray();
         }
 
         public Task<int> ListRemoveStringAsync(string listKey, int count, string value)

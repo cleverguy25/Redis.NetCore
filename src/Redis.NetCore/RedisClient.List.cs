@@ -15,7 +15,7 @@ namespace Redis.NetCore
 
             var request = ComposeRequest(RedisCommands.ListPush, listKey.ToBytes(), values);
             var bytes = await SendMultipleCommandAsync(request).ConfigureAwait(false);
-            return ConvertBytesToInteger(bytes[0]);
+            return bytes[0].ConvertBytesToInteger();
         }
 
         public async Task<int> ListPushIfExistsAsync(string listKey, byte[] value)
@@ -23,7 +23,7 @@ namespace Redis.NetCore
             CheckListKey(listKey);
 
             var bytes = await SendCommandAsync(RedisCommands.ListPushIfExists, listKey.ToBytes(), value).ConfigureAwait(false);
-            return ConvertBytesToInteger(bytes);
+            return bytes.ConvertBytesToInteger();
         }
 
         public async Task<int> ListTailPushAsync(string listKey, params byte[][] values)
@@ -32,7 +32,7 @@ namespace Redis.NetCore
 
             var request = ComposeRequest(RedisCommands.ListTailPush, listKey.ToBytes(), values);
             var bytes = await SendMultipleCommandAsync(request).ConfigureAwait(false);
-            return ConvertBytesToInteger(bytes[0]);
+            return bytes[0].ConvertBytesToInteger();
         }
 
         public async Task<int> ListTailPushIfExistsAsync(string listKey, byte[] value)
@@ -40,7 +40,7 @@ namespace Redis.NetCore
             CheckListKey(listKey);
 
             var bytes = await SendCommandAsync(RedisCommands.ListTailPushIfExists, listKey.ToBytes(), value).ConfigureAwait(false);
-            return ConvertBytesToInteger(bytes);
+            return bytes.ConvertBytesToInteger();
         }
 
         public Task<byte[]> ListPopAsync(string listKey)
@@ -62,7 +62,7 @@ namespace Redis.NetCore
                 return null;
             }
 
-            var foundListKey = ConvertBytesToString(bytes[0]);
+            var foundListKey = bytes[0].ConvertBytesToString();
             return Tuple.Create(foundListKey, bytes[1]);
         }
 
@@ -85,7 +85,7 @@ namespace Redis.NetCore
                 return null;
             }
 
-            var foundListKey = ConvertBytesToString(bytes[0]);
+            var foundListKey = bytes[0].ConvertBytesToString();
             return Tuple.Create(foundListKey, bytes[1]);
         }
 
@@ -120,7 +120,7 @@ namespace Redis.NetCore
 
             var bytes = await SendCommandAsync(RedisCommands.ListInsert, listKey.ToBytes(), RedisCommands.Before, pivot, value)
                 .ConfigureAwait(false);
-            return ConvertBytesToInteger(bytes);
+            return bytes.ConvertBytesToInteger();
         }
 
         public async Task<int> ListInsertAfterAsync(string listKey, byte[] pivot, byte[] value)
@@ -128,7 +128,7 @@ namespace Redis.NetCore
             CheckListKey(listKey);
 
             var bytes = await SendCommandAsync(RedisCommands.ListInsert, listKey.ToBytes(), RedisCommands.After, pivot, value).ConfigureAwait(false);
-            return ConvertBytesToInteger(bytes);
+            return bytes.ConvertBytesToInteger();
         }
 
         public async Task<int> ListLength(string listKey)
@@ -136,7 +136,7 @@ namespace Redis.NetCore
             CheckListKey(listKey);
 
             var bytes = await SendCommandAsync(RedisCommands.ListLength, listKey.ToBytes()).ConfigureAwait(false);
-            return ConvertBytesToInteger(bytes);
+            return bytes.ConvertBytesToInteger();
         }
 
         public async Task<byte[][]> ListRangeAsync(string listKey, int start, int end)
@@ -157,7 +157,7 @@ namespace Redis.NetCore
 
             var countBytes = count.ToBytes();
             var bytes = await SendCommandAsync(RedisCommands.ListRemove, listKey.ToBytes(), countBytes, value).ConfigureAwait(false);
-            return ConvertBytesToInteger(bytes);
+            return bytes.ConvertBytesToInteger();
         }
 
         public Task ListSetAsync(string listKey, int index, byte[] value)

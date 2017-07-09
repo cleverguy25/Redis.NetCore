@@ -101,7 +101,7 @@ namespace Redis.NetCore
 
             var request = ComposeRequest(RedisCommands.HashKeys, hashKey.ToBytes());
             var bytes = await SendMultipleCommandAsync(request).ConfigureAwait(false);
-            return ConvertByteArrayToStringArray(bytes);
+            return bytes.ConvertByteArrayToStringArray();
         }
 
         public Task<byte[][]> HashGetValuesAsync(string hashKey)
@@ -117,7 +117,7 @@ namespace Redis.NetCore
             CheckHashKey(hashKey);
 
             var bytes = await SendCommandAsync(RedisCommands.HashLength, hashKey.ToBytes()).ConfigureAwait(false);
-            return ConvertBytesToInteger(bytes);
+            return bytes.ConvertBytesToInteger();
         }
 
         public async Task<int> HashDeleteFieldsAsync(string hashKey, params string[] fields)
@@ -131,7 +131,7 @@ namespace Redis.NetCore
 
             var request = ComposeRequest(RedisCommands.HashDelete, hashKey.ToBytes(), fields);
             var bytes = await SendMultipleCommandAsync(request).ConfigureAwait(false);
-            return ConvertBytesToInteger(bytes[0]);
+            return bytes[0].ConvertBytesToInteger();
         }
 
         public async Task<bool> HashFieldExistsAsync(string hashKey, string field)
@@ -140,7 +140,7 @@ namespace Redis.NetCore
             CheckField(field);
 
             var bytes = await SendCommandAsync(RedisCommands.HashExists, hashKey.ToBytes(), field.ToBytes()).ConfigureAwait(false);
-            return ConvertBytesToBool(bytes);
+            return bytes.ConvertBytesToBool();
         }
 
         public async Task<int> HashIncrementAsync(string hashKey, string field, int amount)
@@ -150,7 +150,7 @@ namespace Redis.NetCore
 
             var amountBytes = amount.ToBytes();
             var bytes = await SendCommandAsync(RedisCommands.HashIncrementBy, hashKey.ToBytes(), field.ToBytes(), amountBytes).ConfigureAwait(false);
-            return ConvertBytesToInteger(bytes);
+            return bytes.ConvertBytesToInteger();
         }
 
         public async Task<float> HashIncrementAsync(string hashKey, string field, float amount)
@@ -257,9 +257,9 @@ namespace Redis.NetCore
             }
         }
 
-        private static HashScanCursor ConvertToHashScanCursor(byte[][] bytes)
+        private static HashScanCursor ConvertToHashScanCursor(IReadOnlyList<byte[]> bytes)
         {
-            var cursorPosition = ConvertBytesToInteger(bytes[0]);
+            var cursorPosition = bytes[0].ConvertBytesToInteger();
             return new HashScanCursor(cursorPosition, bytes[1]);
         }
     }

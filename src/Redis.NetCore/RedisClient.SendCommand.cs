@@ -81,31 +81,6 @@ namespace Redis.NetCore
             return values.Count + offset;
         }
 
-        private static int ConvertBytesToInteger(IEnumerable<byte> bytes)
-        {
-            return bytes.Aggregate(0, (current, currentByte) => (current * 10) + currentByte - RedisProtocolContants.Zero);
-        }
-
-        private static long ConvertBytesToLong(IEnumerable<byte> bytes)
-        {
-            return bytes.Aggregate(0, (current, currentByte) => (current * 10) + currentByte - RedisProtocolContants.Zero);
-        }
-
-        private static bool ConvertBytesToBool(IReadOnlyList<byte> bytes)
-        {
-            return bytes[0] == '1';
-        }
-
-        private static string[] ConvertByteArrayToStringArray(IEnumerable<byte[]> bytes)
-        {
-            return bytes.Select(ConvertBytesToString).ToArray();
-        }
-
-        private static string ConvertBytesToString(byte[] bytes)
-        {
-            return bytes == null ? null : Encoding.UTF8.GetString(bytes);
-        }
-
         private static void CheckKey(string key)
         {
             if (string.IsNullOrEmpty(key))
