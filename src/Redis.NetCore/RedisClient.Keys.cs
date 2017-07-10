@@ -76,6 +76,44 @@ namespace Redis.NetCore
             return bytes.ConvertBytesToBool();
         }
 
+        public Task<byte[]> DumpAsync(string key)
+        {
+            CheckKey(key);
+
+            return SendCommandAsync(RedisCommands.Dump, key.ToBytes());
+        }
+
+        public Task RestoreAsync(string key, int timeToLive, byte[] data)
+        {
+            CheckKey(key);
+
+            return SendCommandAsync(RedisCommands.Restore, key.ToBytes(), timeToLive.ToBytes(), data);
+        }
+
+        public async Task<int> GetObjectReferenceCountAsync(string key)
+        {
+            CheckKey(key);
+
+            var bytes = await SendCommandAsync(RedisCommands.Object, RedisCommands.ReferenceCount, key.ToBytes());
+            return bytes.ConvertBytesToInteger();
+        }
+
+        public async Task<int> GetObjectIdleTimeAsync(string key)
+        {
+            CheckKey(key);
+
+            var bytes = await SendCommandAsync(RedisCommands.Object, RedisCommands.IdleTime, key.ToBytes());
+            return bytes.ConvertBytesToInteger();
+        }
+
+        public async Task<string> GetObjectEncodingAsync(string key)
+        {
+            CheckKey(key);
+
+            var bytes = await SendCommandAsync(RedisCommands.Object, RedisCommands.Encoding, key.ToBytes());
+            return bytes.ConvertBytesToString();
+        }
+
         public async Task<bool> ExistsAsync(string key)
         {
             CheckKey(key);

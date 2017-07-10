@@ -17,6 +17,43 @@ namespace Redis.NetCore.Tests
     public class RedisKeyClientTest
     {
         [Fact]
+        public async Task DumpAndRestoreAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string expected = "Foo!";
+                const string key = nameof(DumpAndRestoreAsync);
+                await TestClient.SetGetAsync(client, key, expected);
+                var data = await client.DumpAsync(key);
+                await client.DeleteKeyAsync(key);
+                var exists = await client.ExistsAsync(key);
+                Assert.False(exists);
+                await client.RestoreAsync(key, 100000, data);
+                var value = await client.GetStringAsync(key);
+                Assert.Equal(expected, value);
+                var timeToLive = await client.GetTimeToLiveAsync(key);
+                Assert.True(timeToLive > 0);
+            }
+        }
+
+        [Fact]
+        public async Task GetObjectAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string key = nameof(DumpAndRestoreAsync);
+                await client.DeleteKeyAsync(key);
+                await client.ListPushStringAsync(key, "Foo", "Bar");
+                var encoding = await client.GetObjectEncodingAsync(key);
+                var idleTime = await client.GetObjectIdleTimeAsync(key);
+                var referenceCount = await client.GetObjectReferenceCountAsync(key);
+                Assert.False(string.IsNullOrEmpty(encoding));
+                Assert.True(idleTime >= 0);
+                Assert.True(referenceCount > 0);
+            }
+        }
+
+        [Fact]
         public async Task DeleteAsync()
         {
             using (var client = TestClient.CreateClient())

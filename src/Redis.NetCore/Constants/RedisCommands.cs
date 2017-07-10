@@ -60,6 +60,12 @@ namespace Redis.NetCore.Constants
         public static readonly byte[] Scan = "SCAN".ToBytes();
         public static readonly byte[] Touch = "TOUCH".ToBytes();
         public static readonly byte[] Type = "TYPE".ToBytes();
+        public static readonly byte[] Dump = "DUMP".ToBytes();
+        public static readonly byte[] Restore = "RESTORE".ToBytes();
+        public static readonly byte[] Object = "OBJECT".ToBytes();
+        public static readonly byte[] ReferenceCount = "REFCOUNT".ToBytes();
+        public static readonly byte[] Encoding = "ENCODING".ToBytes();
+        public static readonly byte[] IdleTime = "IDLETIME".ToBytes();
 
         public static readonly byte[] Ping = "PING".ToBytes();
         public static readonly byte[] Echo = "ECHO".ToBytes();

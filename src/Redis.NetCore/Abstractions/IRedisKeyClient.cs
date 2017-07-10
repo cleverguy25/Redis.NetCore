@@ -20,6 +20,16 @@ namespace Redis.NetCore.Abstractions
 
         Task<bool> MoveAsync(string key, int databaseIndex);
 
+        Task<byte[]> DumpAsync(string key);
+
+        Task RestoreAsync(string key, int timeToLive, byte[] data);
+
+        Task<int> GetObjectReferenceCountAsync(string key);
+
+        Task<int> GetObjectIdleTimeAsync(string key);
+
+        Task<string> GetObjectEncodingAsync(string key);
+
         Task<bool> ExistsAsync(string key);
 
         Task<int> ExistsAsync(params string[] keys);
