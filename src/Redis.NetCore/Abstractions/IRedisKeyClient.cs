@@ -30,6 +30,8 @@ namespace Redis.NetCore.Abstractions
 
         Task<string> GetObjectEncodingAsync(string key);
 
+        RedisSort Sort(string key);
+
         Task<bool> ExistsAsync(string key);
 
         Task<int> ExistsAsync(params string[] keys);

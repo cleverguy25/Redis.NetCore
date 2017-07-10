@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Redis.NetCore.Abstractions;
 using Redis.NetCore.Constants;
@@ -270,6 +271,14 @@ namespace Redis.NetCore
             var cursorPositionBytes = cursor.CursorPosition.ToBytes();
             var bytes = await SendMultipleCommandAsync(RedisCommands.Scan, cursorPositionBytes, "MATCH".ToBytes(), match.ToBytes(), "COUNT".ToBytes(), countBytes).ConfigureAwait(false);
             return ConvertToScanCursor(bytes);
+        }
+
+        public RedisSort Sort(string key)
+        {
+            CheckKey(key);
+
+            var request = ComposeRequest(RedisCommands.Sort, key.ToBytes());
+            return new RedisSort(this, request);
         }
 
         private static ScanCursor ConvertToScanCursor(IReadOnlyList<byte[]> bytes)

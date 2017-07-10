@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,6 +17,21 @@ namespace Redis.NetCore.Tests
     [Trait("Category", "Integration")]
     public class RedisKeyClientTest
     {
+        private Dictionary<int, string> _sortMap = new Dictionary<int, string>()
+                                                   {
+                                                       { 0, "zero" },
+                                                       { 1, "one" },
+                                                       { 2, "two" },
+                                                       { 3, "three" },
+                                                       { 4, "four" },
+                                                       { 5, "five" },
+                                                       { 6, "six" },
+                                                       { 7, "seven" },
+                                                       { 8, "eight" },
+                                                       { 9, "nine" },
+                                                       { 10, "ten" },
+                                                   };
+
         [Fact]
         public async Task DumpAndRestoreAsync()
         {
@@ -41,7 +57,7 @@ namespace Redis.NetCore.Tests
         {
             using (var client = TestClient.CreateClient())
             {
-                const string key = nameof(DumpAndRestoreAsync);
+                const string key = nameof(GetObjectAsync);
                 await client.DeleteKeyAsync(key);
                 await client.ListPushStringAsync(key, "Foo", "Bar");
                 var encoding = await client.GetObjectEncodingAsync(key);
@@ -50,6 +66,173 @@ namespace Redis.NetCore.Tests
                 Assert.False(string.IsNullOrEmpty(encoding));
                 Assert.True(idleTime >= 0);
                 Assert.True(referenceCount > 0);
+            }
+        }
+
+        [Fact]
+        public async Task SortAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string key = nameof(SortAsync);
+                await client.DeleteKeyAsync(key);
+                await client.ListPushStringAsync(key, "7", "5", "6", "8", "1", "3", "2", "4", "10", "0", "9");
+                var bytes = await client.Sort(key).ExecuteAsync();
+                CheckSortedNumberArray(bytes, 0);
+            }
+        }
+
+        [Fact]
+        public async Task SortStoreAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string key = nameof(SortStoreAsync);
+                const string storeKey = key + "Store";
+                await client.DeleteKeyAsync(key);
+                await client.ListPushStringAsync(key, "7", "5", "6", "8", "1", "3", "2", "4", "10", "0", "9");
+                await client.Sort(key).StoreAsync(storeKey);
+                var bytes = await client.ListRangeAsync(storeKey, 0, 10);
+                CheckSortedNumberArray(bytes, 0);
+            }
+        }
+
+        [Fact]
+        public async Task SortGetAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string key = nameof(SortGetAsync);
+                await client.DeleteKeyAsync(key);
+                await client.ListPushStringAsync(key, "7", "5", "6", "8", "1", "3", "2", "4", "10", "0", "9");
+                for (var i = 0; i <= 10; i++)
+                {
+                    await client.SetStringAsync($"object_{i}", _sortMap[i]);
+                }
+
+                var bytes = await client.Sort(key).Get("object_*").ExecuteStringAsync();
+                Assert.Equal(new[] { "zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten" }, bytes);
+            }
+        }
+
+        [Fact]
+        public async Task SortByAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string key = nameof(SortByAsync);
+                await client.DeleteKeyAsync(key);
+                await client.ListPushStringAsync(key, "7", "5", "6", "8", "1", "3", "2", "4", "10", "0", "9");
+                for (var i = 0; i <= 10; i++)
+                {
+                    await client.SetStringAsync($"weight_{i}", (10 - i).ToString(CultureInfo.InvariantCulture));
+                }
+
+                var bytes = await client.Sort(key).By("weight_*").ExecuteAsync();
+                CheckSortedNumberDescendingArray(bytes, 0);
+            }
+        }
+
+        [Fact]
+        public async Task SortWithLimitAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string key = nameof(SortWithLimitAsync);
+                await client.DeleteKeyAsync(key);
+                await client.ListPushStringAsync(key, "7", "5", "6", "8", "1", "3", "2", "4", "10", "0", "9");
+                const int offset = 3;
+                const int count = 5;
+                var bytes = await client.Sort(key).Limit(offset, count).ExecuteAsync();
+                Assert.Equal(count, bytes.Length);
+                CheckSortedNumberArray(bytes, offset);
+            }
+        }
+
+        [Fact]
+        public async Task SortDescendingAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string key = nameof(SortDescendingAsync);
+                await client.DeleteKeyAsync(key);
+                await client.ListPushStringAsync(key, "7", "5", "6", "8", "1", "3", "2", "4", "10", "0", "9");
+                var bytes = await client.Sort(key).Descending().ExecuteAsync();
+                CheckSortedNumberDescendingArray(bytes, 0);
+            }
+        }
+
+        [Fact]
+        public async Task SortDescendingWithLimitAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string key = nameof(SortDescendingWithLimitAsync);
+                await client.DeleteKeyAsync(key);
+                await client.ListPushStringAsync(key, "7", "5", "6", "8", "1", "3", "2", "4", "10", "0", "9");
+                const int offset = 3;
+                const int count = 5;
+                var bytes = await client.Sort(key).Limit(offset, count).Descending().ExecuteAsync();
+                Assert.Equal(count, bytes.Length);
+                CheckSortedNumberDescendingArray(bytes, offset);
+            }
+        }
+
+        [Fact]
+        public async Task SortAlphaAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string key = nameof(SortAlphaAsync);
+                await client.DeleteKeyAsync(key);
+                await client.ListPushStringAsync(key, "one", "two", "three", "four", "five");
+                var bytes = await client.Sort(key).Alpha().ExecuteStringAsync();
+                Assert.Equal(new[] { "five", "four", "one", "three", "two" }, bytes);
+            }
+        }
+
+        [Fact]
+        public async Task SortAlphaWithLimitAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string key = nameof(SortAlphaWithLimitAsync);
+                await client.DeleteKeyAsync(key);
+                await client.ListPushStringAsync(key, "one", "two", "three", "four", "five");
+                const int offset = 2;
+                const int count = 2;
+                var bytes = await client.Sort(key).Alpha().Limit(offset, count).ExecuteStringAsync();
+                Assert.Equal(count, bytes.Length);
+                Assert.Equal(new[] { "one", "three" }, bytes);
+            }
+        }
+
+        [Fact]
+        public async Task SortAlphaDescendingAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string key = nameof(SortAlphaDescendingAsync);
+                await client.DeleteKeyAsync(key);
+                await client.ListPushStringAsync(key, "one", "two", "three", "four", "five");
+                var bytes = await client.Sort(key).Alpha().Descending().ExecuteStringAsync();
+                Assert.Equal(new[] { "two", "three", "one", "four", "five" }, bytes);
+            }
+        }
+
+        [Fact]
+        public async Task SortAlphaDescendingWithLimitAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string key = nameof(SortAlphaDescendingWithLimitAsync);
+                await client.DeleteKeyAsync(key);
+                await client.ListPushStringAsync(key, "one", "two", "three", "four", "five");
+                const int offset = 2;
+                const int count = 2;
+                var bytes = await client.Sort(key).Alpha().Descending().Limit(offset, count).ExecuteStringAsync();
+                Assert.Equal(count, bytes.Length);
+                Assert.Equal(new[] { "one", "four" }, bytes);
             }
         }
 
@@ -362,6 +545,22 @@ namespace Redis.NetCore.Tests
             for (var i = 0; i < count; i++)
             {
                 await TestClient.SetGetAsync(client, key + i, expected);
+            }
+        }
+
+        private static void CheckSortedNumberArray(IReadOnlyList<byte[]> bytes, int offset)
+        {
+            for (var i = 0; i < bytes.Count; i++)
+            {
+                Assert.Equal((i + offset).ToString(CultureInfo.InvariantCulture).ToBytes(), bytes[i]);
+            }
+        }
+
+        private static void CheckSortedNumberDescendingArray(IReadOnlyList<byte[]> bytes, int offset)
+        {
+            for (var i = 0; i < bytes.Count; i++)
+            {
+                Assert.Equal((bytes.Count + offset - 1 - i).ToString(CultureInfo.InvariantCulture).ToBytes(), bytes[i]);
             }
         }
     }

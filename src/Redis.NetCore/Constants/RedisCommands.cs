@@ -58,6 +58,11 @@ namespace Redis.NetCore.Constants
         public static readonly byte[] RenameNotExists = "RENAMENX".ToBytes();
         public static readonly byte[] RandomKey = "RANDOMKEY".ToBytes();
         public static readonly byte[] Scan = "SCAN".ToBytes();
+        public static readonly byte[] Sort = "SORT".ToBytes();
+        public static readonly byte[] Descending = "DESC".ToBytes();
+        public static readonly byte[] Alpha = "ALPHA".ToBytes();
+        public static readonly byte[] By = "BY".ToBytes();
+        public static readonly byte[] Store = "STORE".ToBytes();
         public static readonly byte[] Touch = "TOUCH".ToBytes();
         public static readonly byte[] Type = "TYPE".ToBytes();
         public static readonly byte[] Dump = "DUMP".ToBytes();

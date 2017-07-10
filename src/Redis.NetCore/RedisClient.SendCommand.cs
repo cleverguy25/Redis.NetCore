@@ -14,6 +14,26 @@ namespace Redis.NetCore
 {
     public partial class RedisClient
     {
+        internal static void CheckKey(string key)
+        {
+            if (string.IsNullOrEmpty(key))
+            {
+                throw new ArgumentNullException(nameof(key), "Key cannot be null or empty");
+            }
+        }
+
+        internal async Task<byte[]> SendCommandAsync(params byte[][] requestData)
+        {
+            var pipeline = await _redisPipelinePool.GetPipelineAsync().ConfigureAwait(false);
+            return await pipeline.SendCommandAsync(requestData).ConfigureAwait(false);
+        }
+
+        internal async Task<byte[][]> SendMultipleCommandAsync(params byte[][] requestData)
+        {
+            var pipeline = await _redisPipelinePool.GetPipelineAsync().ConfigureAwait(false);
+            return await pipeline.SendMultipleCommandAsync(requestData).ConfigureAwait(false);
+        }
+
         private static byte[][] ComposeRequest(byte[] commandName, IEnumerable<string> values)
         {
             return ComposeRequest(commandName, values.ToBytes());
@@ -79,26 +99,6 @@ namespace Redis.NetCore
             }
 
             return values.Count + offset;
-        }
-
-        private static void CheckKey(string key)
-        {
-            if (string.IsNullOrEmpty(key))
-            {
-                throw new ArgumentNullException(nameof(key), "Key cannot be null or empty");
-            }
-        }
-
-        private async Task<byte[]> SendCommandAsync(params byte[][] requestData)
-        {
-            var pipeline = await _redisPipelinePool.GetPipelineAsync().ConfigureAwait(false);
-            return await pipeline.SendCommandAsync(requestData).ConfigureAwait(false);
-        }
-
-        private async Task<byte[][]> SendMultipleCommandAsync(params byte[][] requestData)
-        {
-            var pipeline = await _redisPipelinePool.GetPipelineAsync().ConfigureAwait(false);
-            return await pipeline.SendMultipleCommandAsync(requestData).ConfigureAwait(false);
         }
     }
 }
