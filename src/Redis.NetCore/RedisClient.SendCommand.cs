@@ -22,12 +22,6 @@ namespace Redis.NetCore
             }
         }
 
-        internal async Task<byte[]> SendCommandAsync(params byte[][] requestData)
-        {
-            var pipeline = await _redisPipelinePool.GetPipelineAsync().ConfigureAwait(false);
-            return await pipeline.SendCommandAsync(requestData).ConfigureAwait(false);
-        }
-
         internal async Task<byte[][]> SendMultipleCommandAsync(params byte[][] requestData)
         {
             var pipeline = await _redisPipelinePool.GetPipelineAsync().ConfigureAwait(false);
@@ -99,6 +93,12 @@ namespace Redis.NetCore
             }
 
             return values.Count + offset;
+        }
+
+        private async Task<byte[]> SendCommandAsync(params byte[][] requestData)
+        {
+            var pipeline = await _redisPipelinePool.GetPipelineAsync().ConfigureAwait(false);
+            return await pipeline.SendCommandAsync(requestData).ConfigureAwait(false);
         }
     }
 }

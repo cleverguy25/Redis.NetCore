@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Security;
 using System.Net.Sockets;
@@ -41,6 +42,16 @@ namespace Redis.NetCore.Pipeline
             }
 
             return GetNextPipelineAsync();
+        }
+
+        public async Task<IRedisPipeline[]> GetPipelinesAsync()
+        {
+            if (_pipelines == null)
+            {
+                await InitializeAsync().ConfigureAwait(false);
+            }
+
+            return _pipelines.Select(task => task.Result).ToArray();
         }
 
         public void Dispose()

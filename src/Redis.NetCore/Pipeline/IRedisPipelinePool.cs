@@ -11,5 +11,7 @@ namespace Redis.NetCore.Pipeline
     public interface IRedisPipelinePool : IDisposable
     {
         Task<IRedisPipeline> GetPipelineAsync();
+
+        Task<IRedisPipeline[]> GetPipelinesAsync();
     }
 }

@@ -155,5 +155,11 @@ namespace Redis.NetCore.Constants
         public static readonly byte[] IncrementByFloat = "INCRBYFLOAT".ToBytes();
         public static readonly byte[] Decrement = "DECR".ToBytes();
         public static readonly byte[] DecrementBy = "DECRBY".ToBytes();
+
+        public static readonly byte[] Client = "CLIENT".ToBytes();
+        public static readonly byte[] GetName = "GETNAME".ToBytes();
+        public static readonly byte[] SetName = "SETNAME".ToBytes();
+        public static readonly byte[] Time = "TIME".ToBytes();
+        public static readonly byte[] List = "LIST".ToBytes();
     }
 }

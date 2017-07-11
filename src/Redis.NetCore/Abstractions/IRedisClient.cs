@@ -7,7 +7,7 @@ using System;
 
 namespace Redis.NetCore.Abstractions
 {
-    public interface IRedisClient : IRedisConnectionClient, IRedisRawClient, IRedisKeyClient, IRedisStringClient, IRedisBitClient, IRedisMathClient, IRedisHashClient, IRedisHashStringClient, IRedisListClient, IRedisListStringClient, IRedisSetClient, IRedisSetStringClient, IRedisSortedSetClient, IRedisSortedSetStringClient, IDisposable
+    public interface IRedisClient : IRedisConnectionClient, IRedisRawClient, IRedisKeyClient, IRedisStringClient, IRedisBitClient, IRedisMathClient, IRedisHashClient, IRedisHashStringClient, IRedisListClient, IRedisListStringClient, IRedisSetClient, IRedisSetStringClient, IRedisSortedSetClient, IRedisSortedSetStringClient, IRedisServerClient, IDisposable
     {
     }
 }
