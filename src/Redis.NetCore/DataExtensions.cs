@@ -68,5 +68,17 @@ namespace Redis.NetCore
         {
             return bytes == null ? null : Encoding.UTF8.GetString(bytes);
         }
+
+        public static Dictionary<string, string> ConvertBytesToDictionary(this byte[][] bytes)
+        {
+            var results = new Dictionary<string, string>();
+            for (var i = 0; i < bytes.Length - 1; i += 2)
+            {
+                var key = Encoding.UTF8.GetString(bytes[i]);
+                results[key] = Encoding.UTF8.GetString(bytes[i + 1]);
+            }
+
+            return results;
+        }
     }
 }

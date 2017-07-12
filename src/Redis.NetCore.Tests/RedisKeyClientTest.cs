@@ -418,7 +418,7 @@ namespace Redis.NetCore.Tests
 
                 var cursor = await client.ScanAsync(5);
                 var keys = cursor.GetStringValues().ToArray();
-                Assert.Equal(5, keys.Length);
+                Assert.True(keys.Length >= 5);
 
                 cursor = await client.ScanAsync(cursor, 5);
                 keys = cursor.GetStringValues().ToArray();

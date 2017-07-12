@@ -156,10 +156,22 @@ namespace Redis.NetCore.Constants
         public static readonly byte[] Decrement = "DECR".ToBytes();
         public static readonly byte[] DecrementBy = "DECRBY".ToBytes();
 
+        public static readonly byte[] Configuration = "CONFIG".ToBytes();
+        public static readonly byte[] Rewrite = "REWRITE".ToBytes();
+        public static readonly byte[] ResetStat = "RESETSTAT".ToBytes();
+        public static readonly byte[] BackgroundSave = "BGSAVE".ToBytes();
+        public static readonly byte[] Save = "SAVE".ToBytes();
+        public static readonly byte[] BackgroundRewriteAppendOnlyFile = "BGREWRITEAOF".ToBytes();
         public static readonly byte[] Client = "CLIENT".ToBytes();
         public static readonly byte[] GetName = "GETNAME".ToBytes();
         public static readonly byte[] SetName = "SETNAME".ToBytes();
         public static readonly byte[] Time = "TIME".ToBytes();
         public static readonly byte[] List = "LIST".ToBytes();
+        public static readonly byte[] DatabaseSize = "DBSIZE".ToBytes();
+        public static readonly byte[] FlushDatabase = "FLUSHDB".ToBytes();
+        public static readonly byte[] FlushAll = "FLUSHALL".ToBytes();
+        public static readonly byte[] Async = "ASYNC".ToBytes();
+        public static readonly byte[] Information = "INFO".ToBytes();
+        public static readonly byte[] LastSave = "LASTSAVE".ToBytes();
     }
 }
