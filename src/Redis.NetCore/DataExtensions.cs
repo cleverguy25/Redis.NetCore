@@ -44,6 +44,11 @@ namespace Redis.NetCore
             return ToBytes(value.ToString(CultureInfo.InvariantCulture));
         }
 
+        public static byte[] ToBytes(this double value)
+        {
+            return ToBytes(value.ToString(CultureInfo.InvariantCulture));
+        }
+
         public static byte[] CollapseArray(this IEnumerable<byte[]> value)
         {
             return value?.SelectMany(item => item)?.ToArray();
@@ -52,6 +57,12 @@ namespace Redis.NetCore
         public static int ConvertBytesToInteger(this IEnumerable<byte> bytes)
         {
             return bytes.Aggregate(0, (current, currentByte) => (current * 10) + currentByte - RedisProtocolContants.Zero);
+        }
+
+        public static double ConvertBytesToDouble(this byte[] bytes)
+        {
+            var stringValue = ConvertBytesToString(bytes);
+            return double.Parse(stringValue);
         }
 
         public static bool ConvertBytesToBool(this IReadOnlyList<byte> bytes)

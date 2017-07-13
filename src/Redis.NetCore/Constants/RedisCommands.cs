@@ -173,5 +173,10 @@ namespace Redis.NetCore.Constants
         public static readonly byte[] Async = "ASYNC".ToBytes();
         public static readonly byte[] Information = "INFO".ToBytes();
         public static readonly byte[] LastSave = "LASTSAVE".ToBytes();
+
+        public static readonly byte[] GeoAdd = "GEOADD".ToBytes();
+        public static readonly byte[] GeoPosition = "GEOPOS".ToBytes();
+        public static readonly byte[] GeoHash = "GEOHASH".ToBytes();
+        public static readonly byte[] GeoDistance = "GEODIST".ToBytes();
     }
 }
