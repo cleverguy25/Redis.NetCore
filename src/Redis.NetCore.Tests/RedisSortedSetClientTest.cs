@@ -261,7 +261,7 @@ namespace Redis.NetCore.Tests
                 await client.SortedSetAddMembersAsync(setKey1, ("one".ToBytes(), 1), ("two".ToBytes(), 2));
                 await client.SortedSetAddMembersAsync(setKey2, ("one".ToBytes(), 2), ("two".ToBytes(), 3), ("three".ToBytes(), 4));
 
-                var count = await client.SortedSetStoreIntersectionMembersAsync(storeKey, new[] { (setKey1, 2), (setKey2, 3) }, RedisAggregate.Min);
+                var count = await client.SortedSetStoreIntersectionMembersAsync(storeKey, new[] { (setKey1, 2d), (setKey2, 3d) }, RedisAggregate.Min);
                 Assert.Equal(2, count);
 
                 var score = await client.SortedSetGetScoreAsync(storeKey, "one".ToBytes());
@@ -272,7 +272,7 @@ namespace Redis.NetCore.Tests
 
                 await client.DeleteKeyAsync(storeKey);
 
-                count = await client.SortedSetStoreIntersectionMembersAsync(storeKey, new[] { (setKey1, 2), (setKey2, 3) }, RedisAggregate.Max);
+                count = await client.SortedSetStoreIntersectionMembersAsync(storeKey, new[] { (setKey1, 2d), (setKey2, 3d) }, RedisAggregate.Max);
                 Assert.Equal(2, count);
 
                 score = await client.SortedSetGetScoreAsync(storeKey, "one".ToBytes());
@@ -299,7 +299,7 @@ namespace Redis.NetCore.Tests
                 await client.SortedSetAddMembersAsync(setKey1, ("one".ToBytes(), 1), ("two".ToBytes(), 2));
                 await client.SortedSetAddMembersAsync(setKey2, ("one".ToBytes(), 1), ("two".ToBytes(), 2), ("three".ToBytes(), 3));
 
-                var count = await client.SortedSetStoreIntersectionMembersAsync(storeKey, new[] { (setKey1, 2), (setKey2, 3) });
+                var count = await client.SortedSetStoreIntersectionMembersAsync(storeKey, new[] { (setKey1, 2d), (setKey2, 3d) });
                 Assert.Equal(2, count);
 
                 var score = await client.SortedSetGetScoreAsync(storeKey, "one".ToBytes());
@@ -400,7 +400,7 @@ namespace Redis.NetCore.Tests
                 await client.SortedSetAddMembersAsync(setKey1, ("one".ToBytes(), 1), ("two".ToBytes(), 2));
                 await client.SortedSetAddMembersAsync(setKey2, ("one".ToBytes(), 2), ("two".ToBytes(), 3), ("three".ToBytes(), 4));
 
-                var count = await client.SortedSetStoreUnionMembersAsync(storeKey, new[] { (setKey1, 2), (setKey2, 3) }, RedisAggregate.Min);
+                var count = await client.SortedSetStoreUnionMembersAsync(storeKey, new[] { (setKey1, 2d), (setKey2, 3d) }, RedisAggregate.Min);
                 Assert.Equal(3, count);
 
                 var score = await client.SortedSetGetScoreAsync(storeKey, "one".ToBytes());
@@ -414,7 +414,7 @@ namespace Redis.NetCore.Tests
 
                 await client.DeleteKeyAsync(storeKey);
 
-                count = await client.SortedSetStoreUnionMembersAsync(storeKey, new[] { (setKey1, 2), (setKey2, 3) }, RedisAggregate.Max);
+                count = await client.SortedSetStoreUnionMembersAsync(storeKey, new[] { (setKey1, 2d), (setKey2, 3d) }, RedisAggregate.Max);
                 Assert.Equal(3, count);
 
                 score = await client.SortedSetGetScoreAsync(storeKey, "one".ToBytes());
@@ -444,7 +444,7 @@ namespace Redis.NetCore.Tests
                 await client.SortedSetAddMembersAsync(setKey1, ("one".ToBytes(), 1), ("two".ToBytes(), 2));
                 await client.SortedSetAddMembersAsync(setKey2, ("one".ToBytes(), 1), ("two".ToBytes(), 2), ("three".ToBytes(), 3));
 
-                var count = await client.SortedSetStoreUnionMembersAsync(storeKey, new[] { (setKey1, 2), (setKey2, 3) });
+                var count = await client.SortedSetStoreUnionMembersAsync(storeKey, new[] { (setKey1, 2d), (setKey2, 3d) });
                 Assert.Equal(3, count);
 
                 var score = await client.SortedSetGetScoreAsync(storeKey, "one".ToBytes());
@@ -489,10 +489,10 @@ namespace Redis.NetCore.Tests
                 var items = await client.SortedSetGetRangeWithScoresAsync(setKey, 1, -1);
                 Assert.Equal(2, items.Length);
 
-                Assert.Equal("two".ToBytes(), items[0].Member);
-                Assert.Equal(2, items[0].Weight);
-                Assert.Equal("three".ToBytes(), items[1].Member);
-                Assert.Equal(3, items[1].Weight);
+                Assert.Equal("two".ToBytes(), items[0].member);
+                Assert.Equal(2, items[0].weight);
+                Assert.Equal("three".ToBytes(), items[1].member);
+                Assert.Equal(3, items[1].weight);
             }
         }
 
@@ -527,10 +527,10 @@ namespace Redis.NetCore.Tests
                 var items = await client.SortedSetGetReverseRangeWithScoresAsync(setKey, 1, -1);
                 Assert.Equal(2, items.Length);
 
-                Assert.Equal("two".ToBytes(), items[0].Member);
-                Assert.Equal(2, items[0].Weight);
-                Assert.Equal("one".ToBytes(), items[1].Member);
-                Assert.Equal(1, items[1].Weight);
+                Assert.Equal("two".ToBytes(), items[0].member);
+                Assert.Equal(2, items[0].weight);
+                Assert.Equal("one".ToBytes(), items[1].member);
+                Assert.Equal(1, items[1].weight);
             }
         }
 
@@ -570,16 +570,16 @@ namespace Redis.NetCore.Tests
                 var items = await client.SortedSetGetRangeByScoreWithScoresAsync(setKey, "2", "+inf");
                 Assert.Equal(2, items.Length);
 
-                Assert.Equal("two".ToBytes(), items[0].Member);
-                Assert.Equal(2, items[0].Weight);
-                Assert.Equal("three".ToBytes(), items[1].Member);
-                Assert.Equal(3, items[1].Weight);
+                Assert.Equal("two".ToBytes(), items[0].member);
+                Assert.Equal(2, items[0].weight);
+                Assert.Equal("three".ToBytes(), items[1].member);
+                Assert.Equal(3, items[1].weight);
 
                 items = await client.SortedSetGetRangeByScoreWithScoresAsync(setKey, "-inf", "+inf", 1, 1);
                 Assert.Equal(1, items.Length);
 
-                Assert.Equal("two".ToBytes(), items[0].Member);
-                Assert.Equal(2, items[0].Weight);
+                Assert.Equal("two".ToBytes(), items[0].member);
+                Assert.Equal(2, items[0].weight);
             }
         }
 
@@ -619,16 +619,16 @@ namespace Redis.NetCore.Tests
                 var items = await client.SortedSetGetReverseRangeByScoreWithScoresAsync(setKey, "+inf", "2");
                 Assert.Equal(2, items.Length);
 
-                Assert.Equal("three".ToBytes(), items[0].Member);
-                Assert.Equal(3, items[0].Weight);
-                Assert.Equal("two".ToBytes(), items[1].Member);
-                Assert.Equal(2, items[1].Weight);
+                Assert.Equal("three".ToBytes(), items[0].member);
+                Assert.Equal(3, items[0].weight);
+                Assert.Equal("two".ToBytes(), items[1].member);
+                Assert.Equal(2, items[1].weight);
 
                 items = await client.SortedSetGetReverseRangeByScoreWithScoresAsync(setKey, "+inf", "-inf", 2, 1);
                 Assert.Equal(1, items.Length);
 
-                Assert.Equal("one".ToBytes(), items[0].Member);
-                Assert.Equal(1, items[0].Weight);
+                Assert.Equal("one".ToBytes(), items[0].member);
+                Assert.Equal(1, items[0].weight);
             }
         }
 
@@ -762,12 +762,12 @@ namespace Redis.NetCore.Tests
             }
         }
 
-        private static void CheckItems(IEnumerable<(byte[] Member, int Weight)> items)
+        private static void CheckItems(IEnumerable<(byte[] member, double weight)> items)
         {
             foreach (var item in items)
             {
-                var lastChar = item.Member.Last();
-                var weight = item.Weight.ToString(CultureInfo.InvariantCulture).Last();
+                var lastChar = item.member.Last();
+                var weight = item.weight.ToString(CultureInfo.InvariantCulture).Last();
                 Assert.Equal(weight, (char)lastChar);
             }
         }

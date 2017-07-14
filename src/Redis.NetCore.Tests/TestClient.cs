@@ -74,7 +74,7 @@ namespace Redis.NetCore.Tests
             return fields;
         }
 
-        public static IEnumerable<(byte[] member, int score)> SetupTestSetItems(string prefix = "match", int count = 20)
+        public static IEnumerable<(byte[] member, double score)> SetupTestSetItems(string prefix = "match", int count = 20)
         {
             for (var i = 0; i < 20; i++)
             {

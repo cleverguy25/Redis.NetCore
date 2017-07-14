@@ -59,6 +59,7 @@ namespace Redis.NetCore.Constants
         public static readonly byte[] RandomKey = "RANDOMKEY".ToBytes();
         public static readonly byte[] Scan = "SCAN".ToBytes();
         public static readonly byte[] Sort = "SORT".ToBytes();
+        public static readonly byte[] Ascending = "ASC".ToBytes();
         public static readonly byte[] Descending = "DESC".ToBytes();
         public static readonly byte[] Alpha = "ALPHA".ToBytes();
         public static readonly byte[] By = "BY".ToBytes();
@@ -178,5 +179,12 @@ namespace Redis.NetCore.Constants
         public static readonly byte[] GeoPosition = "GEOPOS".ToBytes();
         public static readonly byte[] GeoHash = "GEOHASH".ToBytes();
         public static readonly byte[] GeoDistance = "GEODIST".ToBytes();
+        public static readonly byte[] GeoRadius = "GEORADIUS".ToBytes();
+        public static readonly byte[] GeoRadiusByMember = "GEORADIUSBYMEMBER".ToBytes();
+        public static readonly byte[] WithDistance = "WITHDIST".ToBytes();
+        public static readonly byte[] WithCoordinates = "WITHCOORD".ToBytes();
+        public static readonly byte[] WithHash = "WITHHASH".ToBytes();
+        public static readonly byte[] Count = "COUNT".ToBytes();
+        public static readonly byte[] StoreDistance = "STOREDIST".ToBytes();
     }
 }

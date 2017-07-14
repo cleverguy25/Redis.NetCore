@@ -311,6 +311,36 @@ namespace Redis.NetCore.Pipeline
 
                     bytes.Add(collapseBytes.ToArray());
                 }
+                else if (firstChar == RedisProtocolContants.Integer)
+                {
+                    if (CurrentPosition >= CurrentResponse.Count)
+                    {
+                        await ReadNextResponseAsync().ConfigureAwait(false);
+                    }
+
+                    var integerBytes = new List<byte>();
+                    var response = (IList<byte>)CurrentResponse;
+                    var currentChar = response[CurrentPosition];
+                    while (currentChar != RedisProtocolContants.LineFeed)
+                    {
+                        if (currentChar != RedisProtocolContants.CarriageReturn)
+                        {
+                            integerBytes.Add(currentChar);
+                        }
+
+                        CurrentPosition++;
+                        if (CurrentPosition >= CurrentResponse.Count)
+                        {
+                            await ReadNextResponseAsync().ConfigureAwait(false);
+                            response = CurrentResponse;
+                        }
+
+                        currentChar = response[CurrentPosition];
+                    }
+
+                    CurrentPosition++;
+                    bytes.Add(integerBytes.ToArray());
+                }
             }
 
             return bytes.ToArray();

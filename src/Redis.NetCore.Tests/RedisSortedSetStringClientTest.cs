@@ -142,10 +142,10 @@ namespace Redis.NetCore.Tests
                 var items = await client.SortedSetGetRangeWithScoresStringAsync(setKey, 1, -1);
                 Assert.Equal(2, items.Length);
 
-                Assert.Equal("two", items[0].Member);
-                Assert.Equal(2, items[0].Weight);
-                Assert.Equal("three", items[1].Member);
-                Assert.Equal(3, items[1].Weight);
+                Assert.Equal("two", items[0].member);
+                Assert.Equal(2, items[0].weight);
+                Assert.Equal("three", items[1].member);
+                Assert.Equal(3, items[1].weight);
             }
         }
 
@@ -180,10 +180,10 @@ namespace Redis.NetCore.Tests
                 var items = await client.SortedSetGetReverseRangeWithScoresStringAsync(setKey, 1, -1);
                 Assert.Equal(2, items.Length);
 
-                Assert.Equal("two", items[0].Member);
-                Assert.Equal(2, items[0].Weight);
-                Assert.Equal("one", items[1].Member);
-                Assert.Equal(1, items[1].Weight);
+                Assert.Equal("two", items[0].member);
+                Assert.Equal(2, items[0].weight);
+                Assert.Equal("one", items[1].member);
+                Assert.Equal(1, items[1].weight);
             }
         }
 
@@ -277,16 +277,16 @@ namespace Redis.NetCore.Tests
                 var items = await client.SortedSetGetRangeByScoreWithScoresStringAsync(setKey, "2", "+inf");
                 Assert.Equal(2, items.Length);
 
-                Assert.Equal("two", items[0].Member);
-                Assert.Equal(2, items[0].Weight);
-                Assert.Equal("three", items[1].Member);
-                Assert.Equal(3, items[1].Weight);
+                Assert.Equal("two", items[0].member);
+                Assert.Equal(2, items[0].weight);
+                Assert.Equal("three", items[1].member);
+                Assert.Equal(3, items[1].weight);
 
                 items = await client.SortedSetGetRangeByScoreWithScoresStringAsync(setKey, "-inf", "+inf", 1, 1);
                 Assert.Equal(1, items.Length);
 
-                Assert.Equal("two", items[0].Member);
-                Assert.Equal(2, items[0].Weight);
+                Assert.Equal("two", items[0].member);
+                Assert.Equal(2, items[0].weight);
             }
         }
 
@@ -326,16 +326,16 @@ namespace Redis.NetCore.Tests
                 var items = await client.SortedSetGetReverseRangeByScoreWithScoresStringAsync(setKey, "+inf", "2");
                 Assert.Equal(2, items.Length);
 
-                Assert.Equal("three", items[0].Member);
-                Assert.Equal(3, items[0].Weight);
-                Assert.Equal("two", items[1].Member);
-                Assert.Equal(2, items[1].Weight);
+                Assert.Equal("three", items[0].member);
+                Assert.Equal(3, items[0].weight);
+                Assert.Equal("two", items[1].member);
+                Assert.Equal(2, items[1].weight);
 
                 items = await client.SortedSetGetReverseRangeByScoreWithScoresStringAsync(setKey, "+inf", "-inf", 2, 1);
                 Assert.Equal(1, items.Length);
 
-                Assert.Equal("one", items[0].Member);
-                Assert.Equal(1, items[0].Weight);
+                Assert.Equal("one", items[0].member);
+                Assert.Equal(1, items[0].weight);
             }
         }
 
@@ -481,12 +481,12 @@ namespace Redis.NetCore.Tests
             }
         }
 
-        private static void CheckItems(IEnumerable<(string Member, int Weight)> items)
+        private static void CheckItems(IEnumerable<(string member, double weight)> items)
         {
             foreach (var item in items)
             {
-                var lastChar = item.Member.Last();
-                var weight = item.Weight.ToString(CultureInfo.InvariantCulture).Last();
+                var lastChar = item.member.Last();
+                var weight = item.weight.ToString(CultureInfo.InvariantCulture).Last();
                 Assert.Equal(weight, (char)lastChar);
             }
         }

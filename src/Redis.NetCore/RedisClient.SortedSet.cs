@@ -14,7 +14,7 @@ namespace Redis.NetCore
     [SuppressMessage("StyleCop", "SA1009", Justification = "StyleCop doesn't understand C#7 tuple return types yet.")]
     public partial class RedisClient : IRedisSortedSetClient
     {
-        public async Task<int> SortedSetAddMembersAsync(string setKey, params(byte[] member, int score)[] items)
+        public async Task<int> SortedSetAddMembersAsync(string setKey, params(byte[] member, double score)[] items)
         {
             CheckSetKey(setKey);
 
@@ -25,7 +25,7 @@ namespace Redis.NetCore
             return bytes[0].ConvertBytesToInteger();
         }
 
-        public async Task<int> SortedSetAddOnlyMembersAsync(string setKey, params (byte[] member, int score)[] items)
+        public async Task<int> SortedSetAddOnlyMembersAsync(string setKey, params (byte[] member, double score)[] items)
         {
             CheckSetKey(setKey);
 
@@ -36,7 +36,7 @@ namespace Redis.NetCore
             return bytes[0].ConvertBytesToInteger();
         }
 
-        public async Task<int> SortedSetUpsertMembersAsync(string setKey, params (byte[] member, int score)[] items)
+        public async Task<int> SortedSetUpsertMembersAsync(string setKey, params (byte[] member, double score)[] items)
         {
             CheckSetKey(setKey);
 
@@ -47,7 +47,7 @@ namespace Redis.NetCore
             return bytes[0].ConvertBytesToInteger();
         }
 
-        public async Task<int> SortedSetUpdateMembersAsync(string setKey, params (byte[] member, int score)[] items)
+        public async Task<int> SortedSetUpdateMembersAsync(string setKey, params (byte[] member, double score)[] items)
         {
             CheckSetKey(setKey);
 
@@ -112,7 +112,7 @@ namespace Redis.NetCore
             return SortedSetStoreCommandAsync(storeKey, sets, aggregate, RedisCommands.SortedSetIntersectionStore);
         }
 
-        public Task<int> SortedSetStoreIntersectionMembersAsync(string storeKey, (string set, int weight)[] sets, RedisAggregate aggregate = RedisAggregate.Sum)
+        public Task<int> SortedSetStoreIntersectionMembersAsync(string storeKey, (string set, double weight)[] sets, RedisAggregate aggregate = RedisAggregate.Sum)
         {
             return SortedSetStoreCommandAsync(storeKey, sets, aggregate, RedisCommands.SortedSetIntersectionStore);
         }
@@ -122,7 +122,7 @@ namespace Redis.NetCore
             return SortedSetStoreCommandAsync(storeKey, sets, aggregate, RedisCommands.SortedSetUnionStore);
         }
 
-        public Task<int> SortedSetStoreUnionMembersAsync(string storeKey, (string set, int weight)[] sets, RedisAggregate aggregate = RedisAggregate.Sum)
+        public Task<int> SortedSetStoreUnionMembersAsync(string storeKey, (string set, double weight)[] sets, RedisAggregate aggregate = RedisAggregate.Sum)
         {
             return SortedSetStoreCommandAsync(storeKey, sets, aggregate, RedisCommands.SortedSetUnionStore);
         }
@@ -135,7 +135,7 @@ namespace Redis.NetCore
             return SendMultipleCommandAsync(request);
         }
 
-        public async Task<(byte[] Member, int Weight)[]> SortedSetGetRangeWithScoresAsync(string setKey, int start, int end)
+        public async Task<(byte[] member, double weight)[]> SortedSetGetRangeWithScoresAsync(string setKey, int start, int end)
         {
             CheckSetKey(setKey);
 
@@ -152,7 +152,7 @@ namespace Redis.NetCore
             return SendMultipleCommandAsync(request);
         }
 
-        public async Task<(byte[] Member, int Weight)[]> SortedSetGetReverseRangeWithScoresAsync(string setKey, int start, int end)
+        public async Task<(byte[] member, double weight)[]> SortedSetGetReverseRangeWithScoresAsync(string setKey, int start, int end)
         {
             CheckSetKey(setKey);
 
@@ -177,7 +177,7 @@ namespace Redis.NetCore
             return SendMultipleCommandAsync(request);
         }
 
-        public async Task<(byte[] Member, int Weight)[]> SortedSetGetRangeByScoreWithScoresAsync(string setKey, string min, string max)
+        public async Task<(byte[] member, double weight)[]> SortedSetGetRangeByScoreWithScoresAsync(string setKey, string min, string max)
         {
             CheckSetKey(setKey);
 
@@ -186,7 +186,7 @@ namespace Redis.NetCore
             return ConvertToSortedSetTuple(bytes);
         }
 
-        public async Task<(byte[] Member, int Weight)[]> SortedSetGetRangeByScoreWithScoresAsync(string setKey, string min, string max, int offset, int count)
+        public async Task<(byte[] member, double weight)[]> SortedSetGetRangeByScoreWithScoresAsync(string setKey, string min, string max, int offset, int count)
         {
             CheckSetKey(setKey);
 
@@ -211,7 +211,7 @@ namespace Redis.NetCore
             return SendMultipleCommandAsync(request);
         }
 
-        public async Task<(byte[] Member, int Weight)[]> SortedSetGetReverseRangeByScoreWithScoresAsync(string setKey, string min, string max)
+        public async Task<(byte[] member, double weight)[]> SortedSetGetReverseRangeByScoreWithScoresAsync(string setKey, string min, string max)
         {
             CheckSetKey(setKey);
 
@@ -220,7 +220,7 @@ namespace Redis.NetCore
             return ConvertToSortedSetTuple(bytes);
         }
 
-        public async Task<(byte[] Member, int Weight)[]> SortedSetGetReverseRangeByScoreWithScoresAsync(string setKey, string min, string max, int offset, int count)
+        public async Task<(byte[] member, double weight)[]> SortedSetGetReverseRangeByScoreWithScoresAsync(string setKey, string min, string max, int offset, int count)
         {
             CheckSetKey(setKey);
 
@@ -256,20 +256,20 @@ namespace Redis.NetCore
             return bytes.ConvertBytesToInteger();
         }
 
-        private static (byte[] Member, int Weight)[] ConvertToSortedSetTuple(IReadOnlyList<byte[]> bytes)
+        private static (byte[] member, double weight)[] ConvertToSortedSetTuple(IReadOnlyList<byte[]> bytes)
         {
-            var results = new List<(byte[] member, int weight)>();
+            var results = new List<(byte[] member, double weight)>();
             for (var i = 0; i < bytes.Count; i += 2)
             {
                 var member = bytes[i];
-                var weight = bytes[i + 1].ConvertBytesToInteger();
+                var weight = bytes[i + 1].ConvertBytesToDouble();
                 results.Add((member, weight));
             }
 
             return results.ToArray();
         }
 
-        private static byte[][] ConvertTupleItemsToByteArray(IReadOnlyList<(byte[] member, int weight)> items)
+        private static byte[][] ConvertTupleItemsToByteArray(IReadOnlyList<(byte[] member, double weight)> items)
         {
             var byteArray = new byte[items.Count * 2][];
             for (var i = 0; i < items.Count; i++)
@@ -300,12 +300,12 @@ namespace Redis.NetCore
             }
         }
 
-        private async Task<int> SortedSetStoreCommandAsync(string storeKey, string[] sets, RedisAggregate aggregate, byte[] command)
+        private async Task<int> SortedSetStoreCommandAsync(string storeKey, IReadOnlyCollection<string> sets, RedisAggregate aggregate, byte[] command)
         {
             CheckSetKey(storeKey);
 
-            var countBytes = sets.Length.ToBytes();
-            var request = new byte[sets.Length + 5][];
+            var countBytes = sets.Count.ToBytes();
+            var request = new byte[sets.Count + 5][];
             request[0] = command;
             request[1] = storeKey.ToBytes();
             request[2] = countBytes;
@@ -316,7 +316,7 @@ namespace Redis.NetCore
             return bytes[0].ConvertBytesToInteger();
         }
 
-        private async Task<int> SortedSetStoreCommandAsync(string storeKey, ValueTuple<string, int>[] sets, RedisAggregate aggregate, byte[] command)
+        private async Task<int> SortedSetStoreCommandAsync(string storeKey, ValueTuple<string, double>[] sets, RedisAggregate aggregate, byte[] command)
         {
             CheckSetKey(storeKey);
 
@@ -325,9 +325,9 @@ namespace Redis.NetCore
             request[0] = command;
             request[1] = storeKey.ToBytes();
             request[2] = countBytes;
-            var index = CopyBytesToRequest(sets.Select<(string set, int weight), string>(item => item.set).ToBytes(), request, 3);
+            var index = CopyBytesToRequest(sets.Select<(string set, double weight), string>(item => item.set).ToBytes(), request, 3);
             request[index] = RedisCommands.Weight;
-            index = CopyBytesToRequest(sets.Select<(string set, int weight), byte[]>(item => item.weight.ToBytes()).ToArray(), request, index + 1);
+            index = CopyBytesToRequest(sets.Select<(string set, double weight), byte[]>(item => item.weight.ToBytes()).ToArray(), request, index + 1);
             AddAggregateTypeToRequest(aggregate, request, index);
 
             var bytes = await SendMultipleCommandAsync(request).ConfigureAwait(false);

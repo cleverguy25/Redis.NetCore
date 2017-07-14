@@ -9,13 +9,13 @@ namespace Redis.NetCore.Abstractions
     [SuppressMessage("StyleCop", "SA1008", Justification = "StyleCop doesn't understand C#7 tuple return types yet.")]
     public interface IRedisSortedSetStringClient
     {
-        Task<int> SortedSetAddMembersStringAsync(string setKey, params (string member, int score)[] items);
+        Task<int> SortedSetAddMembersStringAsync(string setKey, params (string member, double score)[] items);
 
-        Task<int> SortedSetAddOnlyMembersStringAsync(string setKey, params (string member, int score)[] items);
+        Task<int> SortedSetAddOnlyMembersStringAsync(string setKey, params (string member, double score)[] items);
 
-        Task<int> SortedSetUpdateMembersStringAsync(string setKey, params (string member, int score)[] items);
+        Task<int> SortedSetUpdateMembersStringAsync(string setKey, params (string member, double score)[] items);
 
-        Task<int> SortedSetUpsertMembersStringAsync(string setKey, params (string member, int score)[] items);
+        Task<int> SortedSetUpsertMembersStringAsync(string setKey, params (string member, double score)[] items);
 
         Task<int?> SortedSetGetScoreStringAsync(string setKey, string member);
 
@@ -27,11 +27,11 @@ namespace Redis.NetCore.Abstractions
 
         Task<string[]> SortedSetGetRangeStringAsync(string setKey, int start, int end);
 
-        Task<(string Member, int Weight)[]> SortedSetGetRangeWithScoresStringAsync(string setKey, int start, int end);
+        Task<(string member, double weight)[]> SortedSetGetRangeWithScoresStringAsync(string setKey, int start, int end);
 
         Task<string[]> SortedSetGetReverseRangeStringAsync(string setKey, int start, int end);
 
-        Task<(string Member, int Weight)[]> SortedSetGetReverseRangeWithScoresStringAsync(string setKey, int start, int end);
+        Task<(string member, double weight)[]> SortedSetGetReverseRangeWithScoresStringAsync(string setKey, int start, int end);
 
         Task<int> SortedSetGetLexCountAsync(string setKey, string min, string max);
 
@@ -47,9 +47,9 @@ namespace Redis.NetCore.Abstractions
 
         Task<string[]> SortedSetGetRangeByScoreStringAsync(string setKey, string min, string max, int offset, int count);
 
-        Task<(string Member, int Weight)[]> SortedSetGetRangeByScoreWithScoresStringAsync(string setKey, string min, string max);
+        Task<(string member, double weight)[]> SortedSetGetRangeByScoreWithScoresStringAsync(string setKey, string min, string max);
 
-        Task<(string Member, int Weight)[]> SortedSetGetRangeByScoreWithScoresStringAsync(
+        Task<(string member, double weight)[]> SortedSetGetRangeByScoreWithScoresStringAsync(
             string setKey,
             string min,
             string max,
@@ -60,9 +60,9 @@ namespace Redis.NetCore.Abstractions
 
         Task<string[]> SortedSetGetReverseRangeByScoreStringAsync(string setKey, string min, string max, int offset, int count);
 
-        Task<(string Member, int Weight)[]> SortedSetGetReverseRangeByScoreWithScoresStringAsync(string setKey, string min, string max);
+        Task<(string member, double weight)[]> SortedSetGetReverseRangeByScoreWithScoresStringAsync(string setKey, string min, string max);
 
-        Task<(string Member, int Weight)[]> SortedSetGetReverseRangeByScoreWithScoresStringAsync(
+        Task<(string member, double weight)[]> SortedSetGetReverseRangeByScoreWithScoresStringAsync(
             string setKey,
             string min,
             string max,

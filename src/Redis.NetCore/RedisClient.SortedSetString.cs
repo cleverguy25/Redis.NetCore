@@ -14,22 +14,22 @@ namespace Redis.NetCore
     [SuppressMessage("StyleCop", "SA1008", Justification = "StyleCop doesn't understand C#7 tuple return types yet.")]
     public partial class RedisClient : IRedisSortedSetStringClient
     {
-        public Task<int> SortedSetAddMembersStringAsync(string setKey, params(string member, int score)[] items)
+        public Task<int> SortedSetAddMembersStringAsync(string setKey, params(string member, double score)[] items)
         {
             return SortedSetAddMembersAsync(setKey, items.Select(item => (item.member.ToBytes(), item.score)).ToArray());
         }
 
-        public Task<int> SortedSetAddOnlyMembersStringAsync(string setKey, params (string member, int score)[] items)
+        public Task<int> SortedSetAddOnlyMembersStringAsync(string setKey, params (string member, double score)[] items)
         {
             return SortedSetAddOnlyMembersAsync(setKey, items.Select(item => (item.member.ToBytes(), item.score)).ToArray());
         }
 
-        public Task<int> SortedSetUpsertMembersStringAsync(string setKey, params (string member, int score)[] items)
+        public Task<int> SortedSetUpsertMembersStringAsync(string setKey, params (string member, double score)[] items)
         {
             return SortedSetUpsertMembersAsync(setKey, items.Select(item => (item.member.ToBytes(), item.score)).ToArray());
         }
 
-        public Task<int> SortedSetUpdateMembersStringAsync(string setKey, params (string member, int score)[] items)
+        public Task<int> SortedSetUpdateMembersStringAsync(string setKey, params (string member, double score)[] items)
         {
             return SortedSetUpdateMembersAsync(setKey, items.Select(item => (item.member.ToBytes(), item.score)).ToArray());
         }
@@ -60,10 +60,10 @@ namespace Redis.NetCore
             return bytes.ConvertByteArrayToStringArray();
         }
 
-        public async Task<(string Member, int Weight)[]> SortedSetGetRangeWithScoresStringAsync(string setKey, int start, int end)
+        public async Task<(string member, double weight)[]> SortedSetGetRangeWithScoresStringAsync(string setKey, int start, int end)
         {
             var tuples = await SortedSetGetRangeWithScoresAsync(setKey, start, end).ConfigureAwait(false);
-            return tuples.Select(item => (item.Member.ConvertBytesToString(), item.Weight)).ToArray();
+            return tuples.Select(item => (item.member.ConvertBytesToString(), item.weight)).ToArray();
         }
 
         public async Task<string[]> SortedSetGetReverseRangeStringAsync(string setKey, int start, int end)
@@ -72,10 +72,10 @@ namespace Redis.NetCore
             return bytes.ConvertByteArrayToStringArray();
         }
 
-        public async Task<(string Member, int Weight)[]> SortedSetGetReverseRangeWithScoresStringAsync(string setKey, int start, int end)
+        public async Task<(string member, double weight)[]> SortedSetGetReverseRangeWithScoresStringAsync(string setKey, int start, int end)
         {
             var tuples = await SortedSetGetReverseRangeWithScoresAsync(setKey, start, end).ConfigureAwait(false);
-            return tuples.Select(item => (item.Member.ConvertBytesToString(), item.Weight)).ToArray();
+            return tuples.Select(item => (item.member.ConvertBytesToString(), item.weight)).ToArray();
         }
 
         public async Task<int> SortedSetGetLexCountAsync(string setKey, string min, string max)
@@ -134,16 +134,16 @@ namespace Redis.NetCore
             return bytes.ConvertByteArrayToStringArray();
         }
 
-        public async Task<(string Member, int Weight)[]> SortedSetGetRangeByScoreWithScoresStringAsync(string setKey, string min, string max)
+        public async Task<(string member, double weight)[]> SortedSetGetRangeByScoreWithScoresStringAsync(string setKey, string min, string max)
         {
             var tuples = await SortedSetGetRangeByScoreWithScoresAsync(setKey, min, max).ConfigureAwait(false);
-            return tuples.Select(item => (item.Member.ConvertBytesToString(), item.Weight)).ToArray();
+            return tuples.Select(item => (item.member.ConvertBytesToString(), item.weight)).ToArray();
         }
 
-        public async Task<(string Member, int Weight)[]> SortedSetGetRangeByScoreWithScoresStringAsync(string setKey, string min, string max, int offset, int count)
+        public async Task<(string member, double weight)[]> SortedSetGetRangeByScoreWithScoresStringAsync(string setKey, string min, string max, int offset, int count)
         {
             var tuples = await SortedSetGetRangeByScoreWithScoresAsync(setKey, min, max, offset, count).ConfigureAwait(false);
-            return tuples.Select(item => (item.Member.ConvertBytesToString(), item.Weight)).ToArray();
+            return tuples.Select(item => (item.member.ConvertBytesToString(), item.weight)).ToArray();
         }
 
         public async Task<string[]> SortedSetGetReverseRangeByScoreStringAsync(string setKey, string min, string max)
@@ -158,16 +158,16 @@ namespace Redis.NetCore
             return bytes.ConvertByteArrayToStringArray();
         }
 
-        public async Task<(string Member, int Weight)[]> SortedSetGetReverseRangeByScoreWithScoresStringAsync(string setKey, string min, string max)
+        public async Task<(string member, double weight)[]> SortedSetGetReverseRangeByScoreWithScoresStringAsync(string setKey, string min, string max)
         {
             var tuples = await SortedSetGetReverseRangeByScoreWithScoresAsync(setKey, min, max).ConfigureAwait(false);
-            return tuples.Select(item => (item.Member.ConvertBytesToString(), item.Weight)).ToArray();
+            return tuples.Select(item => (item.member.ConvertBytesToString(), item.weight)).ToArray();
         }
 
-        public async Task<(string Member, int Weight)[]> SortedSetGetReverseRangeByScoreWithScoresStringAsync(string setKey, string min, string max, int offset, int count)
+        public async Task<(string member, double weight)[]> SortedSetGetReverseRangeByScoreWithScoresStringAsync(string setKey, string min, string max, int offset, int count)
         {
             var tuples = await SortedSetGetReverseRangeByScoreWithScoresAsync(setKey, min, max, offset, count).ConfigureAwait(false);
-            return tuples.Select(item => (item.Member.ConvertBytesToString(), item.Weight)).ToArray();
+            return tuples.Select(item => (item.member.ConvertBytesToString(), item.weight)).ToArray();
         }
 
         public Task<int> SortedSetRemoveMembersStringAsync(string setKey, params string[] members)

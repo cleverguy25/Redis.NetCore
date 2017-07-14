@@ -22,7 +22,7 @@ namespace Redis.NetCore
         {
         }
 
-        public static IEnumerable<(byte[] Member, int Weight)> GetMembers(byte[][] bytes)
+        public static IEnumerable<(byte[] member, double weight)> GetMembers(byte[][] bytes)
         {
             for (var i = 0; i < bytes.Length - 1; i += 2)
             {
@@ -32,7 +32,7 @@ namespace Redis.NetCore
             }
         }
 
-        public static IEnumerable<(string Member, int Weight)> GetMembersString(byte[][] bytes)
+        public static IEnumerable<(string member, double weight)> GetMembersString(byte[][] bytes)
         {
             for (var i = 0; i < bytes.Length - 1; i += 2)
             {
@@ -42,13 +42,13 @@ namespace Redis.NetCore
             }
         }
 
-        public IEnumerable<(byte[] Member, int Weight)> GetMembers()
+        public IEnumerable<(byte[] member, double weight)> GetMembers()
         {
             var bytes = GetValues().ToArray();
             return GetMembers(bytes);
         }
 
-        public IEnumerable<(string Member, int Weight)> GetMembersString()
+        public IEnumerable<(string member, double weight)> GetMembersString()
         {
             var bytes = GetValues().ToArray();
             return GetMembersString(bytes);
