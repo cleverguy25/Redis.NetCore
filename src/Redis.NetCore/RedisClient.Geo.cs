@@ -63,6 +63,12 @@ namespace Redis.NetCore
             return new RedisGeoRadius(this, request);
         }
 
+        public RedisGeoRadius GeoRadius(string geoKey, string member, int radius, GeoUnit unit)
+        {
+            var request = ComposeRequest(RedisCommands.GeoRadiusByMember, geoKey.ToBytes(), member.ToBytes(), radius.ToBytes(), unit.Unit.ToBytes());
+            return new RedisGeoRadius(this, request);
+        }
+
         private static byte[][] ConvertTupleItemsToByteArray(IReadOnlyList<(GeoPosition position, string member)> items)
         {
             var byteArray = new byte[items.Count * 3][];

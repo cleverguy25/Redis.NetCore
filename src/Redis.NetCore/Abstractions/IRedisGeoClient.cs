@@ -21,5 +21,7 @@ namespace Redis.NetCore.Abstractions
         Task<double?> GeoDistanceAsync(string geoKey, string member1, string member2);
 
         RedisGeoRadius GeoRadius(string geoKey, double longitude, double latitude, int radius, GeoUnit unit);
+
+        RedisGeoRadius GeoRadius(string geoKey, string member, int radius, GeoUnit unit);
     }
 }

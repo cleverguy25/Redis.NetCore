@@ -91,6 +91,23 @@ namespace Redis.NetCore.Tests
         }
 
         [Fact]
+        public async Task GeoRadiusByMemberAsync()
+        {
+            using (var client = TestClient.CreateClient())
+            {
+                const string key = nameof(GeoRadiusByMemberAsync);
+                await client.DeleteKeyAsync(key);
+                await GeoAddAsync(client, key);
+                const string member = "Agrigento";
+                await client.GeoAddAsync(key, (new GeoPosition(13.583333, 37.316667), member));
+                var members = await client.GeoRadius(key, member, 100, GeoUnit.Kilometers)
+                    .GetMembersAsync();
+                Array.Sort(members);
+                Assert.Equal(new[] { member, "Palermo" }, members);
+            }
+        }
+
+        [Fact]
         public async Task GeoRadiusAscendingAsync()
         {
             using (var client = TestClient.CreateClient())

@@ -17,7 +17,7 @@ namespace Redis.NetCore.Tests
     [Trait("Category", "Integration")]
     public class RedisKeyClientTest
     {
-        private Dictionary<int, string> _sortMap = new Dictionary<int, string>()
+        private readonly Dictionary<int, string> _sortMap = new Dictionary<int, string>()
                                                    {
                                                        { 0, "zero" },
                                                        { 1, "one" },

@@ -186,5 +186,9 @@ namespace Redis.NetCore.Constants
         public static readonly byte[] WithHash = "WITHHASH".ToBytes();
         public static readonly byte[] Count = "COUNT".ToBytes();
         public static readonly byte[] StoreDistance = "STOREDIST".ToBytes();
+
+        public static readonly byte[] HyperLogLogAdd = "PFADD".ToBytes();
+        public static readonly byte[] HyperLogLogCount = "PFCOUNT".ToBytes();
+        public static readonly byte[] HyperLogLogMerge = "PFMERGE".ToBytes();
     }
 }
