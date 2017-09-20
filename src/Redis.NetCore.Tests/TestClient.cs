@@ -3,9 +3,13 @@
 // Licensed under the APACHE 2.0 license. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using System.Diagnostics;
+using System.Reactive;
 using System.Threading.Tasks;
 using Castle.Components.DictionaryAdapter;
 using Redis.NetCore.Abstractions;
@@ -24,6 +28,7 @@ namespace Redis.NetCore.Tests
                 Endpoints = new[] { "localhost:32768" }
             };
 
+            DiagnosticListener.AllListeners.Subscribe(listener => SubscribeListener(listener));
             var client = RedisClient.CreateClient(redisConfiguration);
             return client;
         }
@@ -91,6 +96,26 @@ namespace Redis.NetCore.Tests
             }
 
             return members.ToArray();
+        }
+
+        private static void SubscribeListener(DiagnosticListener listener)
+        {
+            if (Debugger.IsAttached == false)
+            {
+                return;
+            }
+
+            listener.Subscribe(@event =>
+            {
+                if (@event.Value == null)
+                {
+                    Debug.WriteLine($"From listener {listener.Name} received event {@event.Key}");
+                }
+                else
+                {
+                    Debug.WriteLine($"From listener {listener.Name} received event {@event.Key} with payload {@event.Value.ToString()}");
+                }
+            });
         }
     }
 }

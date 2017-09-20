@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -12,8 +13,8 @@ namespace Redis.NetCore.Pipeline
 {
     public class BufferManager : IBufferManager
     {
+        private static readonly DiagnosticSource _diagnosticSource = new DiagnosticListener("Redis.NetCore.Pipeline.BufferManager");
         private readonly ConcurrentStack<ArraySegment<byte>> _buffers;
-
         private readonly int _maxPoolSize;
         private readonly int _segmentChunks;
         private readonly ConcurrentBag<byte[]> _segments;
@@ -64,6 +65,7 @@ namespace Redis.NetCore.Pipeline
                     continue;
                 }
 
+                _diagnosticSource.LogEvent("WaitingForBuffer");
                 if (await _semaphore.WaitAsync(timeout).ConfigureAwait(false) == false)
                 {
                     throw new TimeoutException($"Timeout in BufferManager, cannot increase pool beyond max size [{_maxPoolSize}]");
@@ -96,6 +98,7 @@ namespace Redis.NetCore.Pipeline
                 return false;
             }
 
+            _diagnosticSource.LogEvent("CreateNewSegment");
             var bytes = new byte[_segmentSize];
             _segments.Add(bytes);
             for (var i = 0; i < _segmentChunks; i++)

@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,6 +16,7 @@ namespace Redis.NetCore.Pipeline
 {
     public class RedisPipeline : IRedisPipeline
     {
+        private static readonly DiagnosticSource _diagnosticSource = new DiagnosticListener("Redis.NetCore.Pipeline.RedisPipeline");
         private readonly int _pipelineId;
         private readonly IRedisReader _redisReader;
         private readonly IRedisWriter _redisWriter;
@@ -54,6 +56,7 @@ namespace Redis.NetCore.Pipeline
                                                 result => taskCompletion.SetResult(result.CollapseArray()));
 
             RequestQueue.Enqueue(request);
+            _diagnosticSource.LogEvent("RequestEnqueue", request);
 
             return EnsureSendCommandAsync(taskCompletion);
         }
@@ -66,15 +69,18 @@ namespace Redis.NetCore.Pipeline
                                                 taskCompletion.SetException,
                                                 result => taskCompletion.SetResult(result));
             RequestQueue.Enqueue(request);
+            _diagnosticSource.LogEvent("RequestEnqueue", request);
 
             return EnsureSendCommandAsync(taskCompletion);
         }
 
         public void SaveQueue(IRedisPipeline redisPipeline)
         {
+            _diagnosticSource.LogEvent("SaveQueueToNewPipeline");
             while (RequestQueue.TryDequeue(out RedisPipelineItem currentItem))
             {
                 redisPipeline.RequestQueue.Enqueue(currentItem);
+                _diagnosticSource.LogEvent("RequestEnqueue", currentItem);
             }
         }
 
@@ -134,13 +140,17 @@ namespace Redis.NetCore.Pipeline
 
         private async Task SendAsync()
         {
+            _diagnosticSource.LogEvent("SendStart");
+            RedisPipelineItem currentItem = null;
             try
             {
                 await _redisWriter.CreateNewBufferAsync().ConfigureAwait(false);
 
-                while (RequestQueue.TryDequeue(out RedisPipelineItem currentItem))
+                while (RequestQueue.TryDequeue(out currentItem))
                 {
+                    _diagnosticSource.LogEvent("WriteItemStart", currentItem);
                     await _redisWriter.WriteRedisRequestAsync(currentItem.Data).ConfigureAwait(false);
+                    _diagnosticSource.LogEvent("WriteItemStop", currentItem);
                     _responseQueue.Enqueue(currentItem);
                     FireAndForget(StartReceiveIfNotRunning());
                     if (_redisWriter.BufferCount <= 1)
@@ -148,21 +158,29 @@ namespace Redis.NetCore.Pipeline
                         continue;
                     }
 
+                    _diagnosticSource.LogEvent("FlushWriteBufferStart");
                     await _redisWriter.FlushWriteBufferAsync().ConfigureAwait(false);
+                    _diagnosticSource.LogEvent("FlushWriteBufferStop");
                     break;
                 }
 
+                _diagnosticSource.LogEvent("FlushWriteBufferStart");
                 await _redisWriter.FlushWriteBufferAsync().ConfigureAwait(false);
+                _diagnosticSource.LogEvent("FlushWriteBufferStop");
             }
             catch (Exception error)
             {
+                _diagnosticSource.LogEvent("SendException", error);
                 _pipelineException = error;
                 ThrowErrorForRemainingResponseQueueItems();
+                currentItem?.OnError(error);
             }
             finally
             {
                 _redisWriter.CheckInBuffers();
             }
+
+            _diagnosticSource.LogEvent("SendStop");
         }
 
         private Task StartReceiveIfNotRunning()
@@ -196,28 +214,36 @@ namespace Redis.NetCore.Pipeline
 
         private async Task ReceiveAsync()
         {
+            _diagnosticSource.LogEvent("ReceiveStart");
             if (_pipelineException != null)
             {
                 ThrowErrorForRemainingResponseQueueItems();
                 return;
             }
 
+            RedisPipelineItem currentItem = null;
             try
             {
-                while (_responseQueue.TryDequeue(out RedisPipelineItem currentItem))
+                while (_responseQueue.TryDequeue(out currentItem))
                 {
+                    _diagnosticSource.LogEvent("ReceiveItemStart", currentItem);
                     await _redisReader.ReadAsync(currentItem).ConfigureAwait(false);
+                    _diagnosticSource.LogEvent("ReceiveItemStop", currentItem);
                 }
             }
             catch (Exception error)
             {
+                _diagnosticSource.LogEvent("ReceiveException", error);
                 _pipelineException = error;
                 ThrowErrorForRemainingResponseQueueItems();
+                currentItem?.OnError(error);
             }
             finally
             {
                 _redisReader.CheckInBuffers();
             }
+
+            _diagnosticSource.LogEvent("ReceiveStop");
         }
     }
 }

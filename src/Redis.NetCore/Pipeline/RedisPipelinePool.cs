@@ -13,11 +13,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using Redis.NetCore.Configuration;
 using Redis.NetCore.Sockets;
+using System.Diagnostics;
 
 namespace Redis.NetCore.Pipeline
 {
     public class RedisPipelinePool : IRedisPipelinePool
     {
+        private static readonly DiagnosticSource _diagnosticSource = new DiagnosticListener("Redis.NetCore.Pipeline.RedisPipelinePool");
         private readonly IBufferManager _bufferManager;
         private readonly int _capacity;
         private readonly RedisConfiguration _configuration;
@@ -108,6 +110,8 @@ namespace Redis.NetCore.Pipeline
                     return GetNextPipelineAsync();
                 }
 
+                _diagnosticSource.LogEvent("InitializePipelinesAsyncStart");
+
                 var endpoint = await EndpointResolution.GetEndpointAsync(_configuration.Endpoints[0]).ConfigureAwait(false);
                 var pipelines = new List<Task<IRedisPipeline>>();
                 for (var i = 0; i < _capacity; i++)
@@ -117,6 +121,8 @@ namespace Redis.NetCore.Pipeline
                 }
 
                 _pipelines = pipelines;
+
+                _diagnosticSource.LogEvent("InitializePipelinesAsyncStop");
 
                 return GetNextPipelineAsync();
             }
@@ -132,6 +138,7 @@ namespace Redis.NetCore.Pipeline
 
         private async Task<IRedisPipeline> ReplaceErrorPipelineAsync(int currentIndex, IRedisPipeline pipeline)
         {
+            _diagnosticSource.LogEvent("ReplaceErrorPipelineStart", new { CurrentIndex = currentIndex });
             var endpoint = await EndpointResolution.GetEndpointAsync(_configuration.Endpoints[0]).ConfigureAwait(false);
             var newPipeline = await ConnectPipelineAsync(currentIndex, endpoint.Item1, endpoint.Item2).ConfigureAwait(false);
             _pipelines[currentIndex] = Task.FromResult(newPipeline);
@@ -147,6 +154,7 @@ namespace Redis.NetCore.Pipeline
                 // Ignore
             }
 
+            _diagnosticSource.LogEvent("ReplaceErrorPipelineStop", new { CurrentIndex = currentIndex });
             return newPipeline;
         }
 
@@ -154,13 +162,22 @@ namespace Redis.NetCore.Pipeline
         {
             var socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
+            object getPayload()
+            {
+                return new { index = index, Host = host, Endpoint = endpoint };
+            }
+
             var asyncSocket = new AsyncSocket(socket.Wrap(), endpoint);
+            _diagnosticSource.LogEvent("SocketConnectAsyncStart", getPayload);
             await asyncSocket.ConnectAsync();
+            _diagnosticSource.LogEvent("SocketConnectAsyncStop", getPayload);
             var pipeline = await CreatePipelineAsync(index, host, asyncSocket).ConfigureAwait(false);
 
             if (string.IsNullOrWhiteSpace(_configuration.Password) == false)
             {
+                _diagnosticSource.LogEvent("AuthenticateStart", getPayload);
                 await pipeline.AuthenticateAsync(_configuration.Password).ConfigureAwait(false);
+                _diagnosticSource.LogEvent("AuthenticateStop", getPayload);
             }
 
             return pipeline;
