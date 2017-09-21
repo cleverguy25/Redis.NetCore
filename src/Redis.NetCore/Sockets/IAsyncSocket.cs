@@ -10,6 +10,8 @@ namespace Redis.NetCore.Sockets
 {
     public interface IAsyncSocket : IDisposable
     {
+        bool Connected { get; }
+
         ISocketAwaitable<bool> ConnectAsync();
 
         ISocketAwaitable<int> SendAsync(IList<ArraySegment<byte>> bufferList);

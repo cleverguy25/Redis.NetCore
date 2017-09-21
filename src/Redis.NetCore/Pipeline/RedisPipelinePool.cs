@@ -91,13 +91,16 @@ namespace Redis.NetCore.Pipeline
                     continue;
                 }
 
-                if (pipelineTask.Result.IsErrorState == false)
+                _diagnosticSource.LogEvent(
+                    "GetNextPipeline",
+                    () => new { Index = currentIndex, IsErrorState = pipelineTask.Result.IsErrorState });
+                if (pipelineTask.Result.IsErrorState)
                 {
-                    return pipelineTask;
+                    _pipelines[currentIndex] = null;
+                    return ReplaceErrorPipelineAsync(currentIndex, pipelineTask.Result);
                 }
 
-                _pipelines[currentIndex] = null;
-                return ReplaceErrorPipelineAsync(currentIndex, pipelineTask.Result);
+                return pipelineTask;
             }
         }
 
@@ -161,7 +164,6 @@ namespace Redis.NetCore.Pipeline
         private async Task<IRedisPipeline> ConnectPipelineAsync(int index, string host, EndPoint endpoint)
         {
             var socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-
             object getPayload()
             {
                 return new { index = index, Host = host, Endpoint = endpoint };

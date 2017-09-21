@@ -25,6 +25,11 @@ namespace Redis.NetCore.Pipeline
                 CheckInBuffers();
             }
 
+            if (_asyncSocket.Connected == false)
+            {
+                throw new RedisException("Socket is not connected.");
+            }
+
             var buffer = await BufferManager.CheckOutAsync().ConfigureAwait(false);
             BufferList.Add(buffer);
             CurrentResponse = await _asyncSocket.ReceiveAsync(buffer);

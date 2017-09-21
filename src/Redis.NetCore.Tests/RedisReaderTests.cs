@@ -173,6 +173,7 @@ namespace Redis.NetCore.Tests
                                               return data;
                                           });
 
+            socket.Connected.Returns(true);
             socket.ReceiveAsync(Arg.Any<ArraySegment<byte>>()).Returns(awaitable);
         }
 

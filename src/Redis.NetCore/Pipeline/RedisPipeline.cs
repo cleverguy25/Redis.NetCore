@@ -38,7 +38,7 @@ namespace Redis.NetCore.Pipeline
             _redisReader = redisReader;
         }
 
-        public bool IsErrorState => _pipelineException != null;
+        public bool IsErrorState => _pipelineException != null || _socket.Connected == false;
 
         public ConcurrentQueue<RedisPipelineItem> RequestQueue { get; } = new ConcurrentQueue<RedisPipelineItem>();
 

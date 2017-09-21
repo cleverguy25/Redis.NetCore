@@ -357,6 +357,11 @@ namespace Redis.NetCore.Pipeline
             var length = 0;
             var sign = 1;
 
+            if (response.Count == 0)
+            {
+                throw new RedisException("Invalid response");
+            }
+
             var currentChar = response[CurrentPosition];
             if (currentChar == RedisProtocolContants.Minus)
             {

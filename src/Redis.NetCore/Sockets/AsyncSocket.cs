@@ -35,6 +35,14 @@ namespace Redis.NetCore.Sockets
             _receiveSocketAwaitable = new ReceiveSocketAwaitable(_receiveSocketEventArgs);
         }
 
+        public bool Connected
+        {
+            get
+            {
+                return _socket.Connected;
+            }
+        }
+
         public ISocketAwaitable<bool> ConnectAsync()
         {
             _connectSocketAwaitable.Reset();

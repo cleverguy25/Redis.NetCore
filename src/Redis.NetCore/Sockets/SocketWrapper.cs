@@ -18,6 +18,14 @@ namespace Redis.NetCore.Sockets
 
         public Socket UnderlyingSocket { get; }
 
+        public bool Connected
+        {
+            get
+            {
+                return UnderlyingSocket.Connected;
+            }
+        }
+
         public int Send(IList<ArraySegment<byte>> buffers)
         {
             return UnderlyingSocket.Send(buffers);

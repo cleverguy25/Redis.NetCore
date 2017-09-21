@@ -13,6 +13,8 @@ namespace Redis.NetCore.Sockets
     {
         Socket UnderlyingSocket { get; }
 
+        bool Connected { get; }
+
         bool SendAsync(SocketAsyncEventArgs args);
 
         int Send(IList<ArraySegment<byte>> buffers);
