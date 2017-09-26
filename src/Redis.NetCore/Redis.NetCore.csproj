@@ -23,7 +23,7 @@
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
     <CodeAnalysisRuleSet>..\..\payscale.stylecop.ruleset</CodeAnalysisRuleSet>
-    <Version>0.8.7-beta</Version>
+    <Version>0.8.8-beta</Version>
   </PropertyGroup>
 
   <ItemGroup>

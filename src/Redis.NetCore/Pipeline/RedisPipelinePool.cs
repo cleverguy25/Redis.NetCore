@@ -8,12 +8,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Security;
-using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using Redis.NetCore.Configuration;
 using Redis.NetCore.Sockets;
 using System.Diagnostics;
+using Redis.NetCore.Constants;
 
 namespace Redis.NetCore.Pipeline
 {
@@ -21,19 +21,25 @@ namespace Redis.NetCore.Pipeline
     {
         private static readonly DiagnosticSource _diagnosticSource = new DiagnosticListener("Redis.NetCore.Pipeline.RedisPipelinePool");
         private readonly IBufferManager _bufferManager;
+        private readonly Func<EndPoint, IAsyncSocket> _socketFactory;
         private readonly int _capacity;
+        private readonly bool _keepAlive;
         private readonly RedisConfiguration _configuration;
         private readonly int _maxIndex;
+        private readonly int _socketTimeout;
         private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
         private int _currentIndex;
         private List<Task<IRedisPipeline>> _pipelines;
 
-        public RedisPipelinePool(RedisConfiguration configuration, IBufferManager bufferManager, int capacity = 3)
+        public RedisPipelinePool(RedisConfiguration configuration, IBufferManager bufferManager, Func<EndPoint, IAsyncSocket> socketFactory, int capacity = 3, int socketTimeout = 60000, bool keepAlive = true)
         {
             _configuration = configuration;
             _bufferManager = bufferManager;
+            _socketFactory = socketFactory;
             _capacity = capacity;
+            _keepAlive = keepAlive;
             _maxIndex = _capacity - 1;
+            _socketTimeout = 60000;
         }
 
         public Task<IRedisPipeline> GetPipelineAsync()
@@ -67,6 +73,16 @@ namespace Redis.NetCore.Pipeline
             {
                 pipelineTask.Result.Dispose();
             }
+        }
+
+        private void SetupKeepAliveTimer(IRedisPipeline pipeline)
+        {
+            if (_keepAlive == false)
+            {
+                return;
+            }
+
+            RedisPipeline.FireAndForget(pipeline.KeepAliveAsync());
         }
 
         private async Task<Task<IRedisPipeline>> InitializeAsync()
@@ -163,17 +179,17 @@ namespace Redis.NetCore.Pipeline
 
         private async Task<IRedisPipeline> ConnectPipelineAsync(int index, string host, EndPoint endpoint)
         {
-            var socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             object getPayload()
             {
                 return new { index = index, Host = host, Endpoint = endpoint };
             }
 
-            var asyncSocket = new AsyncSocket(socket.Wrap(), endpoint);
             _diagnosticSource.LogEvent("SocketConnectAsyncStart", getPayload);
+            var asyncSocket = _socketFactory(endpoint);
             await asyncSocket.ConnectAsync();
             _diagnosticSource.LogEvent("SocketConnectAsyncStop", getPayload);
             var pipeline = await CreatePipelineAsync(index, host, asyncSocket).ConfigureAwait(false);
+            SetupKeepAliveTimer(pipeline);
 
             if (string.IsNullOrWhiteSpace(_configuration.Password) == false)
             {
@@ -185,20 +201,20 @@ namespace Redis.NetCore.Pipeline
             return pipeline;
         }
 
-        private Task<IRedisPipeline> CreatePipelineAsync(int index, string host, AsyncSocket asyncSocket)
+        private Task<IRedisPipeline> CreatePipelineAsync(int index, string host, IAsyncSocket asyncSocket)
         {
             return _configuration.UseSsl ?
                 CreateSslPipelineAsync(index, host, asyncSocket) : Task.FromResult(CreateSocketPipeline(index, asyncSocket));
         }
 
-        private IRedisPipeline CreateSocketPipeline(int index, AsyncSocket asyncSocket)
+        private IRedisPipeline CreateSocketPipeline(int index, IAsyncSocket asyncSocket)
         {
             var redisReader = new RedisSocketReader(asyncSocket, _bufferManager);
             var redisWriter = new RedisSocketWriter(asyncSocket, _bufferManager);
-            return new RedisPipeline(index, asyncSocket, null, redisWriter, redisReader);
+            return new RedisPipeline(index, asyncSocket, null, redisWriter, redisReader, _socketTimeout);
         }
 
-        private async Task<IRedisPipeline> CreateSslPipelineAsync(int index, string host, AsyncSocket asyncSocket)
+        private async Task<IRedisPipeline> CreateSslPipelineAsync(int index, string host, IAsyncSocket asyncSocket)
         {
             var stream = new AsyncSocketStream(asyncSocket);
             var sslStream = new SslStream(stream);
@@ -206,7 +222,7 @@ namespace Redis.NetCore.Pipeline
             await sslStream.AuthenticateAsClientAsync(host).ConfigureAwait(false);
             var redisReader = new RedisStreamReader(passThrough, _bufferManager);
             var redisWriter = new RedisStreamWriter(passThrough, _bufferManager);
-            return new RedisPipeline(index, asyncSocket, passThrough, redisWriter, redisReader);
+            return new RedisPipeline(index, asyncSocket, passThrough, redisWriter, redisReader, _socketTimeout);
         }
 
         private int GetPipelineIndex()

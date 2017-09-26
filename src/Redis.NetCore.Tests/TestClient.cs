@@ -15,6 +15,8 @@ using Castle.Components.DictionaryAdapter;
 using Redis.NetCore.Abstractions;
 using Redis.NetCore.Configuration;
 using Xunit;
+using Redis.NetCore.Sockets;
+using NSubstitute;
 
 namespace Redis.NetCore.Tests
 {
@@ -98,7 +100,7 @@ namespace Redis.NetCore.Tests
             return members.ToArray();
         }
 
-        private static void SubscribeListener(DiagnosticListener listener)
+        public static void SubscribeListener(DiagnosticListener listener)
         {
             if (Debugger.IsAttached == false)
             {
@@ -116,6 +118,51 @@ namespace Redis.NetCore.Tests
                     Debug.WriteLine($"From listener {listener.Name} received event {@event.Key} with payload {@event.Value.ToString()}");
                 }
             });
+        }
+
+        public static void SetupSocketResponse(IAsyncSocket socket, params string[] dataString)
+        {
+            SetupConnectAsync(socket);
+            SetupSendAsync(socket);
+
+            var awaitable = Substitute.For<ISocketAwaitable<ArraySegment<byte>>>();
+            awaitable.GetAwaiter().Returns(awaitable);
+            awaitable.IsCompleted.Returns(true);
+
+            var i = 0;
+            awaitable.GetResult().Returns(
+                                          (context) =>
+                                          {
+                                              if (i >= dataString.Length)
+                                              {
+                                                  return new ArraySegment<byte>(new byte[0]);
+                                              }
+
+                                              var data = new ArraySegment<byte>(dataString[i].ToBytes());
+                                              i++;
+                                              return data;
+                                          });
+
+            socket.Connected.Returns(true);
+            socket.ReceiveAsync(Arg.Any<ArraySegment<byte>>()).Returns(awaitable);
+        }
+
+        private static void SetupSendAsync(IAsyncSocket socket)
+        {
+            var awaitable = Substitute.For<ISocketAwaitable<int>>();
+            awaitable.GetAwaiter().Returns(awaitable);
+            awaitable.IsCompleted.Returns(true);
+            awaitable.GetResult().Returns(1);
+            socket.SendAsync(Arg.Any<IList<ArraySegment<byte>>>()).Returns(awaitable);
+        }
+
+        private static void SetupConnectAsync(IAsyncSocket socket)
+        {
+            var awaitable = Substitute.For<ISocketAwaitable<bool>>();
+            awaitable.GetAwaiter().Returns(awaitable);
+            awaitable.IsCompleted.Returns(true);
+            awaitable.GetResult().Returns(true);
+            socket.ConnectAsync().Returns(awaitable);
         }
     }
 }

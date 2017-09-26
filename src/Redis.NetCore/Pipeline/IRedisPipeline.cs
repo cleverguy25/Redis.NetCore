@@ -13,6 +13,8 @@ namespace Redis.NetCore.Pipeline
     {
         bool IsErrorState { get; }
 
+        int DurationFromLastCommand { get; }
+
         ConcurrentQueue<RedisPipelineItem> RequestQueue { get; }
 
         void SaveQueue(IRedisPipeline redisPipeline);
@@ -24,5 +26,7 @@ namespace Redis.NetCore.Pipeline
         void ThrowErrorForRemainingResponseQueueItems();
 
         Task AuthenticateAsync(string password);
+
+        Task KeepAliveAsync();
     }
 }

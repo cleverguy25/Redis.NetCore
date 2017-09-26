@@ -19,6 +19,7 @@ namespace Redis.NetCore.Pipeline
         private static readonly DiagnosticSource _diagnosticSource = new DiagnosticListener("Redis.NetCore.Pipeline.RedisPipeline");
         private readonly int _pipelineId;
         private readonly IRedisReader _redisReader;
+        private readonly int _socketTimeout;
         private readonly IRedisWriter _redisWriter;
         private readonly ConcurrentQueue<RedisPipelineItem> _responseQueue = new ConcurrentQueue<RedisPipelineItem>();
         private readonly IAsyncSocket _socket;
@@ -28,19 +29,60 @@ namespace Redis.NetCore.Pipeline
         private Task _receiveTask;
         private int _sendIsRunning;
         private Task _sendTask;
+        private int _lastCommandTicks = Environment.TickCount;
 
-        public RedisPipeline(int pipelineId, IAsyncSocket socket, Stream stream, IRedisWriter redisWriter, IRedisReader redisReader)
+        public RedisPipeline(int pipelineId, IAsyncSocket socket, Stream stream, IRedisWriter redisWriter, IRedisReader redisReader, int socketTimeout = 60000)
         {
             _pipelineId = pipelineId;
             _socket = socket;
             _stream = stream;
             _redisWriter = redisWriter;
             _redisReader = redisReader;
+            _socketTimeout = socketTimeout;
         }
 
-        public bool IsErrorState => _pipelineException != null || _socket.Connected == false;
+        public bool IsErrorState
+        {
+            get
+            {
+                var duration = DurationFromLastCommand;
+                return _pipelineException != null
+                     || _socket.Connected == false
+                     || duration >= _socketTimeout;
+            }
+        }
+
+        public int DurationFromLastCommand
+        {
+            get
+            {
+                var now = Environment.TickCount;
+                return unchecked(now - _lastCommandTicks);
+            }
+        }
 
         public ConcurrentQueue<RedisPipelineItem> RequestQueue { get; } = new ConcurrentQueue<RedisPipelineItem>();
+
+        public static void FireAndForget(Task task)
+        {
+        }
+
+        public async Task KeepAliveAsync()
+        {
+            while (true)
+            {
+                if (IsErrorState)
+                {
+                    return;
+                }
+
+                await Task.Delay(5000).ConfigureAwait(false);
+                if (DurationFromLastCommand >= 15000)
+                {
+                    await SendCommandAsync(RedisCommands.Ping).ConfigureAwait(false);
+                }
+            }
+        }
 
         public Task AuthenticateAsync(string password)
         {
@@ -96,10 +138,6 @@ namespace Redis.NetCore.Pipeline
         {
             _stream?.Dispose();
             _socket?.Dispose();
-        }
-
-        private static void FireAndForget(Task task)
-        {
         }
 
         private Task<T> EnsureSendCommandAsync<T>(TaskCompletionSource<T> taskCompletion)
@@ -170,10 +208,10 @@ namespace Redis.NetCore.Pipeline
             }
             catch (Exception error)
             {
-                _diagnosticSource.LogEvent("SendException", error);
                 _pipelineException = error;
                 ThrowErrorForRemainingResponseQueueItems();
                 currentItem?.OnError(error);
+                _diagnosticSource.LogEvent("SendException", error);
             }
             finally
             {
@@ -233,10 +271,10 @@ namespace Redis.NetCore.Pipeline
             }
             catch (Exception error)
             {
-                _diagnosticSource.LogEvent("ReceiveException", error);
                 _pipelineException = error;
                 ThrowErrorForRemainingResponseQueueItems();
                 currentItem?.OnError(error);
+                _diagnosticSource.LogEvent("ReceiveException", error);
             }
             finally
             {
@@ -244,6 +282,7 @@ namespace Redis.NetCore.Pipeline
             }
 
             _diagnosticSource.LogEvent("ReceiveStop");
+            _lastCommandTicks = Environment.TickCount;
         }
     }
 }

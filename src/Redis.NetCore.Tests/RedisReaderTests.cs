@@ -24,7 +24,7 @@ namespace Redis.NetCore.Tests
             byte[][] responseData = null;
             var redisReader = CreateRedisReader(100, socket);
             var redisPiplineItem = new RedisPipelineItem(null, null, response => responseData = response);
-            SetupSocketResponse(socket, "$5\r", "\nBoo", "m!\r\n");
+            TestClient.SetupSocketResponse(socket, "$5\r", "\nBoo", "m!\r\n");
 
             await redisReader.ReadAsync(redisPiplineItem);
             Assert.Equal("Boom!", Encoding.UTF8.GetString(responseData[0]));
@@ -38,7 +38,7 @@ namespace Redis.NetCore.Tests
             byte[][] responseData = null;
             var redisReader = CreateRedisReader(100, socket);
             var redisPiplineItem = new RedisPipelineItem(null, null, response => responseData = response);
-            SetupSocketResponse(socket, "$", "5\r\nBoom!", "\r\n");
+            TestClient.SetupSocketResponse(socket, "$", "5\r\nBoom!", "\r\n");
 
             await redisReader.ReadAsync(redisPiplineItem);
             Assert.Equal("Boom!", Encoding.UTF8.GetString(responseData[0]));
@@ -52,7 +52,7 @@ namespace Redis.NetCore.Tests
             byte[][] responseData = null;
             var redisReader = CreateRedisReader(100, socket);
             var redisPiplineItem = new RedisPipelineItem(null, null, response => responseData = response);
-            SetupSocketResponse(socket, "*2\r\n", "$5\r\nBoom!\r\n$", "10\r\nShakalaka!", "\r\n");
+            TestClient.SetupSocketResponse(socket, "*2\r\n", "$5\r\nBoom!\r\n$", "10\r\nShakalaka!", "\r\n");
 
             await redisReader.ReadAsync(redisPiplineItem);
             Assert.Equal("Boom!", Encoding.UTF8.GetString(responseData[0]));
@@ -66,7 +66,7 @@ namespace Redis.NetCore.Tests
             byte[][] responseData = null;
             var redisReader = CreateRedisReader(100, socket);
             var redisPiplineItem = new RedisPipelineItem(null, null, response => responseData = response);
-            SetupSocketResponse(socket, "$5\r\nBoom!\r\n");
+            TestClient.SetupSocketResponse(socket, "$5\r\nBoom!\r\n");
 
             await redisReader.ReadAsync(redisPiplineItem);
             Assert.Equal("Boom!", Encoding.UTF8.GetString(responseData[0]));
@@ -80,7 +80,7 @@ namespace Redis.NetCore.Tests
             byte[][] responseData = null;
             var redisReader = CreateRedisReader(100, socket);
             var redisPiplineItem = new RedisPipelineItem(null, null, response => responseData = response);
-            SetupSocketResponse(socket, "$-1\r\n");
+            TestClient.SetupSocketResponse(socket, "$-1\r\n");
 
             await redisReader.ReadAsync(redisPiplineItem);
             Assert.Equal(null, responseData);
@@ -94,7 +94,7 @@ namespace Redis.NetCore.Tests
             byte[][] responseData = null;
             var redisReader = CreateRedisReader(100, socket);
             var redisPiplineItem = new RedisPipelineItem(null, null, response => responseData = response);
-            SetupSocketResponse(socket, "+Boom!\r\n");
+            TestClient.SetupSocketResponse(socket, "+Boom!\r\n");
 
             await redisReader.ReadAsync(redisPiplineItem);
             Assert.Equal("Boom!", Encoding.UTF8.GetString(responseData[0]));
@@ -108,7 +108,7 @@ namespace Redis.NetCore.Tests
             byte[][] responseData = null;
             var redisReader = CreateRedisReader(100, socket);
             var redisPiplineItem = new RedisPipelineItem(null, null, response => responseData = response);
-            SetupSocketResponse(socket, ":42\r\n");
+            TestClient.SetupSocketResponse(socket, ":42\r\n");
 
             await redisReader.ReadAsync(redisPiplineItem);
             Assert.Equal("42", Encoding.UTF8.GetString(responseData[0]));
@@ -122,7 +122,7 @@ namespace Redis.NetCore.Tests
             byte[][] responseData = null;
             var redisReader = CreateRedisReader(100, socket);
             var redisPiplineItem = new RedisPipelineItem(null, null, response => responseData = response);
-            SetupSocketResponse(socket, "*2\r\n$5\r\nBoom!\r\n$10\r\nShakalaka!\r\n");
+            TestClient.SetupSocketResponse(socket, "*2\r\n$5\r\nBoom!\r\n$10\r\nShakalaka!\r\n");
 
             await redisReader.ReadAsync(redisPiplineItem);
             Assert.Equal("Boom!", Encoding.UTF8.GetString(responseData[0]));
@@ -137,7 +137,7 @@ namespace Redis.NetCore.Tests
             byte[][] responseData = null;
             var redisReader = CreateRedisReader(100, socket);
             var redisPiplineItem = new RedisPipelineItem(null, null, response => responseData = response);
-            SetupSocketResponse(socket, "*2\r\n$5\r\nBoom!\r\n$-1\r\n");
+            TestClient.SetupSocketResponse(socket, "*2\r\n$5\r\nBoom!\r\n$-1\r\n");
 
             await redisReader.ReadAsync(redisPiplineItem);
             Assert.Equal("Boom!", Encoding.UTF8.GetString(responseData[0]));
@@ -152,29 +152,10 @@ namespace Redis.NetCore.Tests
             Exception exception = null;
             var redisReader = CreateRedisReader(100, socket);
             var redisPiplineItem = new RedisPipelineItem(null, (error) => exception = error, null);
-            SetupSocketResponse(socket, "-ERR Oh no.\r\n");
+            TestClient.SetupSocketResponse(socket, "-ERR Oh no.\r\n");
 
             await redisReader.ReadAsync(redisPiplineItem);
             Assert.Equal("ERR Oh no.", exception.Message);
-        }
-
-        private static void SetupSocketResponse(IAsyncSocket socket, params string[] dataString)
-        {
-            var awaitable = Substitute.For<ISocketAwaitable<ArraySegment<byte>>>();
-            awaitable.GetAwaiter().Returns(awaitable);
-            awaitable.IsCompleted.Returns(true);
-
-            var i = 0;
-            awaitable.GetResult().Returns(
-                                          (context) =>
-                                          {
-                                              var data = new ArraySegment<byte>(dataString[i].ToBytes());
-                                              i++;
-                                              return data;
-                                          });
-
-            socket.Connected.Returns(true);
-            socket.ReceiveAsync(Arg.Any<ArraySegment<byte>>()).Returns(awaitable);
         }
 
         private static RedisBaseReader CreateRedisReader(int chunkSize, IAsyncSocket socket)
